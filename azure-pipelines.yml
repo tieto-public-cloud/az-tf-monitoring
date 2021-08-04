@@ -1,0 +1,73 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+pool:
+  vmImage: ubuntu-latest
+steps:
+- task: AzureCLI@2
+  displayName: "Creating Terraform Azure Backend Resources"
+  inputs:
+    azureSubscription: 'TPCAzureDevelopment2Connection'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      RESOURCE_GROUP_NAME=rds-use-dev-rg
+      STORAGE_ACCOUNT_NAME=tpcrgpoctfstate
+      CONTAINER_NAME=tfstate
+      # Create resource group
+      az group create --name $RESOURCE_GROUP_NAME --location "West Europe"
+      # Create storage account
+      az storage account create --resource-group $RESOURCE_GROUP_NAME --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
+      # Get storage account key
+      ACCOUNT_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP_NAME --account-name $STORAGE_ACCOUNT_NAME --query [0].value -o tsv)
+      # Create blob container
+      az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME --account-key $ACCOUNT_KEY
+      echo "tf_storage_account_name: $STORAGE_ACCOUNT_NAME"
+      echo "tf_container_name: $CONTAINER_NAME"
+      echo "access_key: $ACCOUNT_KEY"
+      echo "tf_resource_group: $RESOURCE_GROUP_NAME"
+- task: TerraformInstaller@0
+  displayName: "Terraform Install"
+  inputs:
+    terraformVersion: 'latest'
+- task: TerraformCLI@0
+  displayName: "Terraform init"
+  inputs:
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
+    backendType: 'azurerm'
+    backendServiceArm: 'TPCAzureDevelopment2Connection'
+    ensureBackend: true
+    backendAzureRmResourceGroupName: 'rds-use-dev-rg'
+    backendAzureRmResourceGroupLocation: 'westeurope'
+    backendAzureRmStorageAccountName: 'tpcrgpoctfstate'
+    backendAzureRmContainerName: 'tfstate'
+    backendAzureRmKey: 'tpcpoc.tfstate'
+    allowTelemetryCollection: false
+- task: TerraformCLI@0
+  displayName: "Terraform Validate"
+  inputs:
+    command: 'validate'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
+    allowTelemetryCollection: false
+- task: TerraformCLI@0
+  displayName: "Terraform Plan"
+  inputs:
+    command: 'plan'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
+    environmentServiceName: 'TPCAzureDevelopment2Connection'
+    commandOptions: '-out=plan.out'
+    allowTelemetryCollection: false
+    publishPlanResults: 'TerraformPlanOutput'
+- task: TerraformCLI@0
+  displayName: "Apply Terraform Plan"
+  inputs:
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
+    environmentServiceName: 'TPCAzureDevelopment2Connection'
+    commandOptions: '-auto-approve plan.out'
+    allowTelemetryCollection: false
