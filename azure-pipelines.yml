@@ -21,7 +21,7 @@ steps:
 - task: AzureCLI@2
   displayName: "Creating Terraform Azure Backend Resources"
   inputs:
-    azureSubscription: 'TPCAzureDevelopment2Connection'
+    azureSubscription: 'danieldubravecdevconnection'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
@@ -47,7 +47,7 @@ steps:
     command: 'init'
     workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
     backendType: 'azurerm'
-    backendServiceArm: 'TPCAzureDevelopment2Connection'
+    backendServiceArm: 'danieldubravecdevconnection'
     ensureBackend: true
     backendAzureRmResourceGroupName: 'rds-use-dev-rg'
     backendAzureRmResourceGroupLocation: 'westeurope'
