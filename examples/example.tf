@@ -3,7 +3,7 @@ terraform {
   backend "azurerm" {
     resource_group_name  = "dubradan_dev_westeurope_rg"
     storage_account_name = "dubradantest"
-    container_name       = "monitoring"
+    container_name       = "tfstate"
     key                  = "tpcpoc.tfstate"
   }
 }

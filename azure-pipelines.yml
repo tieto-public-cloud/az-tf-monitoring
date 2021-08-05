@@ -3,6 +3,16 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+variables:
+- name: RESOURCE_GROUP_NAME
+  value: dubradan_dev_westeurope_rg 
+
+- name: STORAGE_ACCOUNT_NAME
+  value: dubradantest
+
+- name: STORAGE_CONTAINER_NAME
+  value: tfstate
+
 trigger:
 - main
 pool:
@@ -15,9 +25,6 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      RESOURCE_GROUP_NAME=rds-use-dev-rg
-      STORAGE_ACCOUNT_NAME=tpcrgpoctfstate
-      CONTAINER_NAME=tfstate
       # Create resource group
       az group create --name $RESOURCE_GROUP_NAME --location "West Europe"
       # Create storage account
@@ -25,9 +32,9 @@ steps:
       # Get storage account key
       ACCOUNT_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP_NAME --account-name $STORAGE_ACCOUNT_NAME --query [0].value -o tsv)
       # Create blob container
-      az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME --account-key $ACCOUNT_KEY
+      az storage container create --name $STORAGE_CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME --account-key $ACCOUNT_KEY
       echo "tf_storage_account_name: $STORAGE_ACCOUNT_NAME"
-      echo "tf_container_name: $CONTAINER_NAME"
+      echo "tf_container_name: $STORAGE_CONTAINER_NAME"
       echo "access_key: $ACCOUNT_KEY"
       echo "tf_resource_group: $RESOURCE_GROUP_NAME"
 - task: TerraformInstaller@0
