@@ -13,6 +13,9 @@ variables:
 - name: STORAGE_CONTAINER_NAME
   value: tfstate
 
+- name: LOCATION
+  value: westeurope
+
 trigger:
 - main
 pool:
@@ -26,17 +29,17 @@ steps:
     scriptLocation: 'inlineScript'
     inlineScript: |
       # Create resource group
-      az group create --name $RESOURCE_GROUP_NAME --location "West Europe"
+      az group create --name $(RESOURCE_GROUP_NAME) --location "West Europe"
       # Create storage account
-      az storage account create --resource-group $RESOURCE_GROUP_NAME --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
+      az storage account create --resource-group $(RESOURCE_GROUP_NAME) --name $(STORAGE_ACCOUNT_NAME) --sku Standard_LRS --encryption-services blob
       # Get storage account key
-      ACCOUNT_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP_NAME --account-name $STORAGE_ACCOUNT_NAME --query [0].value -o tsv)
+      ACCOUNT_KEY=$(az storage account keys list --resource-group $(RESOURCE_GROUP_NAME) --account-name $(STORAGE_ACCOUNT_NAME) --query [0].value -o tsv)
       # Create blob container
-      az storage container create --name $STORAGE_CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME --account-key $ACCOUNT_KEY
-      echo "tf_storage_account_name: $STORAGE_ACCOUNT_NAME"
-      echo "tf_container_name: $STORAGE_CONTAINER_NAME"
+      az storage container create --name $(STORAGE_CONTAINER_NAME) --account-name $(STORAGE_ACCOUNT_NAME) --account-key $ACCOUNT_KEY
+      echo "tf_storage_account_name: $(STORAGE_ACCOUNT_NAME)"
+      echo "tf_container_name: $(STORAGE_CONTAINER_NAME)"
       echo "access_key: $ACCOUNT_KEY"
-      echo "tf_resource_group: $RESOURCE_GROUP_NAME"
+      echo "tf_resource_group: $(RESOURCE_GROUP_NAME)"
 - task: TerraformInstaller@0
   displayName: "Terraform Install"
   inputs:
@@ -49,10 +52,10 @@ steps:
     backendType: 'azurerm'
     backendServiceArm: 'danieldubravecdevconnection'
     ensureBackend: true
-    backendAzureRmResourceGroupName: 'rds-use-dev-rg'
-    backendAzureRmResourceGroupLocation: 'westeurope'
-    backendAzureRmStorageAccountName: 'tpcrgpoctfstate'
-    backendAzureRmContainerName: 'tfstate'
+    backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
+    backendAzureRmResourceGroupLocation: $(LOCATION)
+    backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
+    backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
     backendAzureRmKey: 'tpcpoc.tfstate'
     allowTelemetryCollection: false
 - task: TerraformCLI@0
