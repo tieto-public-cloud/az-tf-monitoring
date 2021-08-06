@@ -4,16 +4,16 @@
 # https://aka.ms/yaml
 
 variables:
-- name: RESOURCE_GROUP_NAME
+- name: resource_group_name
   value: dubradan_dev_westeurope_rg 
 
-- name: STORAGE_ACCOUNT_NAME
+- name: storage_account_name
   value: dubradantest
 
-- name: STORAGE_CONTAINER_NAME
+- name: storage_container_name
   value: tfstate
 
-- name: LOCATION
+- name: location
   value: westeurope
 
 trigger:
