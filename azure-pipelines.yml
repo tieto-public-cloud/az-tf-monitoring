@@ -5,7 +5,7 @@
 
 variables:
 - name: resource_group_name
-  value: dubradan_dev_westeurope_rg 
+  value: dubradan_monitoring_dev_westeurope_rg 
 
 - name: storage_account_name
   value: dubradantest
