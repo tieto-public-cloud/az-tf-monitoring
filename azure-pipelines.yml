@@ -48,6 +48,7 @@ steps:
   displayName: "Terraform init"
   inputs:
     command: 'init'
+    commandOptions: "-migrate-state"
     workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
     backendType: 'azurerm'
     backendServiceArm: 'danieldubravecdevconnection'
