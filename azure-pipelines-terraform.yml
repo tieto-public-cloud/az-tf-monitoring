@@ -32,7 +32,7 @@ stages:
           - task: TerraformInstaller@0
             inputs:
               terraformVersion: '0.14.10'
-          - task: TerraformTaskV1@0
+          - task: TerraformCLI@0
             inputs:
               provider: 'azurerm'
               command: 'init'
@@ -42,7 +42,7 @@ stages:
               backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
               backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
               backendAzureRmKey: 'tpcpoc.tfstate'
-          - task: TerraformTaskV1@0
+          - task: TerraformCLI@0
             inputs:
               provider: 'azurerm'
               command: 'plan'
@@ -61,7 +61,7 @@ stages:
           - task: TerraformInstaller@0
             inputs:
               terraformVersion: '0.14.10'
-          - task: TerraformTaskV1@0
+          - task: TerraformCLI@0
             inputs:
               provider: 'azurerm'
               command: 'init'
@@ -71,7 +71,7 @@ stages:
               backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
               backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
               backendAzureRmKey: 'tpcpoc.tfstate'
-          - task: TerraformTaskV1@0
+          - task: TerraformCLI@0
             inputs:
               provider: 'azurerm'
               command: 'apply'
