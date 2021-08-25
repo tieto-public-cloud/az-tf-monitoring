@@ -32,7 +32,7 @@ stages:
           - task: TerraformInstaller@0
             inputs:
               terraformVersion: '0.14.10'
-- task: TerraformCLI@0
+  - task: TerraformCLI@0
     displayName: 'terraform init'
     inputs:
         command: init
@@ -65,7 +65,7 @@ stages:
           - task: TerraformInstaller@0
             inputs:
               terraformVersion: '0.14.10'
-- task: TerraformCLI@0
+  - task: TerraformCLI@0
     displayName: 'terraform init'
     inputs:
         command: init
