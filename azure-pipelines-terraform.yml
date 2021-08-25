@@ -52,7 +52,7 @@ stages:
       environmentServiceNameAzureRM: 'danieldubravecdevconnection'
 
 
- stages:
+stages:
   - stage: Terraform apply
     jobs:
       - job: Terraform apply
