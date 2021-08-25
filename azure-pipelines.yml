@@ -51,7 +51,7 @@ steps:
     commandOptions: "-migrate-state"
     workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
     backendType: 'azurerm'
-    backendServiceArm: 'danieldubravecdevconnectionuser'
+    backendServiceArm: 'danieldubravecdevconnection'
     ensureBackend: true
     backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
     backendAzureRmResourceGroupLocation: $(LOCATION)
