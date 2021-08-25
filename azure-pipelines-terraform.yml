@@ -50,34 +50,6 @@ stages:
       provider: 'azurerm'
       command: 'plan'
       environmentServiceNameAzureRM: 'danieldubravecdevconnection'
-
-
-stages:
-  - stage: Terraform apply
-    jobs:
-      - job: Terraform apply
-        displayName: "apply"
-        continueOnError: false
-        pool:
-          vmImage: "ubuntu-latest"
-        steps:
-          - checkout: self
-          - task: TerraformInstaller@0
-    inputs:
-      terraformVersion: '0.14.10'
-  - task: TerraformCLI@0
-    displayName: 'terraform init'
-    inputs:
-        command: init
-        backendType: azurerm
-        environmentServiceName: 'danieldubravecdevconnection'
-        backendServiceArm: 'danieldubravecdevconnection'
-        ensureBackend: true
-        backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
-        backendAzureRmResourceGroupLocation: $(LOCATION)
-        backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
-        backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
-        backendAzureRmKey: 'tpcpoc.tfstate'
   - task: TerraformCLI@0
     inputs:
       provider: 'azurerm'
