@@ -30,8 +30,9 @@ stages:
         steps:
           - checkout: self
   - task: TerraformInstaller@0
+    displayName: "Terraform Install"
     inputs:
-      terraformVersion: '0.14.10'
+        terraformVersion: 'latest'
   - task: TerraformCLI@0
     displayName: 'terraform init'
     inputs:
