@@ -40,11 +40,11 @@ stages:
         environmentServiceName: 'danieldubravecdevconnection'
         backendServiceArm: 'danieldubravecdevconnection'
         ensureBackend: true
-              backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
-              backendAzureRmResourceGroupLocation: $(LOCATION)
-              backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
-              backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
-              backendAzureRmKey: 'tpcpoc.tfstate'
+        backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
+        backendAzureRmResourceGroupLocation: $(LOCATION)
+        backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
+        backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
+        backendAzureRmKey: 'tpcpoc.tfstate'
   - task: TerraformCLI@0
             inputs:
               provider: 'azurerm'
@@ -73,11 +73,11 @@ stages:
         environmentServiceName: 'danieldubravecdevconnection'
         backendServiceArm: 'danieldubravecdevconnection'
         ensureBackend: true
-              backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
-              backendAzureRmResourceGroupLocation: $(LOCATION)
-              backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
-              backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
-              backendAzureRmKey: 'tpcpoc.tfstate'
+        backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
+        backendAzureRmResourceGroupLocation: $(LOCATION)
+        backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
+        backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
+        backendAzureRmKey: 'tpcpoc.tfstate'
   - task: TerraformCLI@0
             inputs:
               provider: 'azurerm'
