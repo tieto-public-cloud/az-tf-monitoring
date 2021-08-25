@@ -1,0 +1,78 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+variables:
+- name: resource_group_name
+  value: dubradan_monitoring_dev_westeurope_rg 
+
+- name: storage_account_name
+  value: dubradantestmonitoring
+
+- name: storage_container_name
+  value: tfstate
+
+- name: location
+  value: westeurope
+
+trigger:
+- mail
+
+stages:
+  - stage: ValidateAndPlan
+    jobs:
+      - job: Terraform_Validate_and_Plan
+        displayName: "Validate and Plan"
+        continueOnError: false
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - checkout: self
+          - task: TerraformInstaller@0
+            inputs:
+              terraformVersion: '0.14.10'
+          - task: TerraformTaskV1@0
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'Tieto Azure Public Cloud Operations Test(3a60e7b7-ac49-45d8-8a8f-ba61cdc5dc1f)'
+              backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
+              backendAzureRmResourceGroupLocation: $(LOCATION)
+              backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
+              backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
+              backendAzureRmKey: 'tpcpoc.tfstate'
+          - task: TerraformTaskV1@0
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              environmentServiceNameAzureRM: 'Tieto Azure Public Cloud Operations Test(3a60e7b7-ac49-45d8-8a8f-ba61cdc5dc1f)'
+
+
+  - stage: Apply
+    jobs:
+      - job: Terraform_Apply
+        displayName: "Apply"
+        continueOnError: false
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - checkout: self
+          - task: TerraformInstaller@0
+            inputs:
+              terraformVersion: '0.14.10'
+          - task: TerraformTaskV1@0
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'Tieto Azure Public Cloud Operations Test(3a60e7b7-ac49-45d8-8a8f-ba61cdc5dc1f)'
+              backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
+              backendAzureRmResourceGroupLocation: $(LOCATION)
+              backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
+              backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
+              backendAzureRmKey: 'tpcpoc.tfstate'
+          - task: TerraformTaskV1@0
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              environmentServiceNameAzureRM: 'Tieto Azure Public Cloud Operations Test(3a60e7b7-ac49-45d8-8a8f-ba61cdc5dc1f)'
