@@ -29,9 +29,9 @@ stages:
           vmImage: "ubuntu-latest"
         steps:
           - checkout: self
-          - task: TerraformInstaller@0
-            inputs:
-              terraformVersion: '0.14.10'
+  - task: TerraformInstaller@0
+    inputs:
+      terraformVersion: '0.14.10'
   - task: TerraformCLI@0
     displayName: 'terraform init'
     inputs:
@@ -46,10 +46,10 @@ stages:
         backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
         backendAzureRmKey: 'tpcpoc.tfstate'
   - task: TerraformCLI@0
-            inputs:
-              provider: 'azurerm'
-              command: 'plan'
-              environmentServiceNameAzureRM: 'danieldubravecdevconnection'
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      environmentServiceNameAzureRM: 'danieldubravecdevconnection'
 
 
  stages:
@@ -63,8 +63,8 @@ stages:
         steps:
           - checkout: self
           - task: TerraformInstaller@0
-            inputs:
-              terraformVersion: '0.14.10'
+    inputs:
+      terraformVersion: '0.14.10'
   - task: TerraformCLI@0
     displayName: 'terraform init'
     inputs:
@@ -79,7 +79,7 @@ stages:
         backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
         backendAzureRmKey: 'tpcpoc.tfstate'
   - task: TerraformCLI@0
-            inputs:
-              provider: 'azurerm'
-              command: 'apply'
-              environmentServiceNameAzureRM: 'danieldubravecdevconnection'
+    inputs:
+      provider: 'azurerm'
+      command: 'apply'
+      environmentServiceNameAzureRM: 'danieldubravecdevconnection'
