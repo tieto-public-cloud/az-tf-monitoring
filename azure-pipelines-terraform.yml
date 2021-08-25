@@ -3,39 +3,18 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-variables:
-- name: resource_group_name
-  value: dubradan_monitoring_dev_westeurope_rg 
-
-- name: storage_account_name
-  value: dubradantestmonitoring
-
-- name: storage_container_name
-  value: tfstate
-
-- name: location
-  value: westeurope
-
 trigger:
-- mail
-
-stages:
-  - stage: ValidateAndPlan
-    jobs:
-      - job: Terraform_Validate_and_Plan
-        displayName: "Validate and Plan"
-        continueOnError: false
-        pool:
-          vmImage: "ubuntu-latest"
-        steps:
-          - checkout: self
-  - task: TerraformInstaller@0
-    displayName: "Terraform Install"
-    inputs:
-        terraformVersion: 'latest'
-  - task: TerraformCLI@0
-    displayName: 'terraform init'
-    inputs:
+- main
+pool:
+  vmImage: ubuntu-latest
+steps:
+- task: TerraformInstaller@0
+  displayName: "Terraform Install"
+  inputs:
+    terraformVersion: 'latest'
+- task: TerraformCLI@0
+  displayName: "Terraform init"
+  inputs:
         command: init
         backendType: azurerm
         environmentServiceName: 'danieldubravecdevconnection'
@@ -46,13 +25,27 @@ stages:
         backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
         backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
         backendAzureRmKey: 'tpcpoc.tfstate'
-  - task: TerraformCLI@0
-    inputs:
-      provider: 'azurerm'
-      command: 'plan'
-      environmentServiceNameAzureRM: 'danieldubravecdevconnection'
-  - task: TerraformCLI@0
-    inputs:
-      provider: 'azurerm'
-      command: 'apply'
-      environmentServiceNameAzureRM: 'danieldubravecdevconnection'
+    allowTelemetryCollection: false
+- task: TerraformCLI@0
+  displayName: "Terraform Validate"
+  inputs:
+    command: 'validate'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
+    allowTelemetryCollection: false
+- task: TerraformCLI@0
+  displayName: "Terraform Plan"
+  inputs:
+    command: 'plan'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
+    environmentServiceName: 'danieldubravecdevconnection'
+    commandOptions: '-out=plan.out'
+    allowTelemetryCollection: false
+    publishPlanResults: 'TerraformPlanOutput'
+- task: TerraformCLI@0
+  displayName: "Apply Terraform Plan"
+  inputs:
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
+    environmentServiceName: 'danieldubravecdevconnection'
+    commandOptions: '-auto-approve plan.out'
+    allowTelemetryCollection: false
