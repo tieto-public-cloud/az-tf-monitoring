@@ -32,27 +32,31 @@ stages:
           - task: TerraformInstaller@0
             inputs:
               terraformVersion: '0.14.10'
-          - task: TerraformCLI@0
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              backendServiceArm: 'Tieto Azure Public Cloud Operations Test(3a60e7b7-ac49-45d8-8a8f-ba61cdc5dc1f)'
+- task: TerraformCLI
+    displayName: 'terraform init'
+    inputs:
+        command: init
+        backendType: azurerm
+        environmentServiceName: 'danieldubravecdevconnection'
+        backendServiceArm: 'danieldubravecdevconnection'
+        ensureBackend: true
               backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
               backendAzureRmResourceGroupLocation: $(LOCATION)
               backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
               backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
               backendAzureRmKey: 'tpcpoc.tfstate'
-          - task: TerraformCLI@0
+  - task: TerraformCLI@0
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              environmentServiceNameAzureRM: 'Tieto Azure Public Cloud Operations Test(3a60e7b7-ac49-45d8-8a8f-ba61cdc5dc1f)'
+              environmentServiceNameAzureRM: 'danieldubravecdevconnection'
 
 
-  - stage: Apply
+ stages:
+  - stage: Terraform apply
     jobs:
-      - job: Terraform_Apply
-        displayName: "Apply"
+      - job: Terraform apply
+        displayName: "apply"
         continueOnError: false
         pool:
           vmImage: "ubuntu-latest"
@@ -61,18 +65,21 @@ stages:
           - task: TerraformInstaller@0
             inputs:
               terraformVersion: '0.14.10'
-          - task: TerraformCLI@0
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              backendServiceArm: 'Tieto Azure Public Cloud Operations Test(3a60e7b7-ac49-45d8-8a8f-ba61cdc5dc1f)'
+- task: TerraformCLI
+    displayName: 'terraform init'
+    inputs:
+        command: init
+        backendType: azurerm
+        environmentServiceName: 'danieldubravecdevconnection'
+        backendServiceArm: 'danieldubravecdevconnection'
+        ensureBackend: true
               backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
               backendAzureRmResourceGroupLocation: $(LOCATION)
               backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
               backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
               backendAzureRmKey: 'tpcpoc.tfstate'
-          - task: TerraformCLI@0
+  - task: TerraformCLI@0
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              environmentServiceNameAzureRM: 'Tieto Azure Public Cloud Operations Test(3a60e7b7-ac49-45d8-8a8f-ba61cdc5dc1f)'
+              environmentServiceNameAzureRM: 'danieldubravecdevconnection'
