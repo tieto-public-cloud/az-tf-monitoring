@@ -38,7 +38,7 @@ steps:
         backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
         backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
         backendAzureRmKey: 'tpcpoc.tfstate'
-    allowTelemetryCollection: false
+        allowTelemetryCollection: false
 - task: TerraformCLI@0
   displayName: "Terraform Validate"
   inputs:
