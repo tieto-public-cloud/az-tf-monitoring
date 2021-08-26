@@ -184,7 +184,7 @@ variable "monitor_default" {
     )
   })
 
-  default = {
+  /*default = {
 
     query_alerts = {
       "vm-cpu-usage-critical" = {
@@ -398,5 +398,5 @@ variable "monitor_default" {
       }
 
     }
-  }
+  }*/
 }

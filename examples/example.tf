@@ -16,7 +16,7 @@ module "monitoring-alert" {
         short_name = "tm_crit_ag"
         email = {
           name          = "Email Tieto Default"
-          email_address = "tietomanagedazurealerts@tieto.com"
+          email_address = "daniel.dubravec@tietoevry.com"
         }
         webhook = {
           name        = "ServiceNow"
@@ -27,7 +27,7 @@ module "monitoring-alert" {
         short_name = "tm_crit_ag"
         email = {
           name          = "Email Tieto Default"
-          email_address = "tietomanagedazurealerts@tieto.com"
+          email_address = "daniel.dubravec@tietoevry.com"
         }
         webhook = {
           name        = "ServiceNow"
