@@ -40,25 +40,26 @@ steps:
         backendAzureRmKey: 'tpcpoc.tfstate'
         allowTelemetryCollection: false
 - task: TerraformCLI@0
-  displayName: "Terraform Validate"
-  inputs:
-    command: 'validate'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
-    allowTelemetryCollection: false
-- task: TerraformCLI@0
   displayName: "Terraform Plan"
   inputs:
-    command: 'plan'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
-    environmentServiceName: 'danieldubravecdevconnection'
-    commandOptions: '-out=plan.out'
-    allowTelemetryCollection: false
-    publishPlanResults: 'TerraformPlanOutput'
+        command: 'plan'
+        environmentServiceName: 'danieldubravecdevconnection'
+        commandOptions: '-out=plan.out -input=false'
+        publishPlanResults: 'TerraformPlanOutput'
+        backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
+        backendAzureRmResourceGroupLocation: $(LOCATION)
+        backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
+        backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
+        backendAzureRmKey: 'tpcpoc.tfstate'    
 - task: TerraformCLI@0
   displayName: "Apply Terraform"
   inputs:
-    command: 'apply'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
-    environmentServiceName: 'danieldubravecdevconnection'
-    commandOptions: '-auto-approve plan.out'
-    allowTelemetryCollection: false
+        command: 'apply'
+        environmentServiceName: 'danieldubravecdevconnection'
+        commandOptions: '-input=false plan.out'
+        publishPlanResults: 'TerraformPlanOutput'
+        backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
+        backendAzureRmResourceGroupLocation: $(LOCATION)
+        backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
+        backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
+        backendAzureRmKey: 'tpcpoc.tfstate'    
