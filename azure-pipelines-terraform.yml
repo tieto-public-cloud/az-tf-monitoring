@@ -3,6 +3,19 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+variables:
+- name: resource_group_name
+  value: dubradan_monitoring_dev_westeurope_rg 
+
+- name: storage_account_name
+  value: dubradantestmonitoring
+
+- name: storage_container_name
+  value: tfstate
+
+- name: location
+  value: westeurope
+
 trigger:
 - main
 pool:
@@ -42,7 +55,7 @@ steps:
     allowTelemetryCollection: false
     publishPlanResults: 'TerraformPlanOutput'
 - task: TerraformCLI@0
-  displayName: "Apply Terraform Plan"
+  displayName: "Apply Terraform"
   inputs:
     command: 'apply'
     workingDirectory: '$(System.DefaultWorkingDirectory)/examples'
