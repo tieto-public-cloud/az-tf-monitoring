@@ -1,8 +1,8 @@
 terraform {
   experiments = [module_variable_optional_attrs]
   backend "azurerm" {
-    resource_group_name  = "dubradan_dev_westeurope_rg"
-    storage_account_name = "dubradantest"
+    resource_group_name  = "dubradan_monitoring_dev_westeurope_rg"
+    storage_account_name = "dubradantestmonitoring"
     container_name       = "tfstate"
     key                  = "tpcpoc.tfstate"
   }

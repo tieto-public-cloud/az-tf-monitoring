@@ -13,7 +13,7 @@ variable "create_resource_group" {
 variable "log_analytics_workspace_resource_group" {
   type        = string
   description = "The log Analytics Workspace resource group name"
-  default     = "rds-use-dev-rg"
+  default     = "dubradan_monitoring_dev_westeurope_rg"
 }
 variable "create_log_analytics_workspace" {
   description = "Whether to create log analytics workspace and use it for all monitoring resources"
@@ -22,7 +22,7 @@ variable "create_log_analytics_workspace" {
 variable "log_analytics_workspace_name" {
   type        = string
   description = "The log Analytics Workspace Name"
-  default     = "nik-rds-weu-dev-sol"
+  default     = "dubradan_monitoring_workspace"
 }
 
 variable "location" {
