@@ -2,8 +2,6 @@
 # Azure Monitor action group configurations
 #
 
-# Template for easy creation with Mustache https://mustache.github.io/
-# Using following variables
 variable "deploy_monitoring_{{SHORT_NAME}}" {
   description = "Whether to deploy Monitoring alerts related to {{RESOURCE_TYPE}}"
   type        = bool
