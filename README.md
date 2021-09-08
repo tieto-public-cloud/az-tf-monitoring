@@ -38,7 +38,7 @@ Then just fill in the queries and alert attributes.
 
 Add new module stanza added to ./modules/monitoring/main.tf:
 
-`module "monitor-azuresql" {  
+module "monitor-azuresql" {  
   source                     = "../alerts"  
   query_alerts               = var.azuresql-query.query_alert_default  
   deploy_monitoring          = var.deploy_monitoring_azuresql  
@@ -46,11 +46,11 @@ Add new module stanza added to ./modules/monitoring/main.tf:
   log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)  
   l                          = var.location  
   ag                         = azurerm_monitor_action_group.action_group  
-}`
+}
 
 By default new alert bundles are not deployed (if template variables_monitor_template.tftemp is used as source), so to deploy new bundle add a switch to ./deploy.tf file:
 
-`deploy_monitoring_backup = true`
+deploy_monitoring_backup = true  
 
 Then initialize new module in Terraform by running terraform init.
 
