@@ -47,8 +47,8 @@ variable "monitor_tagging_fapp_name" {
 
 variable "monitor_tagging_function_repo" {
   description = "Source code repository URL for monitor tagging Azure Function"
-  type = string
-  default = "https://github.com/junkett/azmontag.git"
+  type        = string
+  default     = "https://github.com/junkett/azmontag.git"
 }
 
 # locals {
