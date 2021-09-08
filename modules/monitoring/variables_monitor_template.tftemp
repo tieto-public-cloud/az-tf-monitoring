@@ -1,0 +1,79 @@
+#
+# Azure Monitor action group configurations
+#
+
+# Template for easy creation with Mustache https://mustache.github.io/
+# Using following variables
+variable "deploy_monitoring_{{SHORT_NAME}}" {
+  description = "Whether to deploy Monitoring alerts related to {{RESOURCE_TYPE}}"
+  type        = bool
+  default     = false
+}
+
+variable "{{SHORT_NAME}}-query" {
+  description = "{{RESOURCE_TYPE}} Monitor Config for Query based monitoring"
+  default = {
+    query_alert_default = {
+      "{{RESOURCE_TYPE_NOSPACE}}-{{METRIC_NOSPACE}}-Critical" = {
+        name         = "{{RESOURCE_TYPE}} - {{METRIC}} - Critical"
+        query        = ""
+        severity     = 0
+        frequency    = 15
+        time_window  = 30
+        action_group = "tm_critical_action_group"
+        trigger = {
+          operator  = "GreaterThan"
+          threshold = 2
+          metric_trigger = {
+            operator  = "GreaterThan"
+            threshold = 0
+            type      = "Consecutive"
+            column    = "Resource"
+          }
+        }
+      }
+      "{{RESOURCE_TYPE}}-{{METRIC_NOSPACE}}-Warning" = {
+        name         = "{{RESOURCE_TYPE}} - {{METRIC}} - Warning"
+        query        = ""
+        severity     = 1
+        frequency    = 15
+        time_window  = 30
+        action_group = "tm_warning_action_group"
+        trigger = {
+          operator  = "GreaterThan"
+          threshold = 0
+          metric_trigger = {
+            operator  = "GreaterThan"
+            threshold = 0
+            type      = "Consecutive"
+            column    = "Resource"
+          }
+        }
+      }
+    }
+  }
+  type = object({
+    query_alert_default = map(
+      object({
+        name         = string
+        enabled      = optional(bool)
+        query        = string
+        severity     = optional(number)
+        frequency    = number
+        time_window  = number
+        action_group = string
+        throttling   = optional(number)
+        trigger = object({
+          operator  = string
+          threshold = number
+          metric_trigger = optional(object({
+            operator  = string
+            threshold = string
+            type      = string
+            column    = string
+          }))
+        })
+      })
+    )
+  })
+}

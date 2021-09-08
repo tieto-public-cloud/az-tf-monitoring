@@ -1,20 +1,54 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Deploy TE Azure Monitoring via Terraform
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+## General thoughts and expectations
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+- We should be able to deploy monitoring only for needed resource types
+- By default we use log workspace and query alerts types on that log workspace
+- We should be able to create custom alerts (even the metric ones for custom alerts should be possible)
+- Metric alerts should be able to be scoped and not expect to use all available subscriptions for deployment
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+## Monitoring modules usage
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+The TF code calls root module in ./modules/monitoring to deploy following resources:
+- If needed - Resource group and Log Analytics Workspace
+- Action groups
+- Calls child module at ./modules/alerts for each monitoring alert bundle that is supposed to be deployed
+
+### Module "monitoring"
+
+### New resource type alert template
+
+Template for easy creation with Mustache https://mustache.github.io/
+Using following variables
+
+SHORTNAME - shor resource type name used in TF resource / variable naming, must not contain any spaces nor underscores and all letters must be lowcase (eg azurevm, azuresql) 
+RESOURCE_TYPE - 
+METRIC
+
+variable "deploy_monitoring_{{SHORTNAME}}" {
+  description = "Whether to deploy Monitoring alerts related to {{RESOURCE_TYPE}}"
+  type        = bool
+  default     = false
+}
+
+variable "{{SHORTNAME}}-query" {
+  description = "{{RESOURCE_TYPE}} Monitor Config for Query based monitoring"
+  default = {
+    query_alert_default = {
+      "{{RESOURCE_TYPE}}-{{METRIC_NOSPACE}}-Critical" = {
+        name         = "{{RESOURCE_TYPE}} - {{METRIC}} - Critical"
+        query        = ""
+        severity     = 0
+        frequency    = 15
+        time_window  = 30
+        action_group = "tm_critical_action_group"
+        trigger = {
+          operator  = "GreaterThan"
+          threshold = 2
+          metric_trigger = {
+            operator  = "GreaterThan"
+            threshold = 0
+            type      = "Consecutive"
+            column    = "Resource"
+          }
+        }

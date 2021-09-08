@@ -20,3 +20,4 @@ output "log_analytics_workspace_id" {
 output "available_subscriptions" {
   value = data.azurerm_subscriptions.available.subscriptions
 }
+
