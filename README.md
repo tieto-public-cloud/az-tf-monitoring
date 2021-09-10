@@ -2,10 +2,10 @@
 
 ## General thoughts and expectations
 
-- We should be able to deploy monitoring only for needed resource types
-- By default we use log workspace and query alerts types on that log workspace
-- We should be able to create custom alerts (even the metric ones for custom alerts should be possible)
-- Metric alerts are out of scope for now.
+- Switches to enable monitoring only for needed resource types
+- Use log workspace and query alerts types on that log workspace
+- Should be able to create custom alerts
+- Metric alerts are out of scope
 
 ## Monitoring modules usage
 
@@ -15,16 +15,22 @@ The TF code calls root module in ./modules/monitoring to deploy following resour
 - Enable resource tags in monitoring if switched on.
 - Calls child module at ./modules/alerts for each monitoring alert bundle that is supposed to be deployed.
 
+### Module "alerts"
+
+Code common for all alert bundles that creates alerts based on variable input.  
+Called from "monitorin" module.
+
 ### Module "monitoring"
 
-Input variables as defined in ./modules/monitoring/variables*.tf
+Input variables as defined in ./modules/monitoring/variables*.tf  
 Each resource type monitoring bundle is defined in separate variables file - eg. variables_monitor_azuresql.tf
 
 ### Adding new alert bundle
 
 #### Variable Template
-Template for easy creation with Mustache https://mustache.github.io/
-file: variables_monitor_template.tftemp / Should work as a guidance / schema for new alert bunde definitions
+
+Template for easy creation with Mustache https://mustache.github.io/  
+file: ./variables_monitor_template.tftemp / Should work as a guidance / schema for new alert bunde definitions
 
 - SHORT_NAME: example "azurevm"
 - RESOURCE_TYPE: "Azure VM"
