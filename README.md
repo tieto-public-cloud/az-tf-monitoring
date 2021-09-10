@@ -18,7 +18,7 @@ The TF code calls root module in ./modules/monitoring to deploy following resour
 ### Module "alerts"
 
 Code common for all alert bundles that creates alerts based on variable input.  
-Called from "monitorin" module.
+Called from "monitoring" module.
 
 ### Module "monitoring"
 
