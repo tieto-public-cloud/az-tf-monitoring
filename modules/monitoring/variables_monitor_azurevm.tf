@@ -8,7 +8,7 @@ variable "deploy_monitoring_azurevm" {
 }
 
 variable "azurevm-query" {
-  description = "Azure VM Monitor Config for Query based monitoring"
+  description = "Azure VM Monitor config for query based monitoring"
   default = {
     query_alert_default = {
       "AzureVM-CPUUsage-Critical" = {
@@ -17,7 +17,7 @@ variable "azurevm-query" {
         severity     = 0
         frequency    = 5
         time_window  = 15
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 90
@@ -35,7 +35,7 @@ variable "azurevm-query" {
         severity     = 1
         frequency    = 5
         time_window  = 15
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 80
@@ -53,7 +53,7 @@ variable "azurevm-query" {
         severity     = 0
         frequency    = 5
         time_window  = 15
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 90
@@ -71,7 +71,7 @@ variable "azurevm-query" {
         severity     = 1
         frequency    = 5
         time_window  = 15
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 80
@@ -89,7 +89,7 @@ variable "azurevm-query" {
         severity     = 0
         frequency    = 30
         time_window  = 30
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "LessThan"
           threshold = 10
@@ -107,7 +107,7 @@ variable "azurevm-query" {
         severity     = 1
         frequency    = 30
         time_window  = 30
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "LessThan"
           threshold = 20
@@ -125,7 +125,7 @@ variable "azurevm-query" {
         severity     = 0
         frequency    = 30
         time_window  = 30
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "LessThan"
           threshold = 15
@@ -143,7 +143,7 @@ variable "azurevm-query" {
         severity     = 1
         frequency    = 30
         time_window  = 30
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "LessThan"
           threshold = 5
@@ -161,7 +161,7 @@ variable "azurevm-query" {
         severity     = 0
         frequency    = 30
         time_window  = 30
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 90
@@ -179,7 +179,7 @@ variable "azurevm-query" {
         severity     = 1
         frequency    = 30
         time_window  = 30
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 80
@@ -197,7 +197,7 @@ variable "azurevm-query" {
         severity     = 0
         frequency    = 5
         time_window  = 60
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 0
@@ -209,7 +209,7 @@ variable "azurevm-query" {
         severity     = 1
         frequency    = 5
         time_window  = 60
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 0
@@ -254,7 +254,7 @@ variable "azurevm-query" {
 #         frequency                = "PT15M"
 #         severity                 = 0
 #         target_resource_type     = "Microsoft.Compute/virtualMachines"
-#         action_group             = "tm_critical_action_group_metric"
+#         action_group             = "tm-critical-actiongroup_metric"
 #         target_resource_location = "westeurope"
 #         window_size              = "PT30M"
 #         scope                    = var.resource_group_name

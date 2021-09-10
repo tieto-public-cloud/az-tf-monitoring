@@ -8,7 +8,7 @@ variable "deploy_monitoring_azuresql" {
 }
 
 variable "azuresql-query" {
-  description = "Azure SQL Monitor Config for Query based monitoring"
+  description = "Azure SQL Monitor config for query based monitoring"
   default = {
     query_alert_default = {
       "AzureSQL-DTUUsage-Critical" = {
@@ -17,7 +17,7 @@ variable "azuresql-query" {
         severity     = 0
         frequency    = 5
         time_window  = 15
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 90
@@ -35,7 +35,7 @@ variable "azuresql-query" {
         severity     = 1
         frequency    = 5
         time_window  = 15
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 80
@@ -53,7 +53,7 @@ variable "azuresql-query" {
         severity     = 0
         frequency    = 5
         time_window  = 15
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 90
@@ -71,7 +71,7 @@ variable "azuresql-query" {
         severity     = 1
         frequency    = 5
         time_window  = 15
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 80
@@ -89,7 +89,7 @@ variable "azuresql-query" {
         severity     = 0
         frequency    = 30
         time_window  = 30
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 90
@@ -107,7 +107,7 @@ variable "azuresql-query" {
         severity     = 1
         frequency    = 30
         time_window  = 30
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 80
@@ -125,7 +125,7 @@ variable "azuresql-query" {
         severity     = 0
         frequency    = 5
         time_window  = 15
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 90
@@ -143,7 +143,7 @@ variable "azuresql-query" {
         severity     = 1
         frequency    = 5
         time_window  = 15
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 80

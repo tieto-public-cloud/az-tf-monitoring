@@ -2,26 +2,26 @@
 # Azure Monitor action group configurations
 #
 
-variable "deploy_monitoring_{{SHORT_NAME}}" {
-  description = "Whether to deploy Monitoring alerts related to {{RESOURCE_TYPE}}"
+variable "deploy_monitoring_lbstd" {
+  description = "Whether to deploy Monitoring alerts related to Load Balancer (Standard SKU)"
   type        = bool
   default     = false
 }
 
-variable "{{SHORT_NAME}}-query" {
-  description = "{{RESOURCE_TYPE}} Monitor config for query based monitoring"
+variable "lbstd-query" {
+  description = "Load Balancer (Standard SKU) Monitor config for query based monitoring"
   default = {
     query_alert_default = {
-      "{{RESOURCE_TYPE_NOSPACE}}-{{METRIC_NOSPACE}}-Critical" = {
-        name         = "{{RESOURCE_TYPE}} - {{METRIC}} - Critical"
-        query        = ""
+      "LoadBalancerStandard-HealthPercentage-Critical" = {
+        name         = "Load Balancer (Standard SKU) - Health Percentage - Critical"
+        query        = "Placeholder"
         severity     = 0
-        frequency    = 15
-        time_window  = 30
-        action_group = "tm-critical-action-group"
+        frequency    = 5
+        time_window  = 5
+        action_group = "tm-critical-actiongroup"
         trigger = {
-          operator  = "GreaterThan"
-          threshold = 2
+          operator  = "LessThan"
+          threshold = 40
           metric_trigger = {
             operator  = "GreaterThan"
             threshold = 0
@@ -30,16 +30,16 @@ variable "{{SHORT_NAME}}-query" {
           }
         }
       }
-      "{{RESOURCE_TYPE_NOSPACE}}-{{METRIC_NOSPACE}}-Warning" = {
-        name         = "{{RESOURCE_TYPE}} - {{METRIC}} - Warning"
-        query        = ""
+      "LoadBalancerStandard-HealthPercentage-Warning" = {
+        name         = "Load Balancer (Standard SKU) - Health Percentage - Warning"
+        query        = "Placeholder"
         severity     = 1
-        frequency    = 15
-        time_window  = 30
-        action_group = "tm-warning-action-group"
+        frequency    = 5
+        time_window  = 5
+        action_group = "tm-warning-actiongroup"
         trigger = {
-          operator  = "GreaterThan"
-          threshold = 0
+          operator  = "LessThan"
+          threshold = 80
           metric_trigger = {
             operator  = "GreaterThan"
             threshold = 0

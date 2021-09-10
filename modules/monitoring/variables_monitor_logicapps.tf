@@ -8,7 +8,7 @@ variable "deploy_monitoring_logicapps" {
 }
 
 variable "logicapps-query" {
-  description = "Logic Apps Monitor Config for Query based monitoring"
+  description = "Logic Apps Monitor config for query based monitoring"
   default = {
     query_alert_default = {
       "LogicApps-RunsFailed-Critical" = {
@@ -17,7 +17,7 @@ variable "logicapps-query" {
         severity     = 0
         frequency    = 15
         time_window  = 30
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 2
@@ -35,7 +35,7 @@ variable "logicapps-query" {
         severity     = 1
         frequency    = 15
         time_window  = 30
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 0

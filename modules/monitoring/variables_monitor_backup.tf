@@ -11,7 +11,7 @@ variable "deploy_monitoring_backup" {
 }
 
 variable "backup-query" {
-  description = "Backups Monitor Config for Query based monitoring"
+  description = "Backups Monitor config for query based monitoring"
   default = {
     query_alert_default = {
       "Backups-JobStatus-Critical" = {
@@ -20,7 +20,7 @@ variable "backup-query" {
         severity     = 0
         frequency    = 60
         time_window  = 60
-        action_group = "tm_critical_action_group"
+        action_group = "tm-critical-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 0
@@ -32,7 +32,7 @@ variable "backup-query" {
         severity     = 1
         frequency    = 60
         time_window  = 60
-        action_group = "tm_warning_action_group"
+        action_group = "tm-warning-actiongroup"
         trigger = {
           operator  = "GreaterThan"
           threshold = 0

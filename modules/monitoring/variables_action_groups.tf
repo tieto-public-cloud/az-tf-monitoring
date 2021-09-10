@@ -1,8 +1,8 @@
 variable "action_groups" {
   description = "Action Group Config"
   default = {
-    "tm_critical_action_group" = {
-      short_name = "ag_crit_que"
+    "tm-critical-actiongroup" = {
+      short_name = "tm-crit-ag"
       email = {
         name          = "Email Tieto Default"
         email_address = "david.bartos@tietoevry.com"
@@ -13,32 +13,8 @@ variable "action_groups" {
         use_common_alert_schema = true
       }
     }
-    "tm_warning_action_group" = {
-      short_name = "ag_warn_que"
-      email = {
-        name          = "Email Tieto Default"
-        email_address = "david.bartos@tietoevry.com"
-      }
-      webhook = {
-        name                    = "dev"
-        service_uri             = "https://en16h3kow7wv4oa.m.pipedream.net"
-        use_common_alert_schema = true
-      }
-    }
-    "tm_critical_action_group_metric" = {
-      short_name = "ag_crit_met"
-      email = {
-        name          = "Email Tieto Default"
-        email_address = "david.bartos@tietoevry.com"
-      }
-      webhook = {
-        name                    = "dev"
-        service_uri             = "https://en16h3kow7wv4oa.m.pipedream.net"
-        use_common_alert_schema = true
-      }
-    }
-    "tm_warning_action_group_metric" = {
-      short_name = "ag_warn_met"
+    "tm-warning-actiongroup" = {
+      short_name = "tm-warn-ag"
       email = {
         name          = "Email Tieto Default"
         email_address = "david.bartos@tietoevry.com"

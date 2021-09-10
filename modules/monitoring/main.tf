@@ -82,3 +82,83 @@ module "monitor-backups" {
   l                          = var.location
   ag                         = azurerm_monitor_action_group.action_group
 }
+
+module "monitor-aci" {
+  source                     = "../alerts"
+  query_alerts               = var.aci-query.query_alert_default
+  deploy_monitoring          = var.deploy_monitoring_aci
+  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
+  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
+  l                          = var.location
+  ag                         = azurerm_monitor_action_group.action_group
+}
+
+module "monitor-agw" {
+  source                     = "../alerts"
+  query_alerts               = var.agw-query.query_alert_default
+  deploy_monitoring          = var.deploy_monitoring_agw
+  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
+  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
+  l                          = var.location
+  ag                         = azurerm_monitor_action_group.action_group
+}
+
+module "monitor-azurecdn" {
+  source                     = "../alerts"
+  query_alerts               = var.azurecdn-query.query_alert_default
+  deploy_monitoring          = var.deploy_monitoring_azurecdn
+  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
+  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
+  l                          = var.location
+  ag                         = azurerm_monitor_action_group.action_group
+}
+
+module "monitor-azurefunction" {
+  source                     = "../alerts"
+  query_alerts               = var.azurefunction-query.query_alert_default
+  deploy_monitoring          = var.deploy_monitoring_azurefunction
+  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
+  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
+  l                          = var.location
+  ag                         = azurerm_monitor_action_group.action_group
+}
+
+module "monitor-datafactory" {
+  source                     = "../alerts"
+  query_alerts               = var.datafactory-query.query_alert_default
+  deploy_monitoring          = var.deploy_monitoring_datafactory
+  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
+  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
+  l                          = var.location
+  ag                         = azurerm_monitor_action_group.action_group
+}
+
+module "monitor-expressroute" {
+  source                     = "../alerts"
+  query_alerts               = var.expressroute-query.query_alert_default
+  deploy_monitoring          = var.deploy_monitoring_expressroute
+  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
+  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
+  l                          = var.location
+  ag                         = azurerm_monitor_action_group.action_group
+}
+
+module "monitor-lbadv" {
+  source                     = "../alerts"
+  query_alerts               = var.lbadv-query.query_alert_default
+  deploy_monitoring          = var.deploy_monitoring_lbadv
+  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
+  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
+  l                          = var.location
+  ag                         = azurerm_monitor_action_group.action_group
+}
+
+module "monitor-lbstd" {
+  source                     = "../alerts"
+  query_alerts               = var.lbstd-query.query_alert_default
+  deploy_monitoring          = var.deploy_monitoring_lbstd
+  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
+  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
+  l                          = var.location
+  ag                         = azurerm_monitor_action_group.action_group
+}
