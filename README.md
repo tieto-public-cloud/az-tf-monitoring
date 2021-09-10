@@ -59,6 +59,6 @@ Then initialize new module in Terraform by running terraform init.
 * Merging custom metrics, currently only default ones available (these can be modified by passing from main Terraform folder)
 * Switch to standard metrics if Tags are not used in monitoring (in case all objects reporting to log workspace are monitored there is no need to use tags - this is questionable if we going to use this)
 * Support for metric alerts (with scoping etc)
-
+* Exceptions - timeframe when no alerts are generated
 
 
