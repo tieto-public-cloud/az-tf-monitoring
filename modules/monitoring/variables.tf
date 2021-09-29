@@ -51,6 +51,11 @@ variable "monitor_tagging_function_repo" {
   default     = "https://github.com/junkett/azmontag.git"
 }
 
+variable "common_tags" {
+  type        = map
+  description = "Map of Default Tags"
+}
+
 # locals {
 #   query_alert  = merge(var.query_alert_local, var.query_alert_default)
 #   metric_alert = merge(var.metric_alert_local, var.metric_alert_default)

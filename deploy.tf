@@ -10,9 +10,11 @@ module "monitoring-alert" {
   monitor_tagging_fapp_name = "fa-te-custz-test"
   use_resource_tags         = true
 
+  # Common tags
+  common_tags = var.common_tags
+
   # Switches enabling different resource types monitoring - as per: https://confluence.shared.int.tds.tieto.com/display/PCCD/Azure+Monitoring+Baseline
   deploy_monitoring_azurevm = true
-  #azurevm_custom_query = var.azurevm_custom_query
   deploy_monitoring_azuresql      = true
   deploy_monitoring_logicapps     = true
   deploy_monitoring_backup        = true
@@ -26,5 +28,7 @@ module "monitoring-alert" {
   deploy_monitoring_lbadv        = false
   deploy_monitoring_lbstd        = false
 
+  # Pass on custom query variables
+  #azurevm_custom_query = var.azurevm_custom_query
 }
 

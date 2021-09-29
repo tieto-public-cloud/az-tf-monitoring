@@ -43,6 +43,7 @@ resource "azurerm_app_service_plan" "monitor-tagging" {
     size     = "Y1"
     capacity = 0
   }
+  tags = var.common_tags
 }
 
 resource "azurerm_function_app" "monitor-tagging" {
@@ -69,6 +70,7 @@ resource "azurerm_function_app" "monitor-tagging" {
     branch             = "main"
     manual_integration = true
   }
+  tags = var.common_tags
 }
 
 resource "azurerm_role_assignment" "function-owner" {
