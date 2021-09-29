@@ -12,13 +12,13 @@ module "monitoring-alert" {
 
   # Switches enabling different resource types monitoring - as per: https://confluence.shared.int.tds.tieto.com/display/PCCD/Azure+Monitoring+Baseline
   deploy_monitoring_azurevm   = true
+  azurevm_custom_query = var.azurevm_custom_query
   deploy_monitoring_azuresql  = true
   deploy_monitoring_logicapps = true
   deploy_monitoring_backup    = true
-
+  deploy_monitoring_agw           = true
+  
   # Following ones does not have queries defined yet so this is just a placeholder at the moment
-  deploy_monitoring_aci           = false
-  deploy_monitoring_agw           = false
   deploy_monitoring_azurecdn      = false
   deploy_monitoring_azurefunction = false
   deploy_monitoring_datafactory   = false
