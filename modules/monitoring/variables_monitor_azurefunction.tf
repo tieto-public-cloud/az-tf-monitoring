@@ -17,7 +17,7 @@ variable "azurefunction_query" {
   default = {
     "AzureFunction-Errors-Critical" = {
       name         = "Azure Function - Errors - Critical"
-      query        = "Placeholder"
+      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AppExceptions ; _perf | join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize AggregatedValue = count() by bin(TimeGenerated, 5m), AppRoleName"
       severity     = 0
       frequency    = 5
       time_window  = 5
@@ -29,25 +29,25 @@ variable "azurefunction_query" {
           operator  = "GreaterThan"
           threshold = 0
           type      = "Consecutive"
-          column    = "Resource"
+          column    = "AppRoleName"
         }
       }
     }
     "AzureFunction-Errors-Warning" = {
       name         = "Azure Function - Errors - Warning"
-      query        = "Placeholder"
+      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AppExceptions ; _perf | join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize AggregatedValue = count() by bin(TimeGenerated, 5m), AppRoleName"
       severity     = 1
       frequency    = 5
       time_window  = 5
       action_group = "tm-warning-actiongroup"
       trigger = {
         operator  = "GreaterThan"
-        threshold = 60
+        threshold = 30
         metric_trigger = {
           operator  = "GreaterThan"
           threshold = 0
           type      = "Consecutive"
-          column    = "Resource"
+          column    = "AppRoleName"
         }
       }
     }
