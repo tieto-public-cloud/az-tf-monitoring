@@ -15,45 +15,9 @@ locals {
 variable "datafactory_query" {
   description = "Data Factory Monitor config for query based monitoring"
   default = {
-    "DataFactory-CPUUsage-Critical" = {
-      name         = "Data Factory - CPU Usage - Critical"
-      query        = "Placeholder"
-      severity     = 0
-      frequency    = 5
-      time_window  = 15
-      action_group = "tm-critical-actiongroup"
-      trigger = {
-        operator  = "GreaterThan"
-        threshold = 95
-        metric_trigger = {
-          operator  = "GreaterThan"
-          threshold = 1
-          type      = "Consecutive"
-          column    = "Resource"
-        }
-      }
-    }
-    "DataFactory-CPUUsage-Warning" = {
-      name         = "Data Factory - CPU Usage - Warning"
-      query        = "Placeholder"
-      severity     = 1
-      frequency    = 5
-      time_window  = 15
-      action_group = "tm-warning-actiongroup"
-      trigger = {
-        operator  = "GreaterThan"
-        threshold = 85
-        metric_trigger = {
-          operator  = "GreaterThan"
-          threshold = 1
-          type      = "Consecutive"
-          column    = "Resource"
-        }
-      }
-    }
     "DataFactory-FailedPipelineRuns-Critical" = {
       name         = "Data Factory - Failed Pipeline Runs - Critical"
-      query        = "Placeholder"
+      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = ADFPipelineRun | where Status in ('Failed') ; _perf | join kind=inner _resources on $left._ResourceId == $right.Id_s"
       severity     = 0
       frequency    = 5
       time_window  = 15
@@ -61,17 +25,11 @@ variable "datafactory_query" {
       trigger = {
         operator  = "GreaterThan"
         threshold = 1
-        metric_trigger = {
-          operator  = "GreaterThan"
-          threshold = 0
-          type      = "Consecutive"
-          column    = "Resource"
-        }
       }
     }
     "DataFactory-FailedPipelineRuns-Warning" = {
       name         = "Data Factory - Failed Pipeline Runs - Warning"
-      query        = "Placeholder"
+      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = ADFPipelineRun | where Status in ('Failed') ; _perf | join kind=inner _resources on $left._ResourceId == $right.Id_s"
       severity     = 1
       frequency    = 5
       time_window  = 15
