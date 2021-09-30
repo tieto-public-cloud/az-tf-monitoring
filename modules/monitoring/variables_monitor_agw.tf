@@ -9,7 +9,7 @@ variable "deploy_monitoring_agw" {
 }
 
 locals {
-  agw_query  = merge(var.agw_query, var.agw_custom_query)
+  agw_query = merge(var.agw_query, var.agw_custom_query)
 }
 
 variable "agw_query" {
@@ -78,7 +78,7 @@ variable "agw_query" {
 
 variable "agw_custom_query" {
   description = "Azure Application Gateway Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string

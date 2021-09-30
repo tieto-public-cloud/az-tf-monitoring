@@ -11,7 +11,7 @@ variable "deploy_monitoring_backup" {
 }
 
 locals {
-  backup_query  = merge(var.backup_query, var.backup_custom_query)
+  backup_query = merge(var.backup_query, var.backup_custom_query)
 }
 
 variable "backup_query" {
@@ -68,7 +68,7 @@ variable "backup_query" {
 
 variable "backup_custom_query" {
   description = "Azure Backup Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string

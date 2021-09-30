@@ -8,7 +8,7 @@ variable "deploy_monitoring_azuresql" {
 }
 
 locals {
-  azuresql_query  = merge(var.azuresql_query, var.azuresql_custom_query)
+  azuresql_query = merge(var.azuresql_query, var.azuresql_custom_query)
 }
 
 variable "azuresql_query" {
@@ -185,7 +185,7 @@ variable "azuresql_query" {
 
 variable "azuresql_custom_query" {
   description = "Azure SQL Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string

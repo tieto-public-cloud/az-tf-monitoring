@@ -9,7 +9,7 @@ variable "deploy_monitoring_expressroute" {
 }
 
 locals {
-  expressroute_query  = merge(var.expressroute_query, var.expressroute_custom_query)
+  expressroute_query = merge(var.expressroute_query, var.expressroute_custom_query)
 }
 
 variable "expressroute_query" {
@@ -78,7 +78,7 @@ variable "expressroute_query" {
 
 variable "expressroute_custom_query" {
   description = "Express Route Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string

@@ -1,3 +1,3 @@
 common_tags = {
-    te-managed-service = "workload"
+  te-managed-service = "workload"
 }

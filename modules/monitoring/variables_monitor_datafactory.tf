@@ -9,7 +9,7 @@ variable "deploy_monitoring_datafactory" {
 }
 
 locals {
-  datafactory_query  = merge(var.datafactory_query, var.datafactory_custom_query)
+  datafactory_query = merge(var.datafactory_query, var.datafactory_custom_query)
 }
 
 variable "datafactory_query" {
@@ -114,7 +114,7 @@ variable "datafactory_query" {
 
 variable "datafactory_custom_query" {
   description = "Data Factory Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string

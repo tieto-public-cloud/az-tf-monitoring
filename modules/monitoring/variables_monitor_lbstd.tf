@@ -9,7 +9,7 @@ variable "deploy_monitoring_lbstd" {
 }
 
 locals {
-  lbstd_query  = merge(var.lbstd_query, var.lbstd_custom_query)
+  lbstd_query = merge(var.lbstd_query, var.lbstd_custom_query)
 }
 
 variable "lbstd_query" {
@@ -78,7 +78,7 @@ variable "lbstd_query" {
 
 variable "lbstd_custom_query" {
   description = "Load Balancer (Standard SKU) Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string

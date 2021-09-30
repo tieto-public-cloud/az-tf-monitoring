@@ -6,7 +6,7 @@ module "monitoring-alert" {
   log_analytics_workspace_resource_group = "rg-teshared-custz-test"
 
   # Resource tagging related switches
-  storage_account_name      = "dbartossa"
+  storage_account_name      = "fatecustztestsa"
   monitor_tagging_fapp_name = "fa-te-custz-test"
   use_resource_tags         = true
 
@@ -14,7 +14,7 @@ module "monitoring-alert" {
   common_tags = var.common_tags
 
   # Switches enabling different resource types monitoring - as per: https://confluence.shared.int.tds.tieto.com/display/PCCD/Azure+Monitoring+Baseline
-  deploy_monitoring_azurevm = true
+  deploy_monitoring_azurevm       = true
   deploy_monitoring_azuresql      = true
   deploy_monitoring_logicapps     = true
   deploy_monitoring_backup        = true

@@ -1,4 +1,4 @@
 variable "common_tags" {
-  type        = map
+  type        = map(any)
   description = "Map of Default Tags"
 }

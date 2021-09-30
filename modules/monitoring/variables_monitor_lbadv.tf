@@ -9,7 +9,7 @@ variable "deploy_monitoring_lbadv" {
 }
 
 locals {
-  lbadv_query  = merge(var.lbadv_query, var.lbadv_custom_query)
+  lbadv_query = merge(var.lbadv_query, var.lbadv_custom_query)
 }
 
 variable "lbadv_query" {
@@ -330,7 +330,7 @@ variable "lbadv_query" {
 
 variable "lbadv_custom_query" {
   description = "Advanced Load Balancer Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string

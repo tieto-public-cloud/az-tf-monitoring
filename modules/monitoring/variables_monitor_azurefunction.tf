@@ -9,7 +9,7 @@ variable "deploy_monitoring_azurefunction" {
 }
 
 locals {
-  azurefunction_query  = merge(var.azurefunction_query, var.azurefunction_custom_query)
+  azurefunction_query = merge(var.azurefunction_query, var.azurefunction_custom_query)
 }
 
 variable "azurefunction_query" {
@@ -78,7 +78,7 @@ variable "azurefunction_query" {
 
 variable "azurefunction_custom_query" {
   description = "Azure Function Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string

@@ -8,7 +8,7 @@ variable "deploy_monitoring_azurevm" {
 }
 
 locals {
-  azurevm_query  = merge(var.azurevm_query, var.azurevm_custom_query)
+  azurevm_query = merge(var.azurevm_query, var.azurevm_custom_query)
 }
 
 variable "azurevm_query" {
@@ -245,7 +245,7 @@ variable "azurevm_query" {
 
 variable "azurevm_custom_query" {
   description = "Azure VM Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string

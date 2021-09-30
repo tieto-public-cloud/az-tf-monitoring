@@ -8,7 +8,7 @@ variable "deploy_monitoring_logicapps" {
 }
 
 locals {
-  logicapps_query  = merge(var.logicapps_query, var.logicapps_custom_query)
+  logicapps_query = merge(var.logicapps_query, var.logicapps_custom_query)
 }
 
 variable "logicapps_query" {
@@ -77,7 +77,7 @@ variable "logicapps_query" {
 
 variable "logicapps_custom_query" {
   description = "Azure Logic Apps Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string

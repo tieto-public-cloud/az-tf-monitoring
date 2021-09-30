@@ -9,7 +9,7 @@ variable "deploy_monitoring_azurecdn" {
 }
 
 locals {
-  azurecdn_query  = merge(var.azurecdn_query, var.azurecdn_custom_query)
+  azurecdn_query = merge(var.azurecdn_query, var.azurecdn_custom_query)
 }
 
 variable "azurecdn_query" {
@@ -114,7 +114,7 @@ variable "azurecdn_query" {
 
 variable "azurecdn_custom_query" {
   description = "Azure CDN Monitor config for query based monitoring - custom"
-  default = null
+  default     = null
   type = map(
     object({
       name         = string
