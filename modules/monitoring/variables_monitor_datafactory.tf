@@ -17,7 +17,7 @@ variable "datafactory_query" {
   default = {
     "DataFactory-FailedPipelineRuns-Critical" = {
       name         = "Data Factory - Failed Pipeline Runs - Critical"
-      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = ADFPipelineRun | where Status in ('Failed') ; _perf | join kind=inner _resources on $left._ResourceId == $right.Id_s"
+      query        = "let _resources = TagData_CL | where Tags_s contains '\"te-managed-service\": \"workload\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = ADFPipelineRun | where Status in ('Failed') ; _perf | join kind=inner _resources on $left._ResourceId == $right.Id_s"
       severity     = 0
       frequency    = 5
       time_window  = 15
@@ -29,7 +29,7 @@ variable "datafactory_query" {
     }
     "DataFactory-FailedPipelineRuns-Warning" = {
       name         = "Data Factory - Failed Pipeline Runs - Warning"
-      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = ADFPipelineRun | where Status in ('Failed') ; _perf | join kind=inner _resources on $left._ResourceId == $right.Id_s"
+      query        = "let _resources = TagData_CL | where Tags_s contains '\"te-managed-service\": \"workload\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = ADFPipelineRun | where Status in ('Failed') ; _perf | join kind=inner _resources on $left._ResourceId == $right.Id_s"
       severity     = 1
       frequency    = 5
       time_window  = 15

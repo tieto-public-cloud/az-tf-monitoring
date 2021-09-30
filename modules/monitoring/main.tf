@@ -93,16 +93,6 @@ module "monitor-agw" {
   ag                         = azurerm_monitor_action_group.action_group
 }
 
-module "monitor-azurecdn" {
-  source                     = "../alerts"
-  query_alerts               = local.azurecdn_query
-  deploy_monitoring          = var.deploy_monitoring_azurecdn
-  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
-  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
-}
-
 module "monitor-azurefunction" {
   source                     = "../alerts"
   query_alerts               = local.azurefunction_query

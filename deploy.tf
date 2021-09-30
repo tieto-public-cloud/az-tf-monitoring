@@ -20,13 +20,12 @@ module "monitoring-alert" {
   deploy_monitoring_backup        = true
   deploy_monitoring_agw           = true
   deploy_monitoring_azurefunction = true
+  deploy_monitoring_datafactory   = true
+  deploy_monitoring_expressroute  = true
 
   # Following ones does not have queries defined yet so this is just a placeholder at the moment
-  deploy_monitoring_azurecdn     = false
-  deploy_monitoring_datafactory  = false
-  deploy_monitoring_expressroute = false
-  deploy_monitoring_lbadv        = false
-  deploy_monitoring_lbstd        = false
+  deploy_monitoring_lbadv = false
+  deploy_monitoring_lbstd = false
 
   # Pass on custom query variables
   #azurevm_custom_query = var.azurevm_custom_query

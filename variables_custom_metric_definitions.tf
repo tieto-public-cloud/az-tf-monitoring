@@ -50,4 +50,3 @@ variable "metric_alert_local" {
   )
   default = null
 }
-
