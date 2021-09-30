@@ -57,7 +57,7 @@ variable "expressroute_query" {
       severity     = 0
       frequency    = 5
       time_window  = 5
-      action_group = "tm-critical-actiongroup"
+      action_group = "tm-warning-actiongroup"
       trigger = {
         operator  = "LessThan"
         threshold = 95
