@@ -107,3 +107,13 @@ resource "azurerm_monitor_diagnostic_setting" "monitor-tagging-diag" {
     category = "AllMetrics"
   }
 }
+
+module "monitor-tagging" {
+  source                     = "../alerts"
+  query_alerts               = var.tagging_query
+  deploy_monitoring          = var.use_resource_tags
+  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
+  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
+  l                          = var.location
+  ag                         = azurerm_monitor_action_group.action_group
+}
