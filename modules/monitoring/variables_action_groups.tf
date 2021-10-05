@@ -9,7 +9,7 @@ variable "action_groups" {
       }
       webhook = {
         name                    = "dev"
-        service_uri             = "https://en16h3kow7wv4oa.m.pipedream.net"
+        service_uri             = "https://eneg9df92ti3jgb.m.pipedream.net"
         use_common_alert_schema = true
       }
     }
@@ -21,7 +21,7 @@ variable "action_groups" {
       }
       webhook = {
         name                    = "dev"
-        service_uri             = "https://en16h3kow7wv4oa.m.pipedream.net"
+        service_uri             = "https://eneg9df92ti3jgb.m.pipedream.net"
         use_common_alert_schema = true
       }
     }
