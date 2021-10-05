@@ -7,7 +7,7 @@ variable "tagging_query" {
   default = {
     "Tagging-Function-Critical" = {
       name         = "Tagging Function - Critical"
-       query        = "TagData_CL"
+      query        = "TagData_CL"
       severity     = 0
       frequency    = 5
       time_window  = 5

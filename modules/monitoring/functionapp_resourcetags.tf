@@ -37,6 +37,14 @@ resource "azurerm_storage_table_entity" "config_data" {
   }
 }
 
+resource "azurerm_application_insights" "monitor-tagging-insights" {
+  count               = var.use_resource_tags == true ? 1 : 0
+  name                = var.monitor_tagging_fapp_name
+  location            = var.location
+  resource_group_name = local.resource_group_name
+  application_type    = "web"
+}
+
 resource "azurerm_app_service_plan" "monitor-tagging" {
   count                        = var.use_resource_tags == true ? 1 : 0
   name                         = var.monitor_tagging_fapp_name
@@ -65,6 +73,7 @@ resource "azurerm_function_app" "monitor-tagging" {
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME         = "powershell"
     FUNCTIONS_WORKER_RUNTIME_VERSION = "~7"
+    APPINSIGHTS_INSTRUMENTATIONKEY   = azurerm_application_insights.monitor-tagging-insights[0].instrumentation_key
   }
 
   identity {
@@ -117,3 +126,4 @@ module "monitor-tagging" {
   l                          = var.location
   ag                         = azurerm_monitor_action_group.action_group
 }
+
