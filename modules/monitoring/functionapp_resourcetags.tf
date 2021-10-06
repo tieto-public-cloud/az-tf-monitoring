@@ -31,9 +31,10 @@ resource "azurerm_storage_table_entity" "config_data" {
   row_key       = "1"
 
   entity = {
-    ResourceGroupName = local.resource_group_name
-    WorkspaceName     = var.log_analytics_workspace_name
-    Delta             = "3600"
+    ResourceGroupName  = local.resource_group_name
+    WorkspaceName      = var.log_analytics_workspace_name
+    StorageAccountName = var.storage_account_name
+    Delta              = "3600"
   }
 }
 
