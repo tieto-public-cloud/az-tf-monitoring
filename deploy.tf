@@ -6,9 +6,10 @@ module "monitoring-alert" {
   log_analytics_workspace_resource_group = "rg-teshared-custz-test"
 
   # Resource tagging related switches
-  storage_account_name      = "fatecustztestsa"
   monitor_tagging_fapp_name = "fa-te-custz-test"
-  use_resource_tags         = true
+  monitor_tagging_fapp_rg   = "rg-temonfa-custz-test"
+  storage_account_name      = "fatecustztestsa"
+#  use_resource_tags         = true
 
   # Common tags
   common_tags = var.common_tags

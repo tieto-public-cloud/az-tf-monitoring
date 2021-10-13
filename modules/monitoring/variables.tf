@@ -34,13 +34,21 @@ variable "use_resource_tags" {
 }
 
 variable "storage_account_name" {
-  description = "Name of storage account for Resource tagging function storage"
+  description = "Name of storage account for Resource tagging function"
   type        = string
   default     = null
 }
 
+
+variable "monitor_tagging_fapp_rg" {
+  description = "Resource group name with Resource tagging function"
+  type        = string
+  default     = null
+}
+
+
 variable "monitor_tagging_fapp_name" {
-  description = "Name of Resource tagging function storage"
+  description = "Name of Resource tagging function"
   type        = string
   default     = null
 }
