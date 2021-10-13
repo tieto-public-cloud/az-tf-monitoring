@@ -21,6 +21,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "warning" {
   resource_group_name = var.resource_group_name
   location            = var.l
   data_source_id      = var.log_analytics_workspace_id
+  description         = each.value.query_alert.name
   frequency           = each.value.query_alert.frequency
   query               = each.value.query_alert.query
   time_window         = each.value.query_alert.time_window
