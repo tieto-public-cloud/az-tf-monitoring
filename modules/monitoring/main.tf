@@ -123,20 +123,10 @@ module "monitor-expressroute" {
   ag                         = azurerm_monitor_action_group.action_group
 }
 
-module "monitor-lbadv" {
+module "monitor-lb" {
   source                     = "../alerts"
-  query_alerts               = local.lbadv_query
-  deploy_monitoring          = var.deploy_monitoring_lbadv
-  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
-  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
-}
-
-module "monitor-lbstd" {
-  source                     = "../alerts"
-  query_alerts               = local.lbstd_query
-  deploy_monitoring          = var.deploy_monitoring_lbstd
+  query_alerts               = local.lb_query
+  deploy_monitoring          = var.deploy_monitoring_lb
   resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
   log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
   l                          = var.location
