@@ -17,7 +17,7 @@ variable "expressroute_query" {
   default = {
     "ExpressRoute-BgpAvailability-Critical" = {
       name         = "Express Route - BGP Availability - Critical"
-      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'BgpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by Average, bin(TimeGenerated, 5m), Resource"
+      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'BgpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by AggregatedValue = Average, bin(TimeGenerated, 5m), Resource"
       severity     = 0
       frequency    = 5
       time_window  = 5
@@ -35,7 +35,7 @@ variable "expressroute_query" {
     }
     "Express Route-ArpAvailability-Critical" = {
       name         = "Express Route - ARP Availability - Critical"
-      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'ArpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by Average, bin(TimeGenerated, 5m), Resource"
+      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'ArpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by AggregatedValue = Average, bin(TimeGenerated, 5m), Resource"
       severity     = 0
       frequency    = 5
       time_window  = 5
@@ -53,7 +53,7 @@ variable "expressroute_query" {
     }
     "ExpressRoute-BgpAvailability-Warning" = {
       name         = "Express Route - BGP Availability - Warning"
-      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'BgpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by Average, bin(TimeGenerated, 5m), Resource"
+      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'BgpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by AggregatedValue = Average, bin(TimeGenerated, 5m), Resource"
       severity     = 0
       frequency    = 5
       time_window  = 5
@@ -71,7 +71,7 @@ variable "expressroute_query" {
     }
     "Express Route-ArpAvailability-Warning" = {
       name         = "Express Route - ARP Availability - Warning"
-      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'ArpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by Average, bin(TimeGenerated, 5m), Resource"
+      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'ArpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by AggregatedValue = Average, bin(TimeGenerated, 5m), Resource"
       severity     = 0
       frequency    = 5
       time_window  = 5
