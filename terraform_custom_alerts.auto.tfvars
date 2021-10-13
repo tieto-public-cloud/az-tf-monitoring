@@ -28,14 +28,14 @@ azurevm_custom_query = {
     severity     = 0
     frequency    = 5
     time_window  = 15
-    enabled      = false
+    enabled      = true
     action_group = "tm-critical-actiongroup"
     trigger = {
       operator  = "GreaterThan"
-      threshold = 90
+      threshold = 0
       metric_trigger = {
         operator  = "GreaterThan"
-        threshold = 2
+        threshold = 0
         type      = "Consecutive"
         column    = "Computer"
       }
