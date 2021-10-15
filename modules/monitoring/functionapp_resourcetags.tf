@@ -110,7 +110,15 @@ resource "azurerm_role_assignment" "function-owner" {
   scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${local.resource_group_name}"
   role_definition_name = "Owner"
   # principal_id         = azurerm_function_app.monitor-tagging[0].identity[0].principal_id
-  principal_id = azurerm_function_app.monitor-tagging.identity[0].principal_id
+  principal_id = azurerm_function_app.monitor-tagging.identity.principal_id
+}
+
+resource "azurerm_role_assignment" "function-owner" {
+  #  count                = var.use_resource_tags == true ? 1 : 0
+  scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${var.monitor_tagging_fapp_rg}"
+  role_definition_name = "Owner"
+  # principal_id         = azurerm_function_app.monitor-tagging[0].identity[0].principal_id
+  principal_id = azurerm_function_app.monitor-tagging.identity.principal_id
 }
 
 resource "azurerm_role_assignment" "function-reader" {
@@ -118,7 +126,7 @@ resource "azurerm_role_assignment" "function-reader" {
   scope                = data.azurerm_subscription.current.id
   role_definition_name = "Reader"
   # principal_id         = azurerm_function_app.monitor-tagging[0].identity[0].principal_id
-  principal_id = azurerm_function_app.monitor-tagging.identity[0].principal_id
+  principal_id = azurerm_function_app.monitor-tagging.identity.principal_id
 }
 
 resource "azurerm_monitor_diagnostic_setting" "monitor-tagging-diag" {
