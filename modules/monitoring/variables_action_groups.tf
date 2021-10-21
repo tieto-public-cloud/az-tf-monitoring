@@ -9,7 +9,7 @@ variable "action_groups" {
       }
       webhook = {
         name                    = "dev"
-        service_uri             = "https://eneg9df92ti3jgb.m.pipedream.net"
+        service_uri             = "https://EventManagement_TestingIntegration:Ostrava123456@tietodev1.service-now.com/api/global/em/inbound_event?source=AzureGCP"
         use_common_alert_schema = true
       }
     }
@@ -21,7 +21,7 @@ variable "action_groups" {
       }
       webhook = {
         name                    = "dev"
-        service_uri             = "https://eneg9df92ti3jgb.m.pipedream.net"
+        service_uri             = "https://EventManagement_TestingIntegration:Ostrava123456@tietodev1.service-now.com/api/global/em/inbound_event?source=AzureGCP"
         use_common_alert_schema = true
       }
     }
