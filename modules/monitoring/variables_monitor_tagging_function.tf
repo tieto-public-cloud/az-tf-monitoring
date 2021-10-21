@@ -10,7 +10,7 @@ variable "tagging_query" {
       query        = "TagData_CL"
       severity     = 0
       frequency    = 5
-      time_window  = 5
+      time_window  = 10
       action_group = "tm-critical-actiongroup"
       trigger = {
         operator  = "LessThan"
