@@ -572,7 +572,7 @@ variable "azurevm_query" {
     # Default Heartbeat alert baseline
     "AzureVM-AgentUnreachable-Critical" = {
       name         = "Azure VM - Agent Unreachable - Critical"
-      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Heartbeat  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize LastCall = max(TimeGenerated) by Computer, tostring(CMDB_Id), SubscriptionId = _SubscriptionId | where LastCall < ago(20m)"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Heartbeat  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize LastCall = max(TimeGenerated) by Computer, tostring(CMDB_Id), SubscriptionId = _SubscriptionId | where LastCall < ago(20m)"
       severity     = 0
       frequency    = 5
       time_window  = 60
@@ -584,7 +584,7 @@ variable "azurevm_query" {
     }
     "AzureVM-AgentUnreachable-Warning" = {
       name         = "Azure VM - Agent Unreachable - Warning"
-      query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Heartbeat  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize LastCall = max(TimeGenerated) by Computer, tostring(CMDB_Id), SubscriptionId = _SubscriptionId | where LastCall < ago(20m)"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Heartbeat  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize LastCall = max(TimeGenerated) by Computer, tostring(CMDB_Id), SubscriptionId = _SubscriptionId | where LastCall < ago(10m)"
       severity     = 1
       frequency    = 5
       time_window  = 60
