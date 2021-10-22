@@ -9,7 +9,7 @@ module "monitoring-alert" {
   monitor_tagging_fapp_name = "fa-te-custz-test"
   monitor_tagging_fapp_rg   = "rg-temonfa-custz-test"
   storage_account_name      = "fatecustztestsa"
-#  use_resource_tags         = true
+  #  use_resource_tags         = true
 
   # Common tags
   common_tags = var.common_tags
@@ -23,7 +23,7 @@ module "monitoring-alert" {
   deploy_monitoring_azurefunction = true
   deploy_monitoring_datafactory   = true
   deploy_monitoring_expressroute  = true
-  deploy_monitoring_lb = true
+  deploy_monitoring_lb            = true
 
   # Pass on custom query variables
   #azurevm_custom_query = var.azurevm_custom_query
