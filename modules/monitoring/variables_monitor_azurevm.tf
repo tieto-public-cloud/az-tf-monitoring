@@ -17,7 +17,7 @@ variable "azurevm_query" {
     # Default cpu alert baseline
     "AzureVM-CPUUsage-Critical" = {
       name         = "Azure VM - CPU Usage - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring_cpu\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring-cpu\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
       severity     = 0
       frequency    = 5
       time_window  = 15
@@ -35,7 +35,7 @@ variable "azurevm_query" {
     }
     "AzureVM-CPUUsage-Warning" = {
       name         = "Azure VM - CPU Usage - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring_cpu\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring-cpu\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
       severity     = 1
       frequency    = 5
       time_window  = 15
@@ -54,7 +54,7 @@ variable "azurevm_query" {
     # High CPU alert baseline
     "AzureVM-CPUUsageHigh-Critical" = {
       name         = "Azure VM - CPU Usage High - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_cpu\": \"high\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-cpu\": \"high\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
       severity     = 0
       frequency    = 5
       time_window  = 15
@@ -72,7 +72,7 @@ variable "azurevm_query" {
     }
     "AzureVM-CPUUsageHigh-Warning" = {
       name         = "Azure VM - CPU Usage High - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_cpu\": \"high\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-cpu\": \"high\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
       severity     = 1
       frequency    = 5
       time_window  = 15
@@ -91,7 +91,7 @@ variable "azurevm_query" {
     # Slow CPU alert baseline
     "AzureVM-CPUUsageSlow-Critical" = {
       name         = "Azure VM - CPU Usage Slow - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_cpu\": \"slow\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-cpu\": \"slow\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
       severity     = 0
       frequency    = 5
       time_window  = 15
@@ -109,7 +109,7 @@ variable "azurevm_query" {
     }
     "AzureVM-CPUUsageSlow-Warning" = {
       name         = "Azure VM - CPU Usage Slow - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_cpu\": \"slow\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-cpu\": \"slow\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Processor' and CounterName == '% Processor Time'; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id), _SubscriptionId"
       severity     = 1
       frequency    = 5
       time_window  = 15
@@ -128,7 +128,7 @@ variable "azurevm_query" {
     # Default Memory alert baseline
     "AzureVM-MemoryUsage-Critical" = {
       name         = "Azure VM - Memory Usage - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring_mem\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring-mem\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 5
       time_window  = 15
@@ -146,7 +146,7 @@ variable "azurevm_query" {
     }
     "AzureVM-MemoryUsage-Warning" = {
       name         = "Azure VM - Memory Usage - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring_mem\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring-mem\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 5
       time_window  = 15
@@ -165,7 +165,7 @@ variable "azurevm_query" {
     # High Memory alert baseline
     "AzureVM-MemoryUsageHigh-Critical" = {
       name         = "Azure VM - Memory Usage High - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_mem\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-mem\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 5
       time_window  = 15
@@ -183,7 +183,7 @@ variable "azurevm_query" {
     }
     "AzureVM-MemoryUsageHigh-Warning" = {
       name         = "Azure VM - Memory Usage High - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_mem\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-mem\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 5
       time_window  = 15
@@ -202,7 +202,7 @@ variable "azurevm_query" {
     # Slow Memory alert baseline
     "AzureVM-MemoryUsageSlow-Critical" = {
       name         = "Azure VM - Memory Usage Slow - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_mem\": \"slow\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-mem\": \"slow\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 5
       time_window  = 15
@@ -220,7 +220,7 @@ variable "azurevm_query" {
     }
     "AzureVM-MemoryUsageSlow-Warning" = {
       name         = "Azure VM - Memory Usage Slow - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_mem\": \"slow\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-mem\": \"slow\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s); let _perf = InsightsMetrics| where Namespace == 'Memory' and Name == 'AvailableMB' | extend tags = todynamic(Tags) | project TimeGenerated, _ResourceId, Computer, P = round(100 - ((Val / parse_json(tags['vm.azm.ms/memorySizeMB'])) * 100)), _SubscriptionId  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s  | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(P) by bin(TimeGenerated, 5m), Computer, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 5
       time_window  = 15
@@ -239,7 +239,7 @@ variable "azurevm_query" {
     # Default Windows OS Disk alert baseline
     "AzureVM-WinOSDiskFreeSpace-Critical" = {
       name         = "Azure VM - Win OS Disk Free Space - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring_wosdisk\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring-wosdisk\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 30
       time_window  = 30
@@ -257,7 +257,7 @@ variable "azurevm_query" {
     }
     "AzureVM-WinOSDiskFreeSpace-Warning" = {
       name         = "Azure VM - Win OS Disk Free Space - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring_wosdisk\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring-wosdisk\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 30
       time_window  = 30
@@ -276,7 +276,7 @@ variable "azurevm_query" {
     # High Windows OS Disk alert baseline
     "AzureVM-WinOSDiskFreeSpaceHigh-Critical" = {
       name         = "Azure VM - Win OS Disk High Free Space - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_wosdisk\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-wosdisk\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 30
       time_window  = 30
@@ -294,7 +294,7 @@ variable "azurevm_query" {
     }
     "AzureVM-WinOSDiskFreeSpaceHigh-Warning" = {
       name         = "Azure VM - Win OS Disk High Free Space - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_wosdisk\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-wosdisk\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 30
       time_window  = 30
@@ -313,7 +313,7 @@ variable "azurevm_query" {
     # Highest Windows OS Disk alert baseline
     "AzureVM-WinOSDiskFreeSpaceHighest-Critical" = {
       name         = "Azure VM - Win OS Disk Highest Free Space - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_wosdisk\": \"highest\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-wosdisk\": \"highest\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 30
       time_window  = 30
@@ -331,7 +331,7 @@ variable "azurevm_query" {
     }
     "AzureVM-WinOSDiskFreeSpaceHighest-Warning" = {
       name         = "Azure VM - Win OS Disk Highest Free Space - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_wosdisk\": \"highest\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-wosdisk\": \"highest\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName == 'C:'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id),  SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 30
       time_window  = 30
@@ -350,7 +350,7 @@ variable "azurevm_query" {
     # Default Windows Data disk alert baseline
     "AzureVM-WinDataDiskFreeSpace-Critical" = {
       name         = "Azure VM - Win Data Disk Free Space - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring_wdatadisk\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring-wdatadisk\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 30
       time_window  = 30
@@ -368,7 +368,7 @@ variable "azurevm_query" {
     }
     "AzureVM-WinDataDiskFreeSpace-Warning" = {
       name         = "Azure VM - Win Data Disk Free Space - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring_wdatadisk\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring-wdatadisk\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 30
       time_window  = 30
@@ -387,7 +387,7 @@ variable "azurevm_query" {
     # High Windows Data disk alert baseline
     "AzureVM-WinDataDiskFreeSpaceHigh-Critical" = {
       name         = "Azure VM - Win Data High Disk Free Space - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_wdatadisk\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-wdatadisk\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 30
       time_window  = 30
@@ -405,7 +405,7 @@ variable "azurevm_query" {
     }
     "AzureVM-WinDataDiskFreeSpaceHigh-Warning" = {
       name         = "Azure VM - Win Data High Disk Free Space - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_wdatadisk\": \"high\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-wdatadisk\": \"high\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 30
       time_window  = 30
@@ -424,7 +424,7 @@ variable "azurevm_query" {
     # Highest Windows Data disk alert baseline
     "AzureVM-WinDataDiskFreeSpaceHighest-Critical" = {
       name         = "Azure VM - Win Data Highest Disk Free Space - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_wdatadisk\": \"highest\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-wdatadisk\": \"highest\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 30
       time_window  = 30
@@ -442,7 +442,7 @@ variable "azurevm_query" {
     }
     "AzureVM-WinDataDiskFreeSpaceHighest-Warning" = {
       name         = "Azure VM - Win Data Highest Disk Free Space - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_wdatadisk\": \"highest\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-wdatadisk\": \"highest\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'LogicalDisk' and CounterName == '% Free Space' and InstanceName != 'C:' and InstanceName != '_Total' and InstanceName notcontains 'Harddisk'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 30
       time_window  = 30
@@ -461,7 +461,7 @@ variable "azurevm_query" {
     # Default Linux disk alert baseline
     "AzureVM-LinuxDiskUsedSpace-Critical" = {
       name         = "Azure VM - Linux Disk Used Space - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring_ldisk\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring-ldisk\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 30
       time_window  = 30
@@ -479,7 +479,7 @@ variable "azurevm_query" {
     }
     "AzureVM-LinuxDiskUsedSpace-Warning" = {
       name         = "Azure VM - Linux Disk Used Space - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring_ldisk\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s !contains '\"monitoring-ldisk\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 30
       time_window  = 30
@@ -498,7 +498,7 @@ variable "azurevm_query" {
     # High Linux disk alert baseline
     "AzureVM-LinuxDiskUsedSpaceHigh-Critical" = {
       name         = "Azure VM - Linux Disk High Used Space - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_ldisk\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-ldisk\": \"high\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 30
       time_window  = 30
@@ -516,7 +516,7 @@ variable "azurevm_query" {
     }
     "AzureVM-LinuxDiskUsedSpaceHigh-Warning" = {
       name         = "Azure VM - Linux Disk High Used Space - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_ldisk\": \"high\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-ldisk\": \"high\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 30
       time_window  = 30
@@ -535,7 +535,7 @@ variable "azurevm_query" {
     # Highest Linux disk alert baseline
     "AzureVM-LinuxDiskUsedSpaceHighest-Critical" = {
       name         = "Azure VM - Linux Disk Highest Used Space - Critical"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_ldisk\": \"highest\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-ldisk\": \"highest\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 0
       frequency    = 30
       time_window  = 30
@@ -553,7 +553,7 @@ variable "azurevm_query" {
     }
     "AzureVM-LinuxDiskUsedSpaceHighest-Warning" = {
       name         = "Azure VM - Linux Disk Highest Used Space - Warning"
-      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring_ldisk\": \"highest\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
+      query        = "let _resources = TagData_CL| where (Tags_s contains '\"te-managed-service\": \"workload\"' or Tags_s contains '\"te-managed-service\": \"true\"') and Tags_s contains '\"monitoring-ldisk\": \"highest\"' | summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = Perf| where ObjectName == 'Logical Disk' and CounterName == '% Used Space'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | extend d=parse_json(Tags_s) | extend CMDB_Id=d['te-cmdb-ci-id'] | summarize AggregatedValue = avg(CounterValue) by bin(TimeGenerated, 30m), Computer, InstanceName, tostring(CMDB_Id), SubscriptionId = _SubscriptionId"
       severity     = 1
       frequency    = 30
       time_window  = 30
