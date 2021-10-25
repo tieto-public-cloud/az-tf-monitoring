@@ -9,7 +9,6 @@ module "monitoring-alert" {
   monitor_tagging_fapp_name = "fa-te-custz-test"
   monitor_tagging_fapp_rg   = "rg-temonfa-custz-test"
   storage_account_name      = "fatecustztestsa"
-  #  use_resource_tags         = true
 
   # Common tags
   common_tags = var.common_tags
