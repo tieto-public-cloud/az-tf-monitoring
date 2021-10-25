@@ -18,7 +18,7 @@ resource "azurerm_monitor_action_group" "action_group" {
   }
 
   name                = each.value.group_name
-  resource_group_name = local.resource_group_name
+  resource_group_name = var.log_analytics_workspace_resource_group
   short_name          = each.value.group.short_name != null ? each.value.group.short_name : length(each.value.group_name) > 12 ? substr(each.value.group_name, 0, 12) : each.value.group_name
 
   dynamic "webhook_receiver" {

@@ -9,7 +9,7 @@ locals {
   ]
 }
 
-resource "azurerm_monitor_scheduled_query_rules_alert" "warning" {
+resource "azurerm_monitor_scheduled_query_rules_alert" "query_alert" {
 
   # Deploy all Azure Monitor query-based alert rules.
   for_each = var.deploy_monitoring ? {

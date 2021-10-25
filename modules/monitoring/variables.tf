@@ -1,19 +1,7 @@
-variable "create_resource_group" {
-  description = "Whether to create resource group and use it for all networking resources"
-  type        = bool
-  default     = false
-}
-
 variable "log_analytics_workspace_resource_group" {
   type        = string
   description = "The log Analytics Workspace resource group name"
   default     = ""
-}
-
-variable "create_log_analytics_workspace" {
-  description = "Whether to create log analytics workspace and use it for all monitoring resources"
-  type        = bool
-  default     = false
 }
 
 variable "log_analytics_workspace_name" {

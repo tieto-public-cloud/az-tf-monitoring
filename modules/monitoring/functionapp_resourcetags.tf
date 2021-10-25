@@ -42,7 +42,7 @@ resource "azurerm_storage_table_entity" "config_data" {
   row_key       = "1"
 
   entity = {
-    ResourceGroupName          = local.resource_group_name
+    ResourceGroupName          = var.log_analytics_workspace_resource_group
     WorkspaceName              = var.log_analytics_workspace_name
     StorageAccountName         = var.storage_account_name
     StorageAccountResGroupName = var.monitor_tagging_fapp_rg
@@ -107,7 +107,7 @@ resource "azurerm_function_app" "monitor-tagging" {
 
 resource "azurerm_role_assignment" "function-owner-law-rg" {
   #  count                = var.use_resource_tags == true ? 1 : 0
-  scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${local.resource_group_name}"
+  scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${var.log_analytics_workspace_resource_group}"
   role_definition_name = "Owner"
   # principal_id         = azurerm_function_app.monitor-tagging[0].identity[0].principal_id
   principal_id = azurerm_function_app.monitor-tagging.identity[0].principal_id
@@ -134,7 +134,7 @@ resource "azurerm_monitor_diagnostic_setting" "monitor-tagging-diag" {
   name = "${var.monitor_tagging_fapp_name}-diag"
   # target_resource_id         = azurerm_function_app.monitor-tagging[0].id
   target_resource_id         = azurerm_function_app.monitor-tagging.id
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace[0].id
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
 
 
   log {
@@ -160,8 +160,8 @@ module "monitor-tagging" {
   source                     = "../alerts"
   query_alerts               = var.tagging_query
   deploy_monitoring          = true
-  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
-  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)
+  resource_group_name        = var.log_analytics_workspace_resource_group
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
   l                          = var.location
   ag                         = azurerm_monitor_action_group.action_group
 }
