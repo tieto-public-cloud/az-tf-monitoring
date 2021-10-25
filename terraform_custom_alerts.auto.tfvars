@@ -42,3 +42,44 @@ azurevm_custom_query = {
     }
   }
 }
+
+custom_metric_alerts = {
+  "bartpdav-test" = {
+    enabled                  = true
+    auto_mitigate            = true
+    description              = "Total number of credits consumed by the Virtual Machine"
+    frequency                = "PT5M"
+    severity                 = 0
+    target_resource_type     = "Microsoft.Compute/virtualMachines"
+    action_group             = "tm-warning-metric-actiongroup"
+    target_resource_location = "westeurope"
+    scope                    = "/subscriptions/3a60e7b7-ac49-45d8-8a8f-ba61cdc5dc1f/resourceGroups/bartpdav_dev_westeurope_rg"
+    window_size              = "PT5M"
+    criteria = {
+      metric_namespace = "Microsoft.Compute/virtualMachines"
+      metric_name      = "CPU Credits Consumed"
+      aggregation      = "Count"
+      operator         = "GreaterThan"
+      threshold        = 100
+    }
+  }
+  "bartpdav-test2" = {
+    enabled                  = true
+    auto_mitigate            = true
+    description              = "Total number of credits consumed by the Virtual Machine"
+    frequency                = "PT5M"
+    severity                 = 0
+    target_resource_type     = "Microsoft.Compute/virtualMachines"
+    action_group             = "tm-warning-metric-actiongroup"
+    target_resource_location = "westeurope"
+    scope                    = "/subscriptions/3a60e7b7-ac49-45d8-8a8f-ba61cdc5dc1f"
+    window_size              = "PT5M"
+    criteria = {
+      metric_namespace = "Microsoft.Compute/virtualMachines"
+      metric_name      = "CPU Credits Consumed"
+      aggregation      = "Count"
+      operator         = "GreaterThan"
+      threshold        = 50
+    }
+  }
+}

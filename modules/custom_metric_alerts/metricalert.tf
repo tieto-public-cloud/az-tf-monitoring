@@ -1,26 +1,24 @@
 locals {
   # Build an array of all Azure Monitor metric alert rules.  A number of rules can be configured and they are
   # configured to Azure Monitor.
-  alert_list = flatten([
-    for subscription in data.azurerm_subscriptions.available.subscriptions : [
-      for alert_name, alert in local.monitor.metric_alerts :{
-        metric_alert_name = alert_name
-        metric_alert = alert
-        subscription_id = subscription.id
-      }
-    ]
-  ])
+  monitor_metric_alert_deployments = [
+    for n, p in var.metric_alerts : {
+      metric_alert_name = n
+      metric_alert      = p
+    }
+  ]
 }
 
 resource "azurerm_monitor_metric_alert" "metric_alerts" {
-  # Deploy all Azure Monitor metric alert rules.
-  for_each = {
-    for k in local.alert_list : join("_", [k.metric_alert_name, k.subscription_id]) => k
-  }
+
+  # Deploy all Azure Monitor query-based alert rules.
+  for_each = var.deploy_monitoring ? {
+    for k in local.monitor_metric_alert_deployments : k.metric_alert_name => k
+  } : {}
 
   name                = each.value.metric_alert_name
-  resource_group_name = local.resource_group_name
-  scopes              = [each.value.subscription_id]
+  resource_group_name = var.resource_group_name
+  scopes              = [each.value.metric_alert.scope]
   description         = each.value.metric_alert.description
   enabled = each.value.metric_alert.enabled
   auto_mitigate = each.value.metric_alert.auto_mitigate
@@ -31,8 +29,9 @@ resource "azurerm_monitor_metric_alert" "metric_alerts" {
   window_size = each.value.metric_alert.window_size
 
   action {
-    action_group_id = azurerm_monitor_action_group.action_group[each.value.metric_alert.action_group].id
+    action_group_id = var.ag[each.value.metric_alert.action_group].id
   }
+
   criteria {
     metric_namespace = each.value.metric_alert.criteria.metric_namespace
     metric_name      = each.value.metric_alert.criteria.metric_name

@@ -132,3 +132,11 @@ module "monitor-lb" {
   l                          = var.location
   ag                         = azurerm_monitor_action_group.action_group
 }
+
+module "custom_metric_alerts" {
+  source = "../custom_metric_alerts"
+  resource_group_name = var.log_analytics_workspace_resource_group
+  deploy_monitoring = var.deploy_custom_metric_alerts
+  metric_alerts = var.custom_metric_alerts
+  ag = azurerm_monitor_action_group.action_group
+}

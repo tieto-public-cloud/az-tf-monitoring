@@ -1,3 +1,8 @@
+variable "deploy_custom_metric_alerts" {
+  description = "Whether to deploy Monitoring custom metric alerts"
+  type        = bool
+  default     = false
+}
 
 variable "custom_metric_alerts" {
   description = "Locally present alerts"

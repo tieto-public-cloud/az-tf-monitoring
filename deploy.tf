@@ -25,7 +25,13 @@ module "monitoring-alert" {
   deploy_monitoring_expressroute  = true
   deploy_monitoring_lb            = true
 
-  # Pass on custom query variables
+  # Pass on custom query variables if needed - see terraform_custom_alerts.auto.tfvars file for a reference
+  # File contains example of custom query based alerts and also custom metric based alerts
   #azurevm_custom_query = var.azurevm_custom_query
+
+  # In case of need you can deploy metric alerts defined in custom_metric_alerts variable
+  # deploy_custom_metric_alerts = true
+  custom_metric_alerts = var.custom_metric_alerts
 }
+
 

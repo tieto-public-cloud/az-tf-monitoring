@@ -1,6 +1,15 @@
+variable "resource_group_name" {
+  description = "Resource Group Name"
+  type        = string
+}
 
-variable "custom_metric_alerts" {
-  description = "Locally present alerts"
+variable "deploy_monitoring" {
+  description = "Deploy Monitoring"
+  type        = bool
+}
+
+variable "metric_alerts" {
+  description = "Metric alerts"
   type = map(
     object({
       enabled                  = optional(bool)
@@ -50,4 +59,8 @@ variable "custom_metric_alerts" {
     })
   )
   default = null
+}
+
+variable "ag" {
+  description = "Action Groups"
 }
