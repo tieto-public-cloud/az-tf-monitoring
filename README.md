@@ -5,20 +5,22 @@
 - Switches to enable monitoring only for needed resource types
 - Use log workspace and query alerts types on that log workspace
 - Should be able to create custom alerts
-- Metric alerts are out of scope
+- Metric alerts are supported just for custom alerts
 
 ## Monitoring modules usage
 
 The TF code calls root module in ./modules/monitoring to deploy following resources:
-- If needed - Resource group and Log Analytics Workspace.
 - Action groups.
-- Enable resource tags in monitoring if switched on.
+- Enable resource tags in monitoring (deploys Azure Function)
 - Calls child module at ./modules/alerts for each monitoring alert bundle that is supposed to be deployed.
+- Calls child module at ./modules/custom_metric_alerts for any metric alerts
 
-### Module "alerts"
+### Module "alerts" and "custom_metric_alerts"
 
 Code common for all alert bundles that creates alerts based on variable input.  
 Called from "monitoring" module.
+Alerts module is used for query based alerts
+Custom metric alerts are used for metric based alerts
 
 ### Module "monitoring"
 
@@ -48,13 +50,13 @@ module "monitor-azuresql" {
   source                     = "../alerts"  
   query_alerts               = var.azuresql-query.query_alert_default  
   deploy_monitoring          = var.deploy_monitoring_azuresql  
-  resource_group_name        = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)  
-  log_analytics_workspace_id = element(coalescelist(data.azurerm_log_analytics_workspace.log_analytics_workspace.*.id, azurerm_log_analytics_workspace.law.*.id, [""]), 0)  
+  resource_group_name        = var.log_analytics_workspace_resource_group
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
   l                          = var.location  
   ag                         = azurerm_monitor_action_group.action_group  
 }
 
-By default new alert bundles are not deployed (if template variables_monitor_template.tftemp is used as source), so to deploy new bundle add a switch to ./deploy.tf file:
+By default new alert bundles are not deployed (if template variables_monitor_template.tftemp is used as source), so to deploy new bundle add a switch as in example file ./deploy.tf like:
 
 deploy_monitoring_backup = true  
 
@@ -62,8 +64,6 @@ Then initialize new module in Terraform by running terraform init.
 
 ## To do
 
-* Merging custom metrics, currently only default ones available (these can be modified by passing from main Terraform folder)
-* Switch to standard metrics if Tags are not used in monitoring (in case all objects reporting to log workspace are monitored there is no need to use tags - this is questionable if we going to use this)
 * Exceptions - timeframe when no alerts are generated
 
 
