@@ -1,7 +1,3 @@
-#
-# Azure Monitor action group configurations
-#
-
 variable "deploy_monitoring_expressroute" {
   description = "Whether to deploy Monitoring alerts related to Express Route"
   type        = bool

@@ -1,7 +1,3 @@
-#
-# Azure Monitor action group configurations
-#
-
 variable "deploy_monitoring_lb" {
   description = "Whether to deploy Monitoring alerts related to Load Balancer (Standard SKU)"
   type        = bool

@@ -16,17 +16,17 @@ resource "azurerm_monitor_metric_alert" "metric_alerts" {
     for k in local.monitor_metric_alert_deployments : k.metric_alert_name => k
   } : {}
 
-  name                = each.value.metric_alert_name
-  resource_group_name = var.resource_group_name
-  scopes              = [each.value.metric_alert.scope]
-  description         = each.value.metric_alert.description
-  enabled = each.value.metric_alert.enabled
-  auto_mitigate = each.value.metric_alert.auto_mitigate
-  frequency = each.value.metric_alert.frequency
-  severity = each.value.metric_alert.severity
-  target_resource_type = each.value.metric_alert.target_resource_type
+  name                     = each.value.metric_alert_name
+  resource_group_name      = var.resource_group_name
+  scopes                   = [each.value.metric_alert.scope]
+  description              = each.value.metric_alert.description
+  enabled                  = each.value.metric_alert.enabled
+  auto_mitigate            = each.value.metric_alert.auto_mitigate
+  frequency                = each.value.metric_alert.frequency
+  severity                 = each.value.metric_alert.severity
+  target_resource_type     = each.value.metric_alert.target_resource_type
   target_resource_location = each.value.metric_alert.target_resource_location
-  window_size = each.value.metric_alert.window_size
+  window_size              = each.value.metric_alert.window_size
 
   action {
     action_group_id = var.ag[each.value.metric_alert.action_group].id
@@ -38,7 +38,7 @@ resource "azurerm_monitor_metric_alert" "metric_alerts" {
     aggregation      = each.value.metric_alert.criteria.aggregation
     operator         = each.value.metric_alert.criteria.operator
     threshold        = each.value.metric_alert.criteria.threshold
-    
+
     /*
     dimension {
       name     = each.value.metric_alert.criteria.dimension.name
@@ -72,5 +72,5 @@ resource "azurerm_monitor_metric_alert" "metric_alerts" {
     component_id = each.value.metric_alert.application_insights_web_test_location_availability_criteria.component_id
     failed_location_count = each.value.metric_alert.application_insights_web_test_location_availability_criteria.failed_location_count
   }
- */ 
+ */
 }

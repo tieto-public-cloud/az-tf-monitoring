@@ -16,17 +16,17 @@ resource "azurerm_storage_account" "function_storage" {
 }
 
 resource "azurerm_storage_table" "config" {
-  name = "Config"
+  name                 = "Config"
   storage_account_name = azurerm_storage_account.function_storage.name
 }
 
 resource "azurerm_storage_table" "temp" {
-  name = "ResTags"
+  name                 = "ResTags"
   storage_account_name = azurerm_storage_account.function_storage.name
 }
 
 resource "azurerm_storage_table_entity" "config_data" {
-  depends_on = [azurerm_storage_table.config]
+  depends_on           = [azurerm_storage_table.config]
   storage_account_name = azurerm_storage_account.function_storage.name
   table_name           = "Config"
 
@@ -42,12 +42,12 @@ resource "azurerm_storage_table_entity" "config_data" {
   }
 }
 
-resource "azurerm_application_insights" "monitor-tagging-insights" {
-  name                = var.monitor_tagging_fapp_name
-  location            = var.location
-  resource_group_name = var.monitor_tagging_fapp_rg
-  application_type    = "web"
-}
+# resource "azurerm_application_insights" "monitor-tagging-insights" {
+#   name                = var.monitor_tagging_fapp_name
+#   location            = var.location
+#   resource_group_name = var.monitor_tagging_fapp_rg
+#   application_type    = "web"
+# }
 
 resource "azurerm_app_service_plan" "monitor-tagging" {
   name                         = var.monitor_tagging_fapp_name
@@ -64,9 +64,9 @@ resource "azurerm_app_service_plan" "monitor-tagging" {
 }
 
 resource "azurerm_function_app" "monitor-tagging" {
-  name                = var.monitor_tagging_fapp_name
-  location            = var.location
-  resource_group_name = var.monitor_tagging_fapp_rg
+  name                       = var.monitor_tagging_fapp_name
+  location                   = var.location
+  resource_group_name        = var.monitor_tagging_fapp_rg
   app_service_plan_id        = azurerm_app_service_plan.monitor-tagging.id
   storage_account_name       = azurerm_storage_account.function_storage.name
   storage_account_access_key = azurerm_storage_account.function_storage.primary_access_key
@@ -75,7 +75,7 @@ resource "azurerm_function_app" "monitor-tagging" {
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME         = "powershell"
     FUNCTIONS_WORKER_RUNTIME_VERSION = "~7"
-    APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.monitor-tagging-insights.instrumentation_key
+    # APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.monitor-tagging-insights.instrumentation_key
   }
 
   identity {
@@ -92,49 +92,49 @@ resource "azurerm_function_app" "monitor-tagging" {
 
 resource "azurerm_role_assignment" "function-owner-law-rg" {
   scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${var.log_analytics_workspace_resource_group}"
-  role_definition_name = "Owner"
-  principal_id = azurerm_function_app.monitor-tagging.identity[0].principal_id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_function_app.monitor-tagging.identity[0].principal_id
 }
 
 resource "azurerm_role_assignment" "function-owner-own-rg" {
   scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${var.monitor_tagging_fapp_rg}"
-  role_definition_name = "Owner"
-  principal_id = azurerm_function_app.monitor-tagging.identity[0].principal_id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_function_app.monitor-tagging.identity[0].principal_id
 }
 
 resource "azurerm_role_assignment" "function-reader" {
   scope                = data.azurerm_subscription.current.id
   role_definition_name = "Reader"
-  principal_id = azurerm_function_app.monitor-tagging.identity[0].principal_id
+  principal_id         = azurerm_function_app.monitor-tagging.identity[0].principal_id
 }
 
-resource "azurerm_monitor_diagnostic_setting" "monitor-tagging-diag" {
-  name = "${var.monitor_tagging_fapp_name}-diag"
-  target_resource_id         = azurerm_function_app.monitor-tagging.id
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
+# resource "azurerm_monitor_diagnostic_setting" "monitor-tagging-diag" {
+#   name = "${var.monitor_tagging_fapp_name}-diag"
+#   target_resource_id         = azurerm_function_app.monitor-tagging.id
+#   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
 
 
-  log {
-    category = "FunctionAppLogs"
-    enabled  = true
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
+#   log {
+#     category = "FunctionAppLogs"
+#     enabled  = true
+#     retention_policy {
+#       days    = 0
+#       enabled = false
+#     }
+#   }
 
-  metric {
-    category = "AllMetrics"
-    enabled  = true
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-}
+#   metric {
+#     category = "AllMetrics"
+#     enabled  = true
+#     retention_policy {
+#       days    = 0
+#       enabled = false
+#     }
+#   }
+# }
 
 module "monitor-tagging" {
-  source                     = "../alerts"
+  source                     = "../alert_query"
   query_alerts               = var.tagging_query
   deploy_monitoring          = true
   resource_group_name        = var.log_analytics_workspace_resource_group

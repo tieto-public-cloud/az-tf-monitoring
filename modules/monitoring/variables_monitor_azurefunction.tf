@@ -1,7 +1,3 @@
-#
-# Azure Monitor action group configurations
-#
-
 variable "deploy_monitoring_azurefunction" {
   description = "Whether to deploy Monitoring alerts related to Azure Function"
   type        = bool

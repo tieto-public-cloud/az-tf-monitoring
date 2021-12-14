@@ -1,7 +1,3 @@
-#
-# Azure Monitor action group configurations
-#
-
 variable "deploy_monitoring_agw" {
   description = "Whether to deploy Monitoring alerts related to Application Gateway"
   type        = bool

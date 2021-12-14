@@ -3,25 +3,17 @@ variable "action_groups" {
   default = {
     "tm-critical-actiongroup" = {
       short_name = "tm-crit-ag"
-      email = {
-        name          = "Email Tieto Default"
-        email_address = "david.bartos@tietoevry.com"
-      }
       webhook = {
-        name                    = "dev"
-        service_uri             = "https://EventManagement_TestingIntegration:Ostrava123456@tietodev1.service-now.com/api/global/em/inbound_event?source=AzureGCP"
+        name                    = "Webhook"
+        service_uri             = "https://dummy.web.hook"
         use_common_alert_schema = true
       }
     }
     "tm-warning-actiongroup" = {
       short_name = "tm-warn-ag"
-      email = {
-        name          = "Email Tieto Default"
-        email_address = "david.bartos@tietoevry.com"
-      }
       webhook = {
-        name                    = "dev"
-        service_uri             = "https://EventManagement_TestingIntegration:Ostrava123456@tietodev1.service-now.com/api/global/em/inbound_event?source=AzureGCP"
+        name                    = "Webhook"
+        service_uri             = "https://dummy.web.hook"
         use_common_alert_schema = true
       }
     }

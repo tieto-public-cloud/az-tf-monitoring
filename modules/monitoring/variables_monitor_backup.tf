@@ -1,9 +1,3 @@
-#
-# Azure Monitor action group configurations
-#
-
-# Template for easy creation with Mustache https://mustache.github.io/
-# Using following variables
 variable "deploy_monitoring_backup" {
   description = "Whether to deploy Monitoring alerts related to Backups"
   type        = bool

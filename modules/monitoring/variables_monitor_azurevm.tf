@@ -1,6 +1,4 @@
-#
-# Azure Monitor action group configurations
-#
+
 variable "deploy_monitoring_azurevm" {
   description = "Whether to deploy Monitoring alerts related to Azure VM"
   type        = bool
