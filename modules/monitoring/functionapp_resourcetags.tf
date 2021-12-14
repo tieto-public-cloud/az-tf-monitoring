@@ -7,7 +7,7 @@ resource "azurerm_resource_group" "function_rg" {
 
 resource "azurerm_storage_account" "function_storage" {
   name                     = var.storage_account_name
-  resource_group_name      = var.monitor_tagging_fapp_rg
+  resource_group_name      = azurerm_resource_group.function_rg.name
   location                 = var.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
@@ -36,8 +36,8 @@ resource "azurerm_storage_table_entity" "config_data" {
   entity = {
     ResourceGroupName          = var.log_analytics_workspace_resource_group
     WorkspaceName              = var.log_analytics_workspace_name
-    StorageAccountName         = var.storage_account_name
-    StorageAccountResGroupName = var.monitor_tagging_fapp_rg
+    StorageAccountName         = azurerm_storage_account.function_storage.name
+    StorageAccountResGroupName = azurerm_resource_group.function_rg.name
     Delta                      = "3600"
   }
 }
@@ -45,14 +45,14 @@ resource "azurerm_storage_table_entity" "config_data" {
 # resource "azurerm_application_insights" "monitor-tagging-insights" {
 #   name                = var.monitor_tagging_fapp_name
 #   location            = var.location
-#   resource_group_name = var.monitor_tagging_fapp_rg
+#   resource_group_name = azurerm_resource_group.function_rg.name
 #   application_type    = "web"
 # }
 
 resource "azurerm_app_service_plan" "monitor-tagging" {
   name                         = var.monitor_tagging_fapp_name
   location                     = var.location
-  resource_group_name          = var.monitor_tagging_fapp_rg
+  resource_group_name          = azurerm_resource_group.function_rg.name
   kind                         = "FunctionApp"
   maximum_elastic_worker_count = 1
   sku {
@@ -66,7 +66,7 @@ resource "azurerm_app_service_plan" "monitor-tagging" {
 resource "azurerm_function_app" "monitor-tagging" {
   name                       = var.monitor_tagging_fapp_name
   location                   = var.location
-  resource_group_name        = var.monitor_tagging_fapp_rg
+  resource_group_name        = azurerm_resource_group.function_rg.name
   app_service_plan_id        = azurerm_app_service_plan.monitor-tagging.id
   storage_account_name       = azurerm_storage_account.function_storage.name
   storage_account_access_key = azurerm_storage_account.function_storage.primary_access_key
@@ -90,14 +90,14 @@ resource "azurerm_function_app" "monitor-tagging" {
   tags = var.common_tags
 }
 
-resource "azurerm_role_assignment" "function-owner-law-rg" {
+resource "azurerm_role_assignment" "function-contributor-law-rg" {
   scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${var.log_analytics_workspace_resource_group}"
   role_definition_name = "Contributor"
   principal_id         = azurerm_function_app.monitor-tagging.identity[0].principal_id
 }
 
-resource "azurerm_role_assignment" "function-owner-own-rg" {
-  scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${var.monitor_tagging_fapp_rg}"
+resource "azurerm_role_assignment" "function-contributor-self-rg" {
+  scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${azurerm_resource_group.function_rg.name}"
   role_definition_name = "Contributor"
   principal_id         = azurerm_function_app.monitor-tagging.identity[0].principal_id
 }
@@ -134,7 +134,7 @@ resource "azurerm_role_assignment" "function-reader" {
 # }
 
 module "monitor-tagging" {
-  source                     = "../alert_query"
+  source                     = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=${var.version}"
   query_alerts               = var.tagging_query
   deploy_monitoring          = true
   resource_group_name        = var.log_analytics_workspace_resource_group

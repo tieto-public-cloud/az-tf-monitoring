@@ -12,13 +12,18 @@ provider "azurerm" {
 
 data "azurerm_subscription" "current" {}
 
+locals { 
+  version = "v1.0"
+}
+
 #
 # Call the monitoring alert module
 #
 
 module "monitoring-alert" {
 
-  source                                 = "./modules/monitoring"
+  source                                 = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=${local.version}"
+  version                                = local.version
   location                               = "westeurope"
   log_analytics_workspace_name           = "log-te-custz-test"
   log_analytics_workspace_resource_group = "rg-teshared-custz-test"

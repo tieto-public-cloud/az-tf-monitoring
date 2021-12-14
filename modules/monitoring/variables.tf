@@ -52,12 +52,8 @@ variable "common_tags" {
   description = "Map of Default Tags"
 }
 
-variable "email_address" {
-  type    = string
-  default = "dummy@email.com"
-}
-
-variable "webhook_address" {
-  type    = string
-  default = "https://dummy.web.hook"
+variable "version" {
+  type = string
+  description = "Version of terraform module to be used"
+  default = "v1.0"
 }
