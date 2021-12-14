@@ -51,9 +51,3 @@ variable "common_tags" {
   type        = map(any)
   description = "Map of Default Tags"
 }
-
-variable "version" {
-  type = string
-  description = "Version of terraform module to be used"
-  default = "v1.0"
-}

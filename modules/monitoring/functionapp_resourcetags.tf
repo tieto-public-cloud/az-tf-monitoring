@@ -134,7 +134,7 @@ resource "azurerm_role_assignment" "function-reader" {
 # }
 
 module "monitor-tagging" {
-  source                     = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=${var.version}"
+  source                     = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.0"
   query_alerts               = var.tagging_query
   deploy_monitoring          = true
   resource_group_name        = var.log_analytics_workspace_resource_group

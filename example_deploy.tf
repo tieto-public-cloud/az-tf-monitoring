@@ -22,8 +22,7 @@ locals {
 
 module "monitoring-alert" {
 
-  source                                 = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=${local.version}"
-  version                                = local.version
+  source                                 = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=v1.0"
   location                               = "westeurope"
   log_analytics_workspace_name           = "log-te-custz-test"
   log_analytics_workspace_resource_group = "rg-teshared-custz-test"
