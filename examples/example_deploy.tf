@@ -12,10 +12,6 @@ provider "azurerm" {
 
 data "azurerm_subscription" "current" {}
 
-locals { 
-  version = "v1.0"
-}
-
 #
 # Call the monitoring alert module
 #

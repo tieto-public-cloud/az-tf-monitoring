@@ -9,7 +9,7 @@
 
 ## Monitoring modules usage
 
-The TF code calls root module in ./modules/monitoring to deploy following resources:
+The TF code calls monitoring module in ./modules/monitoring to deploy following resources:
 - Action groups.
 - Enable resource tags in monitoring (deploys Azure Function)
 - Calls child module at ./modules/alerts for each monitoring alert bundle that is supposed to be deployed.
@@ -62,8 +62,5 @@ deploy_monitoring_backup = true
 
 Then initialize new module in Terraform by running terraform init.
 
-## To do
-
-* Exceptions - timeframe when no alerts are generated
 
 
