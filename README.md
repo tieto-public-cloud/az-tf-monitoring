@@ -14,6 +14,7 @@ Architecture and workflow described here: https://confluence.shared.pub.tds.tiet
     - Filtering based on tags - te-managed-service: true or workload will enable monitoring of the specified resource
     - Ticket routing inside CMDG (Service Now)
     - Tag driven monitoring baselines - currently implemented for VMs - possible to specify tags:  
+
 | Metric | Warning - Threshold | Warning - Period | Critical -Threshold | Critical - Period | Tag - Key | Tag - Value | Comments |
 |---|---|---|---|---|---|---|---|
 | CPU | 90 | 600 | 95 | 600 | default - no tags needed |  | standard fitting most VMs |
@@ -50,6 +51,7 @@ Each resource type monitoring bundle is defined in separate variables file - eg.
 List of alerts is available here: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/report-alerts/alerts-rg-teshared-custz-test.csv
 
 #### Input Variables
+
 | Variable | Format | Description | Default |
 |---|---|---|---|
 | log_analytics_workspace_resource_group | string | The log Analytics Workspace resource group name | null |
@@ -85,19 +87,19 @@ To add new alert bundle you can just use any of existing ones as a guidance as w
 
 Add new module stanza added to ./modules/monitoring/main.tf:
 
-module "monitor-azuresql" {  
-  source                     = "../alerts"  
-  query_alerts               = var.azuresql-query.query_alert_default  
-  deploy_monitoring          = var.deploy_monitoring_azuresql  
-  resource_group_name        = var.log_analytics_workspace_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
-  l                          = var.location  
-  ag                         = azurerm_monitor_action_group.action_group  
-}
+        module "monitor-azuresql" {  
+          source                     = "https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.0"  
+          query_alerts               = var.azuresql-query.query_alert_default  
+          deploy_monitoring          = var.deploy_monitoring_azuresql  
+          resource_group_name        = var.log_analytics_workspace_resource_group
+          log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
+          l                          = var.location  
+          ag                         = azurerm_monitor_action_group.action_group  
+        }
 
 By default new alert bundles are not deployed (if template variables_monitor_template.tftemp is used as source), so to deploy new bundle add a switch as in example file ./deploy.tf like:
 
-deploy_monitoring_backup = true  
+        deploy_monitoring_backup = true  
 
 Then initialize new module in Terraform by running terraform init.
 
