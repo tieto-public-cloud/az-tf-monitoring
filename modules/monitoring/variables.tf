@@ -15,11 +15,11 @@ variable "location" {
   default     = ""
 }
 
-variable "use_resource_tags" {
-  description = "Whether to deploy function app that enables usage of resource tags in monitoring solution"
-  type        = bool
-  default     = false
-}
+# variable "use_resource_tags" {
+#   description = "Whether to deploy function app that enables usage of resource tags in monitoring solution"
+#   type        = bool
+#   default     = false
+# }
 
 variable "storage_account_name" {
   description = "Name of storage account for Resource tagging function"
