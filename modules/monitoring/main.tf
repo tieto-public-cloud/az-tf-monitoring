@@ -108,6 +108,6 @@ module "custom_metric_alerts" {
   source              = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_metric?ref=v1.0"
   resource_group_name = var.log_analytics_workspace_resource_group
   deploy_monitoring   = var.deploy_custom_metric_alerts
-  metric_alerts       = local.metric_alerts
+  metric_alerts       = var.custom_metric_alerts
   ag                  = azurerm_monitor_action_group.action_group
 }

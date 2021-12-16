@@ -58,6 +58,7 @@ variable "metric_alerts" {
       }))
     })
   )
+  default = null
 }
 
 variable "ag" {
