@@ -115,6 +115,8 @@ We needed to use resource tags with Azure Monitor query based alerts to make eas
 Powershell based Azure function that reads subscription resources tags data and stores it to specified log analytics workspace custom log data.
 The function reads configuration from Azure storage account table service (table name Config), also uses this storage account as a temporary storage.
 
+__Repo URL: https://github.com/tieto-public-cloud/az-func-monitoring-tagging__
+
 ### Function workflow
 Due to cost optimization I had decided to make function operate in 2 stages. The function is executed as a scheduled trigger each minute.
 
