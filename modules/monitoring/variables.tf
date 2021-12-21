@@ -56,7 +56,7 @@ variable "monitor_tagging_fapp_name" {
 variable "monitor_tagging_function_repo" {
   description = "Source code repository URL for monitor tagging Azure Function"
   type        = string
-  default     = "https://github.com/tieto-public-cloud/az-func-monitoring-tagging?ref=v1.0"
+  default     = "https://github.com/tieto-public-cloud/az-func-monitoring-tagging"
 }
 
 variable "common_tags" {
