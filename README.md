@@ -67,6 +67,7 @@ List of alerts is available here: https://github.com/tieto-public-cloud/az-tf-mo
 | <alert bundle*>_query | map | <alert bundle*> config for query based monitoring | example: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_monitor_azurevm.tf |
 | deploy_custom_metric_alerts | bool | Whether to deploy Monitoring custom metric alerts | false |
 | custom_metric_alerts | map | Locally present alerts | schema: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_monitor_metric_alerts.tf |
+| assign_functionapp_perms | bool | Set to false if TF does not have permissions to assign IAM roles | true |
 
 *alert bundle - currently supporting following: 
 - App Gateway - agw

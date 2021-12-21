@@ -15,6 +15,11 @@ variable "location" {
   default     = ""
 }
 
+variable "assign_functionapp_perms" {
+  description = "Set to false if TF does not have permissions to assign IAM roles"
+  default     = true
+}
+
 # variable "use_resource_tags" {
 #   description = "Whether to deploy function app that enables usage of resource tags in monitoring solution"
 #   type        = bool

@@ -91,18 +91,21 @@ resource "azurerm_function_app" "monitor-tagging" {
 }
 
 resource "azurerm_role_assignment" "function-contributor-law-rg" {
+  count = var.assign_functionapp_perms == true ? 1 : 0
   scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${var.log_analytics_workspace_resource_group}"
   role_definition_name = "Contributor"
   principal_id         = azurerm_function_app.monitor-tagging.identity[0].principal_id
 }
 
 resource "azurerm_role_assignment" "function-contributor-self-rg" {
+  count = var.assign_functionapp_perms == true ? 1 : 0
   scope                = "${data.azurerm_subscription.current.id}/resourceGroups/${azurerm_resource_group.function_rg.name}"
   role_definition_name = "Contributor"
   principal_id         = azurerm_function_app.monitor-tagging.identity[0].principal_id
 }
 
 resource "azurerm_role_assignment" "function-reader" {
+  count = var.assign_functionapp_perms == true ? 1 : 0
   scope                = data.azurerm_subscription.current.id
   role_definition_name = "Reader"
   principal_id         = azurerm_function_app.monitor-tagging.identity[0].principal_id
