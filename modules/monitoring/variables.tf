@@ -17,7 +17,14 @@ variable "location" {
 
 variable "assign_functionapp_perms" {
   description = "Set to false if TF does not have permissions to assign IAM roles"
+  type = bool
   default     = true
+}
+
+variable "target_subscription_id" {
+    description = "Set target subscription id where to read resource tag data"
+    type = string
+    default = null
 }
 
 # variable "use_resource_tags" {

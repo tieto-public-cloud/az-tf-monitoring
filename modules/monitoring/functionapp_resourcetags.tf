@@ -1,3 +1,5 @@
+
+
 resource "azurerm_resource_group" "function_rg" {
   name     = var.monitor_tagging_fapp_rg
   location = var.location
@@ -36,6 +38,7 @@ resource "azurerm_storage_table_entity" "config_data" {
   entity = {
     ResourceGroupName          = var.log_analytics_workspace_resource_group
     WorkspaceName              = var.log_analytics_workspace_name
+    TargetSubscriptionId       = var.target_subscription_id
     StorageAccountName         = azurerm_storage_account.function_storage.name
     StorageAccountResGroupName = azurerm_resource_group.function_rg.name
     Delta                      = "3600"
@@ -106,7 +109,7 @@ resource "azurerm_role_assignment" "function-contributor-self-rg" {
 
 resource "azurerm_role_assignment" "function-reader" {
   count = var.assign_functionapp_perms == true ? 1 : 0
-  scope                = data.azurerm_subscription.current.id
+  scope                = "/subscriptions/${var.target_subscription_id}"
   role_definition_name = "Reader"
   principal_id         = azurerm_function_app.monitor-tagging.identity[0].principal_id
 }
