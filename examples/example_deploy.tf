@@ -18,7 +18,7 @@ data "azurerm_subscription" "current" {}
 
 module "monitoring-alert" {
 
-  source                                 = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=v1.0"
+  source                                 = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=v1.1"
   location                               = "westeurope"
   log_analytics_workspace_name           = "log-te-custz-test"
   log_analytics_workspace_resource_group = "rg-teshared-custz-test"
@@ -37,7 +37,7 @@ module "monitoring-alert" {
 
   # Switches enabling different resource types monitoring
 
-  deploy_monitoring_azurevm = true
+  deploy_monitoring_azurevm       = true
   # deploy_monitoring_azuresql      = true
   # deploy_monitoring_logicapps     = true
   # deploy_monitoring_backup        = true

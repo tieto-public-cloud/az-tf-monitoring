@@ -37,8 +37,8 @@ The TF code calls monitoring module in ./modules/monitoring to deploy following 
 
 ### Module "alert_query" and "alert_metric"
 
-Query alert: https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.0
-Metric alert: https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_metric?ref=v1.0
+Query alert: https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.1
+Metric alert: https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_metric?ref=v1.1
 
 Code common for all alert bundles that creates alerts based on variable input.  
 Called from "monitoring" module.
@@ -89,7 +89,7 @@ To add new alert bundle you can just use any of existing ones as a guidance as w
 Add new module stanza added to ./modules/monitoring/main.tf:
 
         module "monitor-azuresql" {  
-          source                     = "https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.0"  
+          source                     = "https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.1"  
           query_alerts               = var.azuresql-query.query_alert_default  
           deploy_monitoring          = var.deploy_monitoring_azuresql  
           resource_group_name        = var.log_analytics_workspace_resource_group
