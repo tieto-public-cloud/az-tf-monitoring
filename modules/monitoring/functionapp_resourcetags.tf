@@ -108,8 +108,9 @@ resource "azurerm_role_assignment" "function-contributor-self-rg" {
 }
 
 resource "azurerm_role_assignment" "function-reader" {
-  count = var.assign_functionapp_perms == true ? 1 : 0
-  scope                = "/subscriptions/${var.target_subscription_id}"
+  provider             = azurerm.target
+  count                = var.assign_functionapp_perms == true ? 1 : 0
+  scope                = data.azurerm_subscription.target.id
   role_definition_name = "Reader"
   principal_id         = azurerm_function_app.monitor-tagging.identity[0].principal_id
 }

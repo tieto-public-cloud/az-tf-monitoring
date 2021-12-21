@@ -5,6 +5,10 @@ data "azurerm_client_config" "current" {}
 # Current Azure Subscription
 data "azurerm_subscription" "current" {}
 
+data "azurerm_subscription" "target" {
+  provider = azurerm.target
+}
+
 # All Azure Subscriptions
 data "azurerm_subscriptions" "available" {}
 
