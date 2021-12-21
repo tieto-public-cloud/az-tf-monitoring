@@ -11,11 +11,13 @@ locals {
     }
   ]
 }
+
+
 resource "azurerm_monitor_action_group" "action_group" {
   # Deploy all Azure Monitor action groups.
-  for_each = {
+  for_each = var.deploy_action_groups ? {
     for k in local.monitor_action_group_deployments : k.group_name => k
-  }
+  } : {}
 
   name                = each.value.group_name
   resource_group_name = var.log_analytics_workspace_resource_group

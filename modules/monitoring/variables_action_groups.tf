@@ -1,3 +1,9 @@
+variable "deploy_action_groups" {
+  description = "Whether to deploy Action groups"
+  type        = bool
+  default     = false
+}
+
 variable "action_groups" {
   description = "Action Group Config"
   default = {

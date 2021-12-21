@@ -140,13 +140,4 @@ resource "azurerm_role_assignment" "function-reader" {
 #   }
 # }
 
-module "monitor-tagging" {
-  source                     = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.1"
-  query_alerts               = var.tagging_query
-  deploy_monitoring          = true
-  resource_group_name        = var.log_analytics_workspace_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
-}
 
