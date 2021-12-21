@@ -38,6 +38,7 @@ resource "azurerm_storage_table_entity" "config_data" {
   entity = {
     ResourceGroupName          = var.log_analytics_workspace_resource_group
     WorkspaceName              = var.log_analytics_workspace_name
+    WorkingSubscriptionId      = data.azurerm_subscription.current.subscription_id
     TargetSubscriptionId       = var.target_subscription_id
     StorageAccountName         = azurerm_storage_account.function_storage.name
     StorageAccountResGroupName = azurerm_resource_group.function_rg.name
