@@ -3,6 +3,8 @@ data "azurerm_log_analytics_workspace" "log_analytics_workspace" {
   resource_group_name = var.log_analytics_workspace_resource_group
 }
 
+data "azurerm_subscription" "current" {}
+
 module "monitor-azurevm" {
   source                     = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query"
   query_alerts               = local.azurevm_query
@@ -97,6 +99,6 @@ module "custom_metric_alerts" {
   source              = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_metric"
   resource_group_name = var.log_analytics_workspace_resource_group
   deploy_monitoring   = var.deploy_custom_metric_alerts
-  metric_alerts       = var.custom_metric_alerts
+  metric_alerts       = local.metric_alerts
   ag                  = azurerm_monitor_action_group.action_group
 }

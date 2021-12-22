@@ -3,7 +3,30 @@ variable "deploy_custom_metric_alerts" {
   type        = bool
   default     = false
 }
-
+locals {
+  dummy_metric_alert = {
+    "dummy" = {
+      enabled                  = false
+      auto_mitigate            = true
+      description              = "Dummy metric alert"
+      frequency                = "PT5M"
+      severity                 = 0
+      target_resource_type     = "Microsoft.Compute/virtualMachines"
+      action_group             = "tm-warning-actiongroup"
+      target_resource_location = "westeurope"
+      scope                    = data.azurerm_subscription.current.id
+      window_size              = "PT5M"
+      criteria = {
+        metric_namespace = "Microsoft.Compute/virtualMachines"
+        metric_name      = "CPU Credits Consumed"
+        aggregation      = "Count"
+        operator         = "GreaterThan"
+        threshold        = 100
+      }
+    }
+  }
+  metric_alerts = merge(var.custom_metric_alerts, local.dummy_metric_alert)
+}
 variable "custom_metric_alerts" {
   description = "Locally present alerts"
   type = map(
