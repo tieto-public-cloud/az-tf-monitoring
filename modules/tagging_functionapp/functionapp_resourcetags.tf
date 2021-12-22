@@ -1,5 +1,3 @@
-
-
 resource "azurerm_resource_group" "function_rg" {
   name     = var.monitor_tagging_fapp_rg
   location = var.location

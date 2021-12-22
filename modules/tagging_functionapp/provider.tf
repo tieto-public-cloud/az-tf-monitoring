@@ -33,3 +33,9 @@ terraform {
 provider "azurerm" {
   features {}
 }
+
+provider "azurerm" {
+  alias           = "target"
+  subscription_id = var.target_subscription_id
+  features {}
+}

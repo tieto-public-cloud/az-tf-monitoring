@@ -1,18 +1,3 @@
-# Datasources for Azure environment
-# AzureRM provider client
-data "azurerm_client_config" "current" {}
-
-# Current Azure Subscription
-data "azurerm_subscription" "current" {}
-
-data "azurerm_subscription" "target" {
-  provider = azurerm.target
-}
-
-# All Azure Subscriptions
-data "azurerm_subscriptions" "available" {}
-
-# Log Analytics Workspace Creation or selection - Default is "false"
 data "azurerm_log_analytics_workspace" "log_analytics_workspace" {
   name                = var.log_analytics_workspace_name
   resource_group_name = var.log_analytics_workspace_resource_group

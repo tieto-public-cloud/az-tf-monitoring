@@ -15,49 +15,6 @@ variable "location" {
   default     = ""
 }
 
-variable "assign_functionapp_perms" {
-  description = "Set to false if TF does not have permissions to assign IAM roles"
-  type = bool
-  default     = true
-}
-
-variable "target_subscription_id" {
-    description = "Set target subscription id where to read resource tag data"
-    type = string
-    default = null
-}
-
-# variable "use_resource_tags" {
-#   description = "Whether to deploy function app that enables usage of resource tags in monitoring solution"
-#   type        = bool
-#   default     = false
-# }
-
-variable "storage_account_name" {
-  description = "Name of storage account for Resource tagging function"
-  type        = string
-  default     = null
-}
-
-
-variable "monitor_tagging_fapp_rg" {
-  description = "Resource group name with Resource tagging function"
-  type        = string
-  default     = null
-}
-
-
-variable "monitor_tagging_fapp_name" {
-  description = "Name of Resource tagging function"
-  type        = string
-  default     = null
-}
-
-variable "monitor_tagging_function_repo" {
-  description = "Source code repository URL for monitor tagging Azure Function"
-  type        = string
-  default     = "https://github.com/tieto-public-cloud/az-func-monitoring-tagging"
-}
 
 variable "common_tags" {
   type        = map(any)
