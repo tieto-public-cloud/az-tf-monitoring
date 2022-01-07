@@ -18,7 +18,7 @@ data "azurerm_subscription" "current" {}
 
 module "monitoring-alert" {
 
-  source                                 = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=v1.1"
+  source                                 = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=v1.0"
   location                               = "westeurope"
   log_analytics_workspace_name           = "log-te-custz-test"
   log_analytics_workspace_resource_group = "rg-teshared-custz-test"
@@ -53,31 +53,7 @@ module "monitoring-alert" {
 
   # In case of need you can deploy metric alerts defined in custom_metric_alerts variable
   # deploy_custom_metric_alerts = false
-
-  # !!! There must always be some alert passed over to monitoring module !!!
-  # even if deploy_custom_metric_alerts is false or not set (as it has false set by default)
-
-  custom_metric_alerts = {
-    "dummy" = {
-      enabled                  = false
-      auto_mitigate            = true
-      description              = "Dummy metric alert"
-      frequency                = "PT5M"
-      severity                 = 0
-      target_resource_type     = "Microsoft.Compute/virtualMachines"
-      action_group             = "tm-warning-actiongroup"
-      target_resource_location = "westeurope"
-      scope                    = data.azurerm_subscription.current.id
-      window_size              = "PT5M"
-      criteria = {
-        metric_namespace = "Microsoft.Compute/virtualMachines"
-        metric_name      = "CPU Credits Consumed"
-        aggregation      = "Count"
-        operator         = "GreaterThan"
-        threshold        = 100
-      }
-    }
-  }
+  
 }
 
 
