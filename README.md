@@ -2,18 +2,94 @@
 
 ## General information
 
-This terraform module provides deployment of Azure monitoring that supports following:
+Contains set of terraform modules:
+Tagging function app
+Monitoring
+Alert_query
+Alert_metric
 
-Architecture and workflow described here: https://confluence.shared.pub.tds.tieto.com/display/PCCD/Azure+Monitoring+with+Resource+Tags
+### Terraform module Tagging function app 
+- Deploys the function app into subscription with shared log workspace  
+- Function app code is deployed from this url: https://github.com/tieto-public-cloud/az-func-monitoring-tagging.git 
+- Function app needs will read resource tags in target subscription and store them temporarily in storage account table ResTags, this will be updated once in hour.  
+- Function app will also forward data from temporary storage into shared log workspace each minute and store them in custom log table TagData_CL  
+- Function app need following permissions:
+        - Read on target subscription  
+        - Contributor on resource group with itself  
+        - Contributor on resource group with shared log analytics workspace  
+- It is possible specify whether to assign permissions to the function or not (in case the deployment service principal has such rights to assign permission)  
 
-- Switches to enable monitoring only for needed resource types and deploys only related monitoring alert bundles
-- Creates query based alerts on log workspace
-- If needed there is possibility to override default query bundle, or create custom queries as well
-- Metric alerts are supported, no defaults only custom alerts
-- Deploys Azure function that provide resource tags to Log Analytics Workspace that are used in queries to provide support for:
-    - Filtering based on tags - te-managed-service: true or workload will enable monitoring of the specified resource
-    - Ticket routing inside CMDG (Service Now)
-    - Tag driven monitoring baselines - currently implemented for VMs - possible to specify tags:  
+### Terraform module Monitoring
+- Deploys chosen default alert bundles to shared log analytics workspace
+- Deploys custom query alerts  
+These should be specified as needed with following considerations:  
+        - If alert has same name as one in default bundle it will override default alert  
+        - If alert has unused name, it will create new alert  
+- Deploys custom metric alerts – these should be specified as needed.  
+- Deploys action groups  
+
+### Module "alert_query" and "alert_metric"
+
+Query alert: https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.0
+Metric alert: https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_metric?ref=v1.0
+
+Code common for all alert bundles that creates alerts based on variable input.  
+Called from "monitoring" module.
+Alerts module is used for query based alerts
+Custom metric alerts are used for metric based alerts
+
+## Module "monitoring"
+
+Each resource type monitoring bundle is defined in separate variables file - eg. variables_monitor_azuresql.tf
+List of alerts is available here: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/report-alerts/alerts-rg-teshared-custz-test.csv
+
+### Input Variables
+
+#### Tagging function app module
+
+| Variable | Format | Description | Default |
+|---|---|---|---|
+| log_analytics_workspace_resource_group | string | The log Analytics Workspace resource group name | null |
+| log_analytics_workspace_name | string | The log Analytics Workspace Name | null |
+| location | string | The location/region to keep all your monitoring resources. | null |
+| storage_account_name | string | Name of storage account for Resource tagging function temp storage | null |
+| monitor_tagging_fapp_rg | string | Resource group name with Resource tagging function | null |
+| monitor_tagging_fapp_name | string | Name of Resource tagging function | null |
+| monitor_tagging_function_repo | string | Source code repository URL for monitor tagging Azure Function | https://github.com/tieto-public-cloud/az-func-monitoring-tagging.git |
+| common_tags | map | Map of Default Tags | null |
+| assign_functionapp_perms | bool | Set to false if TF does not have permissions to assign IAM roles | true |
+
+
+#### Monitoring module
+
+| Variable | Format | Description | Default |
+|---|---|---|---|
+| log_analytics_workspace_resource_group | string | The log Analytics Workspace resource group name | null |
+| log_analytics_workspace_name | string | The log Analytics Workspace Name | null |
+| location | string | The location/region to keep all your monitoring resources. | null |
+| common_tags | map | Map of Default Tags | null |
+| deploy_action_groups | bool | Switch to set if action groups should be deployed | true |
+| action_groups | map | Action Group Config | https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_action_groups.tf |
+| deploy_monitoring_<alert bundle*> | bool | Whether to deploy Monitoring alerts related to <alert bundle*> | false |
+| <alert bundle*>_query | map | <alert bundle*> config for query based monitoring | example: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_monitor_azurevm.tf |
+| <alert bundle*>_custom_query | map | <alert bundle*> config for custom queries - does not have default values and is expected to be passed from root module this is merged with <alert bundle*>_query default bundle | null |
+| deploy_custom_metric_alerts | bool | Whether to deploy Monitoring custom metric alerts | false |
+| custom_metric_alerts | map | Locally present alerts | schema: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_monitor_metric_alerts.tf |
+
+*alert bundle - currently supporting following: 
+- App Gateway - agw
+- Azure Function - azurefunction
+- Azure SQL - azuresql
+- Azure VM - azurevm
+- Backup - backup
+- DataFactory - datafactory
+- Express Route - expressroute
+- Load Balancer - lb
+- Logic Apps - logicapps
+
+### Implemented baselines
+
+#### Tag driven baselines for Azure VM
 
 | Metric | Warning - Threshold | Warning - Period | Critical -Threshold | Critical - Period | Tag - Key | Tag - Value | Comments |
 |---|---|---|---|---|---|---|---|
@@ -27,69 +103,23 @@ Architecture and workflow described here: https://confluence.shared.pub.tds.tiet
 | Disk | 90 | 900 | 95 | 60 | monitoring_disk (os or data) | high | for VMs with large disks |
 | Disk | 94 | 900 | 97 | 60 | monitoring_disk (os or data) | highest | for VMs with extremely large disks |
 
-## Monitoring modules usage
+#### Other baselines
 
-The TF code calls monitoring module in ./modules/monitoring to deploy following resources:
-- Action groups.
-- Enable resource tags in monitoring (deploys Azure Function and related infrastructure)
-- Calls child module for each monitoring alert bundle that is supposed to be deployed.
-- Calls child module for any metric alerts
+There are 2 files inside folder report-alerts. 
+* report-alerts.ps1 contains script that can pull all alerts deployed on a resource group. 
+* deployed-alerts-list.csv lists all deployed alerts currently implemented in default bundles with their thresholds, queries etc.
 
-### Module "alert_query" and "alert_metric"
-
-Query alert: https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.1
-Metric alert: https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_metric?ref=v1.1
-
-Code common for all alert bundles that creates alerts based on variable input.  
-Called from "monitoring" module.
-Alerts module is used for query based alerts
-Custom metric alerts are used for metric based alerts
-
-### Module "monitoring"
-
-Each resource type monitoring bundle is defined in separate variables file - eg. variables_monitor_azuresql.tf
-List of alerts is available here: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/report-alerts/alerts-rg-teshared-custz-test.csv
-
-#### Input Variables
-
-| Variable | Format | Description | Default |
-|---|---|---|---|
-| log_analytics_workspace_resource_group | string | The log Analytics Workspace resource group name | null |
-| log_analytics_workspace_name | string | The log Analytics Workspace Name | null |
-| location | string | The location/region to keep all your monitoring resources. | null |
-| storage_account_name | string | Name of storage account for Resource tagging function temp storage | null |
-| monitor_tagging_fapp_rg | string | Resource group name with Resource tagging function | null |
-| monitor_tagging_fapp_name | string | Name of Resource tagging function | null |
-| monitor_tagging_function_repo | string | Source code repository URL for monitor tagging Azure Function | https://github.com/tieto-public-cloud/az-func-monitoring-tagging.git |
-| common_tags | map | Map of Default Tags | null |
-| action_groups | map | Action Group Config | https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_action_groups.tf |
-| deploy_monitoring_<alert bundle*> | bool | Whether to deploy Monitoring alerts related to <alert bundle*> | false |
-| <alert bundle*>_query | map | <alert bundle*> config for query based monitoring | example: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_monitor_azurevm.tf |
-| deploy_custom_metric_alerts | bool | Whether to deploy Monitoring custom metric alerts | false |
-| custom_metric_alerts | map | Locally present alerts | schema: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_monitor_metric_alerts.tf |
-| assign_functionapp_perms | bool | Set to false if TF does not have permissions to assign IAM roles | true |
-
-*alert bundle - currently supporting following: 
-- App Gateway - agw
-- Azure Function - azurefunction
-- Azure SQL - azuresql
-- Azure VM - azurevm
-- Backup - backup
-- DataFactory - datafactory
-- Express Route - expressroute
-- Load Balancer - lb
-- Logic Apps - logicapps
-
-### Adding new alert bundle
+Any custom baselines that are not implemented in default bundles can be deployed via 
+#### Adding new alert bundle
 
 To add new alert bundle you can just use any of existing ones as a guidance as well as variable object definition available to create new alert bundle defaults.
 
-#### TF Config
+##### TF Config
 
 Add new module stanza added to ./modules/monitoring/main.tf:
 
         module "monitor-azuresql" {  
-          source                     = "https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.1"  
+          source                     = "https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.0"  
           query_alerts               = var.azuresql-query.query_alert_default  
           deploy_monitoring          = var.deploy_monitoring_azuresql  
           resource_group_name        = var.log_analytics_workspace_resource_group
@@ -103,29 +133,3 @@ By default new alert bundles are not deployed (if template variables_monitor_tem
         deploy_monitoring_backup = true  
 
 Then initialize new module in Terraform by running terraform init.
-
-## Azure function - resource tags data to log analytics workspace
-
-### General Info
-We needed to use resource tags with Azure Monitor query based alerts to make easier use of:
-
-1. Monitoring baselines
-2. Routing tickets to specific team in our CMDB
-3. Filter resources that we are interested in monitoring (as a service provider)
-
-Powershell based Azure function that reads subscription resources tags data and stores it to specified log analytics workspace custom log data.
-The function reads configuration from Azure storage account table service (table name Config), also uses this storage account as a temporary storage.
-
-__Repo URL: https://github.com/tieto-public-cloud/az-func-monitoring-tagging__
-
-### Function workflow
-Due to cost optimization I had decided to make function operate in 2 stages. The function is executed as a scheduled trigger each minute.
-
-#### Stage 1
-This stage is initiated if difference between now and time of creation of the temporary record is greater than Delta configuration property value (or there are not any temporary data stored yet)
-Removes temporary data from ResTags table in specified storage account
-Read resource tags data from subscription where function resides. This should happen once in hour (actually configurable via Delta configruation property) as this operation is quite compute heavy and takes most of the time
-Store data in temporary storage
-
-#### Stage 2
-Reads ResTags table content and push it to log analytics workspace
