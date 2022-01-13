@@ -2,11 +2,11 @@
 
 ## General information
 
-Contains set of terraform modules:
-Tagging function app
-Monitoring
-Alert_query
-Alert_metric
+Contains set of terraform modules:  
+* Tagging function app  
+* Monitoring  
+* Alert_query  
+* Alert_metric  
 
 ### Terraform module Tagging function app 
 - Deploys the function app into subscription with shared log workspace  
@@ -38,14 +38,9 @@ Called from "monitoring" module.
 Alerts module is used for query based alerts
 Custom metric alerts are used for metric based alerts
 
-## Module "monitoring"
+## Input Variables
 
-Each resource type monitoring bundle is defined in separate variables file - eg. variables_monitor_azuresql.tf
-List of alerts is available here: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/report-alerts/alerts-rg-teshared-custz-test.csv
-
-### Input Variables
-
-#### Tagging function app module
+### Tagging function app module
 
 | Variable | Format | Description | Default |
 |---|---|---|---|
@@ -60,7 +55,9 @@ List of alerts is available here: https://github.com/tieto-public-cloud/az-tf-mo
 | assign_functionapp_perms | bool | Set to false if TF does not have permissions to assign IAM roles | true |
 
 
-#### Monitoring module
+### Monitoring module
+
+Each resource type monitoring bundle is defined in separate variables file - eg. variables_monitor_azuresql.tf
 
 | Variable | Format | Description | Default |
 |---|---|---|---|
@@ -87,9 +84,9 @@ List of alerts is available here: https://github.com/tieto-public-cloud/az-tf-mo
 - Load Balancer - lb
 - Logic Apps - logicapps
 
-### Implemented baselines
+## Implemented baselines
 
-#### Tag driven baselines for Azure VM
+### Tag driven baselines for Azure VM
 
 | Metric | Warning - Threshold | Warning - Period | Critical -Threshold | Critical - Period | Tag - Key | Tag - Value | Comments |
 |---|---|---|---|---|---|---|---|
@@ -103,18 +100,18 @@ List of alerts is available here: https://github.com/tieto-public-cloud/az-tf-mo
 | Disk | 90 | 900 | 95 | 60 | monitoring_disk (os or data) | high | for VMs with large disks |
 | Disk | 94 | 900 | 97 | 60 | monitoring_disk (os or data) | highest | for VMs with extremely large disks |
 
-#### Other baselines
+### Other baselines
 
 There are 2 files inside folder report-alerts. 
 * report-alerts.ps1 contains script that can pull all alerts deployed on a resource group. 
 * deployed-alerts-list.csv lists all deployed alerts currently implemented in default bundles with their thresholds, queries etc.
 
 Any custom baselines that are not implemented in default bundles can be deployed via 
-#### Adding new alert bundle
+### Adding new alert baseline bundle
 
 To add new alert bundle you can just use any of existing ones as a guidance as well as variable object definition available to create new alert bundle defaults.
 
-##### TF Config
+#### TF Config
 
 Add new module stanza added to ./modules/monitoring/main.tf:
 
