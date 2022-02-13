@@ -119,7 +119,7 @@ resource "azurerm_role_assignment" "function_role_contributor_self_storage" {
 resource "azurerm_role_assignment" "function_role_reader_target_sub" {
   count                = var.assign_roles ? 1 : 0
 
-  scope                = var.target_subscription_id
+  scope                = "/subscriptions/${var.target_subscription_id}"
   role_definition_name = "Reader"
   principal_id         = azurerm_function_app.function_app.identity[0].principal_id
 }

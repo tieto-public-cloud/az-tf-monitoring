@@ -62,7 +62,7 @@ resource "azurerm_monitor_action_group" "action_group" {
   }
 
   # Attach common tags passed from the caller.
-  tags = local.common_tags
+  tags = var.common_tags
 
   # This could take a long time, extend default timeouts.
   timeouts {
@@ -255,9 +255,9 @@ module "tagging_functionapp" {
   target_subscription_id  = var.target_subscription_ids[count.index]
   name                    = "${var.fa_name}${count.index}"
   resource_group_name     = var.fa_resource_group_name
-  storage_account_name    = "${var.fa_name}${count.index}sa"
+  storage_account_name    = replace("${var.fa_name}${count.index}sa","/[^a-z0-9]/","")
   assign_roles            = var.assign_roles
   tag_retrieval_interval  = var.fa_tag_retrieval_interval
 
-  common_tags = local.common_tags
+  common_tags = var.common_tags
 }

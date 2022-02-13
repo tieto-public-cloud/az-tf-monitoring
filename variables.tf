@@ -1,6 +1,6 @@
 variable "azurerm_client_id" {
   description = "Client ID for authentication to Azure, see https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret"
-  type        = string 
+  type        = string
 }
 
 variable "azurerm_client_secret" {

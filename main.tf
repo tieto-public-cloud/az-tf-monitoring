@@ -8,6 +8,25 @@ locals {
   )
 }
 
+resource "azurerm_resource_group" "law_rg" {
+  name     = var.law_resource_group_name
+  location = var.location
+
+  tags     = local.common_tags
+  provider = azurerm.law
+}
+
+resource "azurerm_log_analytics_workspace" "law" {
+  name                = var.law_name
+  location            = azurerm_resource_group.law_rg.location
+  resource_group_name = azurerm_resource_group.law_rg.name
+
+  retention_in_days = 7
+
+  tags     = local.common_tags
+  provider = azurerm.law
+}
+
 module "tag_driven_monitoring" {
   source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=v2.0"
 
@@ -66,6 +85,11 @@ module "tag_driven_monitoring" {
 
   ## Assign common tags to all resources deployed by this module and its submodules.
   common_tags = local.common_tags
+
+  depends_on = [
+    azurerm_resource_group.law_rg,
+    azurerm_log_analytics_workspace.law
+  ]
 
   #############################################################
   ## Everything beyond this point is customization for experts.
