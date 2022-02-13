@@ -84,7 +84,7 @@ resource "azurerm_monitor_action_group" "action_group" {
 ## Log Query Alerts
 ##############################################################################
 
-module "monitor_azurevm" {
+module "azurevm_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
@@ -98,7 +98,7 @@ module "monitor_azurevm" {
   ag                         = azurerm_monitor_action_group.action_group
 }
 
-module "monitor_azuresql" {
+module "azuresql_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
@@ -112,7 +112,7 @@ module "monitor_azuresql" {
   ag                         = azurerm_monitor_action_group.action_group
 }
 
-module "monitor_logicapp" {
+module "logicapp_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
@@ -126,7 +126,7 @@ module "monitor_logicapp" {
   ag                         = azurerm_monitor_action_group.action_group
 }
 
-module "monitor_backup" {
+module "backup_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
@@ -140,7 +140,7 @@ module "monitor_backup" {
   ag                         = azurerm_monitor_action_group.action_group
 }
 
-module "monitor_agw" {
+module "agw_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
@@ -154,7 +154,7 @@ module "monitor_agw" {
   ag                         = azurerm_monitor_action_group.action_group
 }
 
-module "monitor_azurefunction" {
+module "azurefunction_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
@@ -168,7 +168,7 @@ module "monitor_azurefunction" {
   ag                         = azurerm_monitor_action_group.action_group
 }
 
-module "monitor_datafactory" {
+module "datafactory_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
@@ -182,7 +182,7 @@ module "monitor_datafactory" {
   ag                         = azurerm_monitor_action_group.action_group
 }
 
-module "monitor_expressroute" {
+module "expressroute_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
@@ -196,7 +196,7 @@ module "monitor_expressroute" {
   ag                         = azurerm_monitor_action_group.action_group
 }
 
-module "monitor_lb" {
+module "lb_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
@@ -216,7 +216,7 @@ module "monitor_lb" {
 
 # Right now, there are no pre-defined metric alerts. Only metric alerts
 # provided by the caller will be deployed.
-module "metric_alerts" {
+module "custom_metric_alerts" {
   source    = local.module_source_am
   providers = {
     azurerm = azurerm.law
@@ -232,7 +232,7 @@ module "metric_alerts" {
 ## Tagging Function App
 ##############################################################################
 
-module "monitor_tagging_functionapp" {
+module "tagging_functionapp_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
