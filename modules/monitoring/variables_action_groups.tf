@@ -2,6 +2,11 @@ variable "ag_default_webhook_service_uri" {
   description = "Webhook URI for sending events, including any secrets necessary for authentication"
   type        = string
   sensitive   = true
+
+  validation {
+    condition     = length(var.ag_default_webhook_service_uri) > 0
+    error_message = "Allowed value for ag_default_webhook_service_uri is a non-empty string"
+  }
 }
 
 variable "ag_default_use_common_alert_schema" {

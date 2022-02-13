@@ -13,27 +13,27 @@ variable "azurerm_tenant_id" {
   type        = string
 }
 
-variable "mgmthub_subscription_id" {
+variable "law_subscription_id" {
   description = "ID of the Azure subscription hosting the Log Analytics Workspace used for log collection and analysis"
   type        = string
 }
 
-variable "monexec_subscription_id" {
+variable "aux_subscription_id" {
   description = "ID of the Azure subscription hosting the supporting functions used for log data enrichment"
   type        = string
 }
 
-variable "montarget_subscription_ids" {
-  description = "IDs of the Azure subscription that is to be monitored by this deployment"
+variable "target_subscription_ids" {
+  description = "IDs of the Azure subscription that are to be monitored by this deployment"
   type        = list(string)
 }
 
-variable "mgmt_law_name" {
+variable "law_name" {
   description = "The name of the Log Analytics Workspace used for log collection and analysis"
   type        = string
 }
 
-variable "mgmt_law_resource_group" {
+variable "law_resource_group_name" {
   description = "The Resource Group housing the Log Analytics Workspace used for log collection and analysis"
   type        = string
 }

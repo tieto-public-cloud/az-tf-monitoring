@@ -1,15 +1,3 @@
-# Get subscription data for both subscriptions used in this example.
-# We will be deploying the monitoring set up in the first one and
-# any other supporting functions in the second one. They may or may
-# not be identical.
-data "azurerm_subscription" "mgmthub" {
-  provider = azurerm.mgmthub
-}
-
-data "azurerm_subscription" "monexec" {
-  provider = azurerm.monexec
-}
-
 # Declare some helpful locals, show examples of various customizations
 # supported by these modules.
 locals {
@@ -48,16 +36,16 @@ module "tag_driven_monitoring" {
 
   ## The module expect two providers, mapping must be provided explicitly!
   providers = {
-    azurerm.law  = azurerm.mgmthub
-    azurerm.exec = azurerm.monexec
+    azurerm.law = azurerm.law
+    azurerm.aux = azurerm.aux
   }
 
   ## Location must be shared by all resources, only regional deployments are supported.
   location  = var.location
 
   ## Which Log Analytics Workspace will be used as the source of data. It must exist beforehand!
-  law_name           = var.mgmt_law_name
-  law_resource_group = var.mgmt_law_resource_group
+  law_name                = var.law_name
+  law_resource_group_name = var.law_resource_group_name
 
   ## Change configuration of the default action group set up.
   ## Module deploys two webhook-based AGs by default:
@@ -80,6 +68,37 @@ module "tag_driven_monitoring" {
   ## To monitor itself! Enabled by default.
   # monitor_tagging_functionapp = true
 
+  ## To push tag data to LAW, we need helper functions.
+  ## One Azure Function app will be deployed for each target subscription.
+  fa_resource_group_name  = var.fa_resource_group_name
+  fa_name                 = var.fa_name
+  target_subscription_ids = var.target_subscription_ids
+
+  ## During the deployment, we need to adjust Azure RBAC assignments.
+  ## If your deployment credentials don't have permission to do that,
+  ## set this to `false` and look for principal IDs in the output so
+  ## that you can assign roles manually.
+  ##
+  ## Look for:
+  ## * principal_id             (this is the identity that needs roles below)
+  ## * storage_account_id       (Storage Account Contributor)
+  ## * law_id                   (Log Analytics Contributor)
+  ## * target_subscription_id   (Reader)
+  ##
+  # assign_roles = true
+
+  ## Assign common tags to all resources deployed by this module and its submodules.
+  common_tags = local.common_tags
+
+  #############################################################
+  ## Everything beyond this point is customization for experts.
+  #############################################################
+
+  ## How often should helper function refresh data from target subscriptions?
+  ## Doing this often can get expensive. Do not change this value unless you
+  ## know what you are doing.
+  # fa_tag_retrieval_interval = 3600
+
   ## Add any new action groups referenced from custom signals below here!
   # action_groups  = []
 
@@ -96,7 +115,4 @@ module "tag_driven_monitoring" {
 
   ## Take care to reference only existing action groups (or add them above)!
   # metric_signals = []
-
-  ## Assign common tags to all resources deployed by this module and its submodules.
-  common_tags = local.common_tags
 }
