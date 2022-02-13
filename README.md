@@ -1,132 +1,145 @@
-# Deploy TE Azure Monitoring via Terraform
+# Deploy Azure Monitoring via Terraform
 
 ## General information
+This repository contains a set of Terraform (sub)modules:  
+* `monitoring` - the main module referencing/using all other submodules.
+* `tagigng_functionapp` - a submodule deploying Azure Function apps reading resource tags from subscriptions and submitting them to LAW.
+* `alert_query` - a submodule deploying log query based alerts to LAW.
+* `alert_metric` - a submodule deploying metric based alerts.
 
-Contains set of terraform modules:  
-* Tagging function app  
-* Monitoring  
-* Alert_query  
-* Alert_metric  
+Unless you know exaclty what you are doing, you should use only the main `monitoring` module as shown in the example provided in the root
+of this repository. Direct use of its submodules is discouraged and you will be doing it at your own peril.
 
-### Terraform module Tagging function app 
-- Deploys the function app into subscription with shared log workspace  
-- Function app code is deployed from this url: https://github.com/tieto-public-cloud/az-func-monitoring-tagging.git 
-- Function app needs will read resource tags in target subscription and store them temporarily in storage account table ResTags, this will be updated once in hour.  
-- Function app will also forward data from temporary storage into shared log workspace each minute and store them in custom log table TagData_CL  
-- Function app need following permissions:
-        - Read on target subscription  
-        - Contributor on resource group with itself  
-        - Contributor on resource group with shared log analytics workspace  
-- It is possible specify whether to assign permissions to the function or not (in case the deployment service principal has such rights to assign permission)  
+## Monitoring Module
+- Deploys default action groups.
+- Deploys chosen default alert bundles to a shared log analytics workspace.
+- Deploys Azure Function app(s) into the specified subscription.
+  - The app is deployed from: https://github.com/tieto-public-cloud/az-func-monitoring-tagging
+  - The app will read resource tags from resources in the target subscription and push them into a shared log analytics workspace.
+- *[Advanced]* Deploys custom action groups – these should be specified as needed.
+- *[Advanced]* Deploys custom log query alerts – these should be specified as needed.
+- *[Advanced]* Deploys custom metric alerts – these should be specified as needed.
 
-### Terraform module Monitoring
-- Deploys chosen default alert bundles to shared log analytics workspace
-- Deploys custom query alerts  
-These should be specified as needed with following considerations:  
-        - If alert has same name as one in default bundle it will override default alert  
-        - If alert has unused name, it will create new alert  
-- Deploys custom metric alerts – these should be specified as needed.  
-- Deploys action groups  
+### Input Variables
+```hcl
+locals {
+  # Module version, look for tags on this repository to see available versions.
+  module_version = "v2.0"
 
-### Module "alert_query" and "alert_metric"
+  # Some tags applied to all newly deployed resources.
+  common_tags = {}
+}
 
-Query alert: https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.0
-Metric alert: https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_metric?ref=v1.0
+module "tag_driven_monitoring" {
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=${local.module_version}"
 
-Code common for all alert bundles that creates alerts based on variable input.  
-Called from "monitoring" module.
-Alerts module is used for query based alerts
-Custom metric alerts are used for metric based alerts
+  ## The module expect two providers, mapping must be provided explicitly!
+  providers = {
+    azurerm.law = azurerm.law
+    azurerm.aux = azurerm.aux
+  }
 
-## Input Variables
+  ## Location must be shared by all resources, only regional deployments are supported.
+  location  = var.location
 
-### Tagging function app module
+  ## Which Log Analytics Workspace will be used as the source of data. It must exist beforehand!
+  law_name                = var.law_name
+  law_resource_group_name = var.law_resource_group_name
 
-| Variable | Format | Description | Default |
-|---|---|---|---|
-| log_analytics_workspace_resource_group | string | The log Analytics Workspace resource group name | null |
-| log_analytics_workspace_name | string | The log Analytics Workspace Name | null |
-| location | string | The location/region to keep all your monitoring resources. | null |
-| storage_account_name | string | Name of storage account for Resource tagging function temp storage | null |
-| monitor_tagging_fapp_rg | string | Resource group name with Resource tagging function | null |
-| monitor_tagging_fapp_name | string | Name of Resource tagging function | null |
-| monitor_tagging_function_repo | string | Source code repository URL for monitor tagging Azure Function | https://github.com/tieto-public-cloud/az-func-monitoring-tagging.git |
-| common_tags | map | Map of Default Tags | null |
-| assign_functionapp_perms | bool | Set to false if TF does not have permissions to assign IAM roles | true |
+  ## Change configuration of the default action group set up.
+  ## Module deploys two webhook-based AGs by default:
+  ## * tm-critical-actiongroup
+  ## * tm-warning-actiongroup
+  ag_default_webhook_service_uri = var.snow_webhook_uri
 
+  ## To choose what will be monitored. Everything is turned off by default.
+  monitor_azurevm = true
+  # monitor_azuresql      = false
+  # monitor_logicapp      = false
+  # monitor_backup        = false
+  # monitor_agw           = false
+  # monitor_azurefunction = false
+  # monitor_datafactory   = false
+  # monitor_expressroute  = false
+  # monitor_lb            = false
 
-### Monitoring module
+  ## To push tag data to LAW, we need helper functions.
+  ## One Azure Function app will be deployed for each target subscription.
+  fa_resource_group_name  = var.fa_resource_group_name
+  fa_name                 = var.fa_name
+  target_subscription_ids = var.target_subscription_ids
 
-Each resource type monitoring bundle is defined in separate variables file - eg. variables_monitor_azuresql.tf
+  ## During the deployment, we need to adjust Azure RBAC assignments.
+  ## If your deployment credentials don't have permission to do that,
+  ## set this to `false` and look for principal IDs in the output so
+  ## that you can assign roles manually.
+  ##
+  ## Look for:
+  ## * principal_id             (this is the identity that needs roles below)
+  ## * storage_account_id       (Storage Account Contributor)
+  ## * law_id                   (Log Analytics Contributor)
+  ## * target_subscription_id   (Reader)
+  ##
+  # assign_roles = true
 
-| Variable | Format | Description | Default |
-|---|---|---|---|
-| log_analytics_workspace_resource_group | string | The log Analytics Workspace resource group name | null |
-| log_analytics_workspace_name | string | The log Analytics Workspace Name | null |
-| location | string | The location/region to keep all your monitoring resources. | null |
-| common_tags | map | Map of Default Tags | null |
-| deploy_action_groups | bool | Switch to set if action groups should be deployed | true |
-| action_groups | map | Action Group Config | https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_action_groups.tf |
-| deploy_monitoring_<alert bundle*> | bool | Whether to deploy Monitoring alerts related to <alert bundle*> | false |
-| <alert bundle*>_query | map | <alert bundle*> config for query based monitoring | example: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_monitor_azurevm.tf |
-| <alert bundle*>_custom_query | map | <alert bundle*> config for custom queries - does not have default values and is expected to be passed from root module this is merged with <alert bundle*>_query default bundle | null |
-| deploy_custom_metric_alerts | bool | Whether to deploy Monitoring custom metric alerts | false |
-| custom_metric_alerts | map | Locally present alerts | schema: https://github.com/tieto-public-cloud/az-tf-monitoring/blob/master/modules/monitoring/variables_monitor_metric_alerts.tf |
+  ## Assign common tags to all resources deployed by this module and its submodules.
+  common_tags = local.common_tags
+}
+```
 
-*alert bundle - currently supporting following: 
-- App Gateway - agw
-- Azure Function - azurefunction
-- Azure SQL - azuresql
-- Azure VM - azurevm
-- Backup - backup
-- DataFactory - datafactory
-- Express Route - expressroute
-- Load Balancer - lb
-- Logic Apps - logicapps
+For more details, refer to the example provided in the root of the repository (top-level `*.tf` files) or variables defined in
+all `variables*.tf` files in [the monitoring module](modules/monitoring/).
 
-## Implemented baselines
+### Supported Alert Bundles
+- App Gateway - `agw`
+- Azure Function - `azurefunction`
+- Azure SQL - `azuresql`
+- Azure VM - `azurevm`
+- Backup - `backup`
+- DataFactory - `datafactory`
+- Express Route - `expressroute`
+- Load Balancer - `lb`
+- Logic App - `logicapp`
 
-### Tag driven baselines for Azure VM
+### Implemented baselines
+For a list of baselines provided by default alert bundles for each resource type, refer to
+local variables available in [the monitoring module](modules/monitoring/).
 
-| Metric | Warning - Threshold | Warning - Period | Critical -Threshold | Critical - Period | Tag - Key | Tag - Value | Comments |
-|---|---|---|---|---|---|---|---|
-| CPU | 90 | 600 | 95 | 600 | default - no tags needed |  | standard fitting most VMs |
-| CPU | 95 | 600 | 98 | 600 | monitoring_cpu | high | VMs with higher CPU usage |
-| CPU | 90 | 1800 | 95 | 1800 | monitoring_cpu | slow | for VMs that runs long running processes that consume large amount of cpu but then coming back to normal (batch jobs etc) |
-| Memory | 87 | 300 | 95 | 300 | default - no tags needed |  | standard fitting most VMs |
-| Memory | 96 | 300 | 98 | 300 | monitoring_mem | high | for VMs with large memory usage footpring |
-| Memory | 87 | 1800 | 95 | 1800 | monitoring_mem | slow | for VMs that runs long running processes that consume large amount of memory but then coming back to normal (batch jobs etc) |
-| Disk | 80 | 60 | 90 | 60 | default - no tags needed |  | standard fitting most VMs |
-| Disk | 90 | 900 | 95 | 60 | monitoring_disk (os or data) | high | for VMs with large disks |
-| Disk | 94 | 900 | 97 | 60 | monitoring_disk (os or data) | highest | for VMs with extremely large disks |
+Any custom baselines that are not implemented in default alert bundles can be deployed via:
+- `*_log_signals`
+- `metric_signals`
+This are *advanced* parameters of the `monitoring` module.
 
-### Other baselines
+## Changelog
+See [CHANGELOG.md](CHANGELOG.md).
 
-There are 2 files inside folder report-alerts. 
-* report-alerts.ps1 contains script that can pull all alerts deployed on a resource group. 
-* deployed-alerts-list.csv lists all deployed alerts currently implemented in default bundles with their thresholds, queries etc.
+## Contribute
+1. Fork it.
+2. Create a branch (git checkout -b my_markup).
+3. Commit your changes (git commit -am "My changes").
+4. Push to the branch (git push origin my_markup).
+5. Create an Issue with a link to your branch.
 
-Any custom baselines that are not implemented in default bundles can be deployed via 
-### Adding new alert baseline bundle
+### Adding Resource Alert Bundle
+To add an alert bundle for a new resource type, you can use any of the existing ones as a guide.
 
-To add new alert bundle you can just use any of existing ones as a guidance as well as variable object definition available to create new alert bundle defaults.
+You need to add a new module stanza to [modules/monitoring/main.tf](modules/monitoring/main.tf):
+```hcl
+# In this example, change "azurevm" to match the name of the new resource.
+module "azurevm_log_alerts" {
+  source    = local.module_source_aq
+  providers = {
+    azurerm = azurerm.law
+  }
 
-#### TF Config
+  query_alerts            = local.azurevm_log_signals
+  deploy                  = var.monitor_azurevm
+  law_resource_group_name = var.law_resource_group_name
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
+}
+```
 
-Add new module stanza added to ./modules/monitoring/main.tf:
-
-        module "monitor-azuresql" {  
-          source                     = "https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v1.0"  
-          query_alerts               = var.azuresql-query.query_alert_default  
-          deploy_monitoring          = var.deploy_monitoring_azuresql  
-          resource_group_name        = var.log_analytics_workspace_resource_group
-          log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
-          l                          = var.location  
-          ag                         = azurerm_monitor_action_group.action_group  
-        }
-
-By default new alert bundles are not deployed (if template variables_monitor_template.tftemp is used as source), so to deploy new bundle add a switch as in example file ./deploy.tf like:
-
-        deploy_monitoring_backup = true  
-
-Then initialize new module in Terraform by running terraform init.
+You also need to add a new `variables_monitor_*.tf` to [modules/monitoring/](modules/monitoring/) that
+matches the name of the new resource. See existing resource variables for the required layout of that file.
