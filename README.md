@@ -1,4 +1,4 @@
-# Deploy Azure Monitoring via Terraform
+# Azure Monitoring via Terraform
 
 ## General information
 This repository contains a set of Terraform (sub)modules:  
