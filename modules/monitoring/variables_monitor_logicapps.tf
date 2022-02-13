@@ -1,18 +1,42 @@
-variable "deploy_monitoring_logicapps" {
-  description = "Whether to deploy Monitoring alerts related to Logic Apps"
+variable "monitor_logicapp" {
+  description = "Deploy monitoring for Azure Logic App"
   type        = bool
   default     = false
 }
 
-locals {
-  logicapps_query = merge(var.logicapps_query, var.logicapps_custom_query)
+variable "logicapp_log_signals" {
+  description = "Additional Azure Logic App configuration for query based monitoring to exetend the default configuration of the module"
+  default     = []
+  type = list(
+    object({
+      name         = string
+      enabled      = optional(bool)
+      query        = string
+      severity     = optional(number)
+      frequency    = number
+      time_window  = number
+      action_group = string
+      throttling   = optional(number)
+
+      trigger = object({
+        operator  = string
+        threshold = number
+
+        metric_trigger = optional(object({
+          operator  = string
+          threshold = string
+          type      = string
+          column    = string
+        }))
+      })
+    })
+  )
 }
 
-variable "logicapps_query" {
-  description = "Logic Apps Monitor config for query based monitoring"
-  default = {
-    "LogicApps-RunsFailed-Critical" = {
-      name         = "Logic Apps - Runs Failed - Critical"
+locals {
+  logicapp_log_signals_default = [
+    {
+      name         = "Logic App - Runs Failed - Critical"
       query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where ResourceProvider == 'MICROSOFT.LOGIC' and MetricName == 'RunsFailed'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize AggregatedValue = sum(Total) by bin(TimeGenerated, 5m), Resource"
       severity     = 0
       frequency    = 15
@@ -28,9 +52,9 @@ variable "logicapps_query" {
           column    = "Resource"
         }
       }
-    }
-    "LogicApps-RunsFailed-Warning" = {
-      name         = "Logic Apps - Runs Failed - Warning"
+    },
+    {
+      name         = "Logic App - Runs Failed - Warning"
       query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where ResourceProvider == 'MICROSOFT.LOGIC' and MetricName == 'RunsFailed'  ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize AggregatedValue = sum(Total) by bin(TimeGenerated, 5m), Resource"
       severity     = 1
       frequency    = 15
@@ -47,54 +71,7 @@ variable "logicapps_query" {
         }
       }
     }
-  }
-  type = map(
-    object({
-      name         = string
-      enabled      = optional(bool)
-      query        = string
-      severity     = optional(number)
-      frequency    = number
-      time_window  = number
-      action_group = string
-      throttling   = optional(number)
-      trigger = object({
-        operator  = string
-        threshold = number
-        metric_trigger = optional(object({
-          operator  = string
-          threshold = string
-          type      = string
-          column    = string
-        }))
-      })
-    })
-  )
-}
+  ]
 
-variable "logicapps_custom_query" {
-  description = "Azure Logic Apps Monitor config for query based monitoring - custom"
-  default     = null
-  type = map(
-    object({
-      name         = string
-      enabled      = optional(bool)
-      query        = string
-      severity     = optional(number)
-      frequency    = number
-      time_window  = number
-      action_group = string
-      throttling   = optional(number)
-      trigger = object({
-        operator  = string
-        threshold = number
-        metric_trigger = optional(object({
-          operator  = string
-          threshold = string
-          type      = string
-          column    = string
-        }))
-      })
-    })
-  )
+  logicapp_log_signals = concat(local.logicapp_log_signals_default, var.logicapp_log_signals)
 }

@@ -1,17 +1,41 @@
-variable "deploy_monitoring_expressroute" {
-  description = "Whether to deploy Monitoring alerts related to Express Route"
+variable "monitor_expressroute" {
+  description = "Deploy monitoring for Express Route"
   type        = bool
   default     = false
 }
 
-locals {
-  expressroute_query = merge(var.expressroute_query, var.expressroute_custom_query)
+variable "expressroute_log_signals" {
+  description = "Additional Express Route configuration for query based monitoring to exetend the default configuration of the module"
+  default     = []
+  type = list(
+    object({
+      name         = string
+      enabled      = optional(bool)
+      query        = string
+      severity     = optional(number)
+      frequency    = number
+      time_window  = number
+      action_group = string
+      throttling   = optional(number)
+
+      trigger = object({
+        operator  = string
+        threshold = number
+
+        metric_trigger = optional(object({
+          operator  = string
+          threshold = string
+          type      = string
+          column    = string
+        }))
+      })
+    })
+  )
 }
 
-variable "expressroute_query" {
-  description = "Express Route Monitor config for query based monitoring"
-  default = {
-    "ExpressRoute-BgpAvailability-Critical" = {
+locals {
+  expressroute_log_signals_default = [
+    {
       name         = "Express Route - BGP Availability - Critical"
       query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'BgpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by AggregatedValue = Average, bin(TimeGenerated, 5m), Resource"
       severity     = 0
@@ -28,8 +52,8 @@ variable "expressroute_query" {
           column    = "Resource"
         }
       }
-    }
-    "Express Route-ArpAvailability-Critical" = {
+    },
+    {
       name         = "Express Route - ARP Availability - Critical"
       query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'ArpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by AggregatedValue = Average, bin(TimeGenerated, 5m), Resource"
       severity     = 0
@@ -46,8 +70,8 @@ variable "expressroute_query" {
           column    = "Resource"
         }
       }
-    }
-    "ExpressRoute-BgpAvailability-Warning" = {
+    },
+    {
       name         = "Express Route - BGP Availability - Warning"
       query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'BgpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by AggregatedValue = Average, bin(TimeGenerated, 5m), Resource"
       severity     = 0
@@ -64,8 +88,8 @@ variable "expressroute_query" {
           column    = "Resource"
         }
       }
-    }
-    "Express Route-ArpAvailability-Warning" = {
+    },
+    {
       name         = "Express Route - ARP Availability - Warning"
       query        = "let _resources = TagData_CL| where Tags_s contains '\"te-managed-service\": \"workload\"'| summarize arg_max(TimeGenerated, *) by Id_s = tolower(Id_s);let _perf = AzureMetrics | where MetricName == 'ArpAvailability' ; _perf| join kind=inner _resources on $left._ResourceId == $right.Id_s | summarize by AggregatedValue = Average, bin(TimeGenerated, 5m), Resource"
       severity     = 0
@@ -83,54 +107,7 @@ variable "expressroute_query" {
         }
       }
     }
-  }
-  type = map(
-    object({
-      name         = string
-      enabled      = optional(bool)
-      query        = string
-      severity     = optional(number)
-      frequency    = number
-      time_window  = number
-      action_group = string
-      throttling   = optional(number)
-      trigger = object({
-        operator  = string
-        threshold = number
-        metric_trigger = optional(object({
-          operator  = string
-          threshold = string
-          type      = string
-          column    = string
-        }))
-      })
-    })
-  )
-}
+  ]
 
-variable "expressroute_custom_query" {
-  description = "Express Route Monitor config for query based monitoring - custom"
-  default     = null
-  type = map(
-    object({
-      name         = string
-      enabled      = optional(bool)
-      query        = string
-      severity     = optional(number)
-      frequency    = number
-      time_window  = number
-      action_group = string
-      throttling   = optional(number)
-      trigger = object({
-        operator  = string
-        threshold = number
-        metric_trigger = optional(object({
-          operator  = string
-          threshold = string
-          type      = string
-          column    = string
-        }))
-      })
-    })
-  )
+  expressroute_log_signals = concat(local.expressroute_log_signals_default, var.expressroute_log_signals)
 }

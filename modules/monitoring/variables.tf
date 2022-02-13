@@ -1,22 +1,42 @@
-variable "log_analytics_workspace_resource_group" {
+variable "law_resource_group" {
   type        = string
-  description = "The log Analytics Workspace resource group name"
-  default     = ""
+  description = "The Log Analytics Workspace resource group name"
 }
 
-variable "log_analytics_workspace_name" {
+variable "law_name" {
   type        = string
-  description = "The log Analytics Workspace Name"
-  default     = ""
+  description = "The Log Analytics Workspace name"
 }
 
 variable "location" {
-  description = "The location/region to keep all your monitoring resources. To get the list of all locations with table format from azure cli, run 'az account list-locations -o table'"
-  default     = ""
+  type        = string
+  description = "The location (region) for deployment of all monitoring resources"
 }
-
 
 variable "common_tags" {
   type        = map(any)
-  description = "Map of Default Tags"
+  default     = {}
+  description = "Map of default tags assigned to all deployed resources"
+}
+
+variable "submodule_source" {
+  type        = string
+  default     = "remote"
+  description = "Internal variable used for development and testing, do not use!"
+
+  validation {
+    condition     = contains(["remote", "local"], var.submodule_source)
+    error_message = "Allowed values for submodule_source are \"remote\" or \"local\""
+  }
+}
+
+variable "submodule_version" {
+  type        = string
+  default     = "v2.0"
+  description = "Internal variable used during development, do not use!"
+
+  validation {
+    condition     = length(var.submodule_version) > 0
+    error_message = "Allowed value for submodule_version is a non-empty string"
+  }
 }
