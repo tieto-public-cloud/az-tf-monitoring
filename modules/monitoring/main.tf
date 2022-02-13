@@ -9,16 +9,6 @@
 ##
 ##############################################################################
 
-locals {
-  module_public_repo  = "https://github.com/tieto-public-cloud/az-tf-monitoring"
-  module_source_gh    = "git::${local.module_public_repo}//modules"
-  module_source_local = ".."
-
-  module_source_aq = var.submodule_source == "remote" ? "${local.module_source_gh}/alert_query?ref=${var.submodule_version}" : "${local.module_source_local}/alert_query"
-  module_source_am = var.submodule_source == "remote" ? "${local.module_source_gh}/alert_metric?ref=${var.submodule_version}" : "${local.module_source_local}/alert_metric"
-  module_source_fa = var.submodule_source == "remote" ? "${local.module_source_gh}/tagging_functionapp?ref=${var.submodule_version}" : "${local.module_source_local}/tagging_functionapp"
-}
-
 data "azurerm_log_analytics_workspace" "law" {
   provider = azurerm.law
 
@@ -86,7 +76,7 @@ resource "azurerm_monitor_action_group" "action_group" {
 ##############################################################################
 
 module "azurevm_log_alerts" {
-  source    = local.module_source_aq
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -100,7 +90,7 @@ module "azurevm_log_alerts" {
 }
 
 module "azuresql_log_alerts" {
-  source    = local.module_source_aq
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -114,7 +104,7 @@ module "azuresql_log_alerts" {
 }
 
 module "logicapp_log_alerts" {
-  source    = local.module_source_aq
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -128,7 +118,7 @@ module "logicapp_log_alerts" {
 }
 
 module "backup_log_alerts" {
-  source    = local.module_source_aq
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -142,7 +132,7 @@ module "backup_log_alerts" {
 }
 
 module "agw_log_alerts" {
-  source    = local.module_source_aq
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -156,7 +146,7 @@ module "agw_log_alerts" {
 }
 
 module "azurefunction_log_alerts" {
-  source    = local.module_source_aq
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -170,7 +160,7 @@ module "azurefunction_log_alerts" {
 }
 
 module "datafactory_log_alerts" {
-  source    = local.module_source_aq
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -184,7 +174,7 @@ module "datafactory_log_alerts" {
 }
 
 module "expressroute_log_alerts" {
-  source    = local.module_source_aq
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -198,7 +188,7 @@ module "expressroute_log_alerts" {
 }
 
 module "lb_log_alerts" {
-  source    = local.module_source_aq
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -218,7 +208,7 @@ module "lb_log_alerts" {
 # Right now, there are no pre-defined metric alerts. Only metric alerts
 # provided by the caller will be deployed.
 module "custom_metric_alerts" {
-  source    = local.module_source_am
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_metric?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -235,7 +225,7 @@ module "custom_metric_alerts" {
 
 # Deploy monitoring on self.
 module "tagging_functionapp_log_alerts" {
-  source    = local.module_source_aq
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
   providers = {
     azurerm = azurerm.law
   }
@@ -253,7 +243,7 @@ module "tagging_functionapp_log_alerts" {
 module "tagging_functionapp" {
   count = length(var.target_subscription_ids)
 
-  source    = local.module_source_fa
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/tagging_functionapp?ref=v2.0"
   providers = {
     azurerm = azurerm.aux
   }

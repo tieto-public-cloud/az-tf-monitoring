@@ -1,9 +1,6 @@
 # Declare some helpful locals, show examples of various customizations
 # supported by these modules.
 locals {
-  # Module version, not used when using local source starting with "./modules"
-  module_version = "v2.0"
-
   # Some tags applied to all newly deployed resources.
   common_tags = merge(
     var.common_tags,
@@ -12,27 +9,7 @@ locals {
 }
 
 module "tag_driven_monitoring" {
-  ## !!WARN!!
-  ##
-  ## The `source` parameter must be changed when you are using it in your own code!
-  ##
-  ## Use:
-  ##   "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=${local.module_version}"
-  ## where ${local.module_version} is a git repository reference to a tagged version of the code, for example "v2.0".
-  ##
-  ## This will make sure your module is correctly versioned and its code is retrieved from the correct place.
-  ##
-  ## !!WARN!!
-  source    = "./modules/monitoring"
-
-  ## !!WARN!!
-  ##
-  ## Remove this line when deploying the module. The module and its submodules should be
-  ## pulled directly from its source repository on Github, unless you are doing some development
-  ## on the module itself.
-  ##
-  ## !!WARN!!
-  submodule_source = "local"
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=v2.0"
 
   ## The module expect two providers, mapping must be provided explicitly!
   providers = {

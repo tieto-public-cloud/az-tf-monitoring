@@ -23,15 +23,12 @@ of this repository. Direct use of its submodules is discouraged and you will be 
 ### Input Variables
 ```hcl
 locals {
-  # Module version, look for tags on this repository to see available versions.
-  module_version = "v2.0"
-
   # Some tags applied to all newly deployed resources.
   common_tags = {}
 }
 
 module "tag_driven_monitoring" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=${local.module_version}"
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=v2.0"
 
   ## The module expect two providers, mapping must be provided explicitly!
   providers = {
