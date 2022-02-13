@@ -71,6 +71,7 @@ resource "azurerm_monitor_action_group" "action_group" {
     }
   }
 
+  # Attach common tags passed from the caller.
   tags = local.common_tags
 
   # This could take a long time, extend default timeouts.
@@ -90,12 +91,12 @@ module "azurevm_log_alerts" {
     azurerm = azurerm.law
   }
 
-  query_alerts               = local.azurevm_log_signals
-  deploy_monitoring          = var.monitor_azurevm
-  resource_group_name        = var.law_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
+  query_alerts            = local.azurevm_log_signals
+  deploy                  = var.monitor_azurevm
+  law_resource_group_name = var.law_resource_group
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 module "azuresql_log_alerts" {
@@ -104,12 +105,12 @@ module "azuresql_log_alerts" {
     azurerm = azurerm.law
   }
 
-  query_alerts               = local.azuresql_log_signals
-  deploy_monitoring          = var.monitor_azuresql
-  resource_group_name        = var.law_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
+  query_alerts            = local.azuresql_log_signals
+  deploy                  = var.monitor_azuresql
+  law_resource_group_name = var.law_resource_group
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 module "logicapp_log_alerts" {
@@ -118,12 +119,12 @@ module "logicapp_log_alerts" {
     azurerm = azurerm.law
   }
 
-  query_alerts               = local.logicapp_log_signals
-  deploy_monitoring          = var.monitor_logicapp
-  resource_group_name        = var.law_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
+  query_alerts            = local.logicapp_log_signals
+  deploy                  = var.monitor_logicapp
+  law_resource_group_name = var.law_resource_group
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 module "backup_log_alerts" {
@@ -132,12 +133,12 @@ module "backup_log_alerts" {
     azurerm = azurerm.law
   }
 
-  query_alerts               = local.backup_log_signals
-  deploy_monitoring          = var.monitor_backup
-  resource_group_name        = var.law_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
+  query_alerts            = local.backup_log_signals
+  deploy                  = var.monitor_backup
+  law_resource_group_name = var.law_resource_group
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 module "agw_log_alerts" {
@@ -146,12 +147,12 @@ module "agw_log_alerts" {
     azurerm = azurerm.law
   }
 
-  query_alerts               = local.agw_log_signals
-  deploy_monitoring          = var.monitor_agw
-  resource_group_name        = var.law_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
+  query_alerts            = local.agw_log_signals
+  deploy                  = var.monitor_agw
+  law_resource_group_name = var.law_resource_group
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 module "azurefunction_log_alerts" {
@@ -160,12 +161,12 @@ module "azurefunction_log_alerts" {
     azurerm = azurerm.law
   }
 
-  query_alerts               = local.azurefunction_log_signals
-  deploy_monitoring          = var.monitor_azurefunction
-  resource_group_name        = var.law_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
+  query_alerts            = local.azurefunction_log_signals
+  deploy                  = var.monitor_azurefunction
+  law_resource_group_name = var.law_resource_group
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 module "datafactory_log_alerts" {
@@ -174,12 +175,12 @@ module "datafactory_log_alerts" {
     azurerm = azurerm.law
   }
 
-  query_alerts               = local.datafactory_log_signals
-  deploy_monitoring          = var.monitor_datafactory
-  resource_group_name        = var.law_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
+  query_alerts            = local.datafactory_log_signals
+  deploy                  = var.monitor_datafactory
+  law_resource_group_name = var.law_resource_group
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 module "expressroute_log_alerts" {
@@ -188,12 +189,12 @@ module "expressroute_log_alerts" {
     azurerm = azurerm.law
   }
 
-  query_alerts               = local.expressroute_log_signals
-  deploy_monitoring          = var.monitor_expressroute
-  resource_group_name        = var.law_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
+  query_alerts            = local.expressroute_log_signals
+  deploy                  = var.monitor_expressroute
+  law_resource_group_name = var.law_resource_group
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 module "lb_log_alerts" {
@@ -202,12 +203,12 @@ module "lb_log_alerts" {
     azurerm = azurerm.law
   }
 
-  query_alerts               = local.lb_log_signals
-  deploy_monitoring          = var.monitor_lb
-  resource_group_name        = var.law_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
+  query_alerts            = local.lb_log_signals
+  deploy                  = var.monitor_lb
+  law_resource_group_name = var.law_resource_group
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 ##############################################################################
@@ -222,30 +223,32 @@ module "custom_metric_alerts" {
     azurerm = azurerm.law
   }
 
-  resource_group_name = var.law_resource_group
-  deploy_monitoring   = true
-  metric_alerts       = local.metric_signals
-  ag                  = azurerm_monitor_action_group.action_group
+  law_resource_group_name = var.law_resource_group
+  deploy                  = true
+  metric_alerts           = local.metric_signals
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 ##############################################################################
 ## Tagging Function App
 ##############################################################################
 
+# Deploy monitoring on self.
 module "tagging_functionapp_log_alerts" {
   source    = local.module_source_aq
   providers = {
     azurerm = azurerm.law
   }
 
-  query_alerts               = local.tagging_functionapp_log_signals
-  deploy_monitoring          = var.monitor_tagging_functionapp
-  resource_group_name        = var.law_resource_group
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
-  l                          = var.location
-  ag                         = azurerm_monitor_action_group.action_group
+  query_alerts            = local.tagging_functionapp_log_signals
+  deploy                  = var.monitor_tagging_functionapp
+  law_resource_group_name = var.law_resource_group
+  law_id                  = data.azurerm_log_analytics_workspace.law.id
+  location                = var.location
+  action_groups           = azurerm_monitor_action_group.action_group
 }
 
+# Deploy a Function App pulling resource tags and sending them to the Log Analytics Workspace.
 module "tagging_functionapp" {
   source    = local.module_source_fa
   providers = {

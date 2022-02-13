@@ -3,6 +3,7 @@ variable "metric_signals" {
   default     = []
   type = list(
     object({
+      name                     = string
       enabled                  = optional(bool)
       auto_mitigate            = optional(bool)
       description              = optional(string)
@@ -12,7 +13,7 @@ variable "metric_signals" {
       target_resource_location = optional(string)
       window_size              = optional(string)
       action_group             = string
-      scope                    = string
+      scopes                   = list(string)
 
       criteria = optional(object({
         metric_namespace = string
