@@ -38,6 +38,26 @@ variable "law_resource_group_name" {
   type        = string
 }
 
+variable "fa_resource_group_name" {
+  type        = string
+  description = "The name of the Azure Function app resource group to be created"
+
+  validation {
+    condition     = length(var.fa_resource_group_name) > 0
+    error_message = "Allowed value for fa_resource_group_name is a non-empty string."
+  }
+}
+
+variable "fa_name" {
+  type        = string
+  description = "The name of the Azure Function app to be created"
+
+  validation {
+    condition     = length(var.fa_name) > 0
+    error_message = "Allowed value for fa_name is a non-empty string."
+  }
+}
+
 variable "snow_webhook_uri" {
   description = "Webhook URI for sending Azure Common Alert schema events to ServiceNow, including any secrets necessary for authentication"
   type        = string
