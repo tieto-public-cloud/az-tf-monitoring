@@ -28,9 +28,11 @@ resource "azurerm_monitor_metric_alert" "metric_alert" {
     dynamic "dimension" {
       for_each = each.value.criteria.dimension == null ? [] : [1]
 
-      name     = each.value.criteria.dimension.name
-      operator = each.value.criteria.dimension.operator
-      values   = each.value.criteria.dimension.values
+      content {
+        name     = each.value.criteria.dimension.name
+        operator = each.value.criteria.dimension.operator
+        values   = each.value.criteria.dimension.values
+      }
     }
 
     skip_metric_validation = each.value.criteria.skip_metric_validation
@@ -39,31 +41,37 @@ resource "azurerm_monitor_metric_alert" "metric_alert" {
   dynamic "dynamic_criteria" {
     for_each = each.value.dynamic_criteria == null ? [] : [1]
 
-    metric_namespace  = each.value.dynamic_criteria.metric_namespace
-    metric_name       = each.value.dynamic_criteria.metric_name
-    aggregation       = each.value.dynamic_criteria.aggregation
-    operator          = each.value.dynamic_criteria.operator
-    alert_sensitivity = each.value.dynamic_criteria.alert_sensitivity
+    content {
+      metric_namespace  = each.value.dynamic_criteria.metric_namespace
+      metric_name       = each.value.dynamic_criteria.metric_name
+      aggregation       = each.value.dynamic_criteria.aggregation
+      operator          = each.value.dynamic_criteria.operator
+      alert_sensitivity = each.value.dynamic_criteria.alert_sensitivity
 
-    dynamic "dimension" {
-      for_each = each.value.dynamic_criteria.dimension == null ? [] : [1]
+      dynamic "dimension" {
+        for_each = each.value.dynamic_criteria.dimension == null ? [] : [1]
 
-      name     = each.value.dynamic_criteria.dimension.name
-      operator = each.value.dynamic_criteria.dimension.operator
-      values   = each.value.dynamic_criteria.dimension.values
+        content {
+          name     = each.value.dynamic_criteria.dimension.name
+          operator = each.value.dynamic_criteria.dimension.operator
+          values   = each.value.dynamic_criteria.dimension.values
+        }
+      }
+
+      evaluation_total_count = each.value.dynamic_criteria.evaluation_total_count
+      evaluation_failure_count = each.value.dynamic_criteria.evaluation_failure_count
+      ignore_data_before = each.value.dynamic_criteria.ignore_data_before
+      skip_metric_validation = each.value.dynamic_criteria.skip_metric_validation
     }
-
-    evaluation_total_count = each.value.dynamic_criteria.evaluation_total_count
-    evaluation_failure_count = each.value.dynamic_criteria.evaluation_failure_count
-    ignore_data_before = each.value.dynamic_criteria.ignore_data_before
-    skip_metric_validation = each.value.dynamic_criteria.skip_metric_validation
   }
 
   dynamic "application_insights_web_test_location_availability_criteria" {
     for_each = each.value.application_insights_web_test_location_availability_criteria == null ? [] : [1]
 
-    web_test_id = each.value.application_insights_web_test_location_availability_criteria.web_test_id
-    component_id = each.value.application_insights_web_test_location_availability_criteria.component_id
-    failed_location_count = each.value.application_insights_web_test_location_availability_criteria.failed_location_count
+    content {
+      web_test_id = each.value.application_insights_web_test_location_availability_criteria.web_test_id
+      component_id = each.value.application_insights_web_test_location_availability_criteria.component_id
+      failed_location_count = each.value.application_insights_web_test_location_availability_criteria.failed_location_count
+    }
   }
 }
