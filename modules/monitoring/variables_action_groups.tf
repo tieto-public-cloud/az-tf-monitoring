@@ -5,7 +5,7 @@ variable "ag_default_webhook_service_uri" {
 
   validation {
     condition     = length(var.ag_default_webhook_service_uri) > 0
-    error_message = "Allowed value for ag_default_webhook_service_uri is a non-empty string"
+    error_message = "Allowed value for ag_default_webhook_service_uri is a non-empty string."
   }
 }
 

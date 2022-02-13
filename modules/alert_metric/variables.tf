@@ -4,7 +4,7 @@ variable "law_resource_group_name" {
 
   validation {
     condition     = length(var.law_resource_group_name) > 0
-    error_message = "Allowed value for law_resource_group_name is a non-empty string"
+    error_message = "Allowed value for law_resource_group_name is a non-empty string."
   }
 }
 
@@ -14,7 +14,7 @@ variable "action_groups" {
 
   validation {
     condition     = length(var.action_groups) > 0
-    error_message = "Allowed value for action_groups is a non-empty list of objects"
+    error_message = "Allowed value for action_groups is a non-empty list of objects."
   }
 }
 

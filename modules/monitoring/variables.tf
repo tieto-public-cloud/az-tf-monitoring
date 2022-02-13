@@ -4,7 +4,7 @@ variable "law_resource_group_name" {
 
   validation {
     condition     = length(var.law_resource_group_name) > 0
-    error_message = "Allowed value for law_resource_group_name is a non-empty string"
+    error_message = "Allowed value for law_resource_group_name is a non-empty string."
   }
 }
 
@@ -14,7 +14,7 @@ variable "law_name" {
 
   validation {
     condition     = length(var.law_name) > 0
-    error_message = "Allowed value for law_name is a non-empty string"
+    error_message = "Allowed value for law_name is a non-empty string."
   }
 }
 
@@ -24,7 +24,7 @@ variable "location" {
 
   validation {
     condition     = length(var.location) > 0
-    error_message = "Allowed value for location is a non-empty string"
+    error_message = "Allowed value for location is a non-empty string."
   }
 }
 

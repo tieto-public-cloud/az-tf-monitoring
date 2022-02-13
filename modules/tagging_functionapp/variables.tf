@@ -4,7 +4,7 @@ variable "location" {
 
   validation {
     condition     = length(var.location) > 0
-    error_message = "Allowed value for location is a non-empty string"
+    error_message = "Allowed value for location is a non-empty string."
   }
 }
 
@@ -14,7 +14,7 @@ variable "law_id" {
 
   validation {
     condition     = length(var.law_id) > 0
-    error_message = "Allowed value for law_id is a non-empty string"
+    error_message = "Allowed value for law_id is a non-empty string."
   }
 }
 
@@ -24,7 +24,7 @@ variable "law_resource_group_name" {
 
   validation {
     condition     = length(var.law_resource_group_name) > 0
-    error_message = "Allowed value for law_resource_group_name is a non-empty string"
+    error_message = "Allowed value for law_resource_group_name is a non-empty string."
   }
 }
 
@@ -34,7 +34,7 @@ variable "law_name" {
 
   validation {
     condition     = length(var.law_name) > 0
-    error_message = "Allowed value for law_name is a non-empty string"
+    error_message = "Allowed value for law_name is a non-empty string."
   }
 }
 
@@ -44,7 +44,7 @@ variable "target_subscription_id" {
 
   validation {
     condition     = length(var.target_subscription_id) > 0
-    error_message = "Allowed value for target_subscription_id is a non-empty string"
+    error_message = "Allowed value for target_subscription_id is a non-empty string."
   }
 }
 
@@ -54,7 +54,7 @@ variable "storage_account_name" {
 
   validation {
     condition     = length(var.storage_account_name) > 0
-    error_message = "Allowed value for storage_account_name is a non-empty string"
+    error_message = "Allowed value for storage_account_name is a non-empty string."
   }
 }
 
@@ -64,7 +64,7 @@ variable "resource_group_name" {
 
   validation {
     condition     = length(var.resource_group_name) > 0
-    error_message = "Allowed value for resource_group_name is a non-empty string"
+    error_message = "Allowed value for resource_group_name is a non-empty string."
   }
 }
 
@@ -74,7 +74,7 @@ variable "name" {
 
   validation {
     condition     = length(var.name) > 0
-    error_message = "Allowed value for name is a non-empty string"
+    error_message = "Allowed value for name is a non-empty string."
   }
 }
 
@@ -85,7 +85,7 @@ variable "tag_retrieval_interval" {
 
   validation {
     condition     = var.tag_retrieval_interval > 90
-    error_message = "Allowed value for tag_retrieval_interval is a number larger than 90"
+    error_message = "Allowed value for tag_retrieval_interval is a number larger than 90."
   }
 }
 
@@ -96,7 +96,7 @@ variable "source_repository" {
 
   validation {
     condition     = length(var.source_repository) > 0
-    error_message = "Allowed value for source_repository is a non-empty string"
+    error_message = "Allowed value for source_repository is a non-empty string."
   }
 }
 
@@ -107,7 +107,7 @@ variable "source_repository_branch" {
 
   validation {
     condition     = length(var.source_repository_branch) > 0
-    error_message = "Allowed value for source_repository_branch is a non-empty string"
+    error_message = "Allowed value for source_repository_branch is a non-empty string."
   }
 }
 

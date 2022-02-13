@@ -1,6 +1,9 @@
 # Local .terraform directories
 **/.terraform/*
 
+# This is an example, ignore lock files
+.terraform.lock.hcl
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

@@ -4,7 +4,7 @@ variable "fa_resource_group_name" {
 
   validation {
     condition     = length(var.fa_resource_group_name) > 0
-    error_message = "Allowed value for fa_resource_group_name is a non-empty string"
+    error_message = "Allowed value for fa_resource_group_name is a non-empty string."
   }
 }
 
@@ -14,7 +14,7 @@ variable "fa_name" {
 
   validation {
     condition     = length(var.fa_name) > 0
-    error_message = "Allowed value for fa_name is a non-empty string"
+    error_message = "Allowed value for fa_name is a non-empty string."
   }
 }
 
@@ -24,7 +24,7 @@ variable "target_subscription_ids" {
 
   validation {
     condition     = length(var.target_subscription_ids) > 0
-    error_message = "Allowed value for target_subscription_ids is a non-empty list"
+    error_message = "Allowed value for target_subscription_ids is a non-empty list."
   }
 }
 
@@ -35,7 +35,7 @@ variable "fa_tag_retrieval_interval" {
 
   validation {
     condition     = var.fa_tag_retrieval_interval > 90
-    error_message = "Allowed value for fa_tag_retrieval_interval is a number larger than 90"
+    error_message = "Allowed value for fa_tag_retrieval_interval is a number larger than 90."
   }
 }
 

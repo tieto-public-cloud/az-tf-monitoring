@@ -7,7 +7,7 @@ variable "monitor_azuresql" {
 variable "azuresql_log_signals" {
   description = "Additional Azure SQL configuration for query based monitoring to exetend the default configuration of the module"
   default     = []
-  type        = map(
+  type        = list(
     object({
       name         = string
       enabled      = optional(bool)
