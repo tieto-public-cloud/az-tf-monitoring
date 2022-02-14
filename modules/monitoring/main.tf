@@ -92,7 +92,7 @@ resource "azurerm_monitor_action_group" "action_group" {
 ##############################################################################
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "query_alert" {
-  for_each = toset(var.deploy_log_signals)
+  for_each = toset(local.deploy_log_signals)
 
   resource_group_name = var.law_resource_group_name
   location            = var.location
