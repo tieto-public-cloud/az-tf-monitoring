@@ -97,7 +97,7 @@ locals {
       short_name = "tm-crit-ag"
       webhook = {
         name                    = "Webhook"
-        service_uri             = var.ag_default_webhook_service_uri
+        service_uri             = nonsensitive(var.ag_default_webhook_service_uri)
         use_common_alert_schema = var.ag_default_use_common_alert_schema
       }
     },
@@ -106,7 +106,7 @@ locals {
       short_name = "tm-warn-ag"
       webhook = {
         name                    = "Webhook"
-        service_uri             = var.ag_default_webhook_service_uri
+        service_uri             = nonsensitive(var.ag_default_webhook_service_uri)
         use_common_alert_schema = var.ag_default_use_common_alert_schema
       }
     }

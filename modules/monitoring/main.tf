@@ -41,14 +41,14 @@ data "azurerm_log_analytics_workspace" "law" {
 # are supported but other receivers can be added to the code easily following
 # the existing pattern.
 resource "azurerm_monitor_action_group" "action_group" {
-  for_each = toset(local.action_groups) # See variables_action_groups.tf for locals.
+  for_each = { for ag in local.action_groups : ag.name => ag } # See variables_action_groups.tf for locals.
 
   name                = each.value.name
   resource_group_name = var.law_resource_group_name
   short_name          = each.value.short_name
 
   dynamic "webhook_receiver" {
-    for_each = each.value.webhook == null ? [] : [1]
+    for_each = lookup(each.value, "webhook", null) == null ? [] : [1]
 
     content {
       name                    = each.value.webhook.name
@@ -58,7 +58,7 @@ resource "azurerm_monitor_action_group" "action_group" {
   }
 
   dynamic "email_receiver" {
-    for_each = each.value.email == null ? [] : [1]
+    for_each = lookup(each.value, "email", null) == null ? [] : [1]
 
     content {
       name                    = each.value.email.name
@@ -68,7 +68,7 @@ resource "azurerm_monitor_action_group" "action_group" {
   }
 
   dynamic "arm_role_receiver" {
-    for_each = each.value.arm_role_receiver == null ? [] : [1]
+    for_each = lookup(each.value, "arm_role_receiver", null) == null ? [] : [1]
 
     content {
       name                    = each.value.arm_role_receiver.name
@@ -92,7 +92,7 @@ resource "azurerm_monitor_action_group" "action_group" {
 ##############################################################################
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "query_alert" {
-  for_each = toset(local.deploy_log_signals)
+  for_each = { for dls in local.deploy_log_signals : dls.name => dls }
 
   resource_group_name = var.law_resource_group_name
   location            = var.location
@@ -103,16 +103,16 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "query_alert" {
   frequency   = each.value.frequency
   query       = each.value.query
   time_window = each.value.time_window
-  enabled     = each.value.enabled
-  severity    = each.value.severity
-  throttling  = each.value.throttling
+  enabled     = lookup(each.value, "enabled", null)
+  severity    = lookup(each.value, "severity", null)
+  throttling  = lookup(each.value, "throttling", null)
 
   trigger {
     operator  = each.value.trigger.operator
     threshold = each.value.trigger.threshold
 
     dynamic "metric_trigger" {
-      for_each = each.value.trigger.metric_trigger == null ? [] : [1]
+      for_each = lookup(each.value.trigger, "metric_trigger", null) == null ? [] : [1]
 
       content {
         operator            = each.value.trigger.metric_trigger.operator
@@ -127,7 +127,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "query_alert" {
   # down as a parameter. Match by name.
   action {
     action_group = [
-      azurerm_monitor_action_group.action_group[index(azurerm_monitor_action_group.action_group.*.name, each.value.action_group)].id
+      azurerm_monitor_action_group.action_group[each.value.action_group].id
     ]
   }
 
@@ -143,22 +143,22 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "query_alert" {
 ##############################################################################
 
 resource "azurerm_monitor_metric_alert" "metric_alert" {
-  for_each = toset(var.metric_signals)
+  for_each = { for ms in var.metric_signals : ms.name => ms }
 
   name                     = each.value.name
   resource_group_name      = var.law_resource_group_name
   scopes                   = each.value.scopes
-  description              = each.value.description
-  enabled                  = each.value.enabled
-  auto_mitigate            = each.value.auto_mitigate
-  frequency                = each.value.frequency
-  severity                 = each.value.severity
-  target_resource_type     = each.value.target_resource_type
-  target_resource_location = each.value.target_resource_location
-  window_size              = each.value.window_size
+  description              = lookup(each.value, "description", null)
+  enabled                  = lookup(each.value, "enabled", null)
+  auto_mitigate            = lookup(each.value, "auto_mitigate", null)
+  frequency                = lookup(each.value, "frequency", null)
+  severity                 = lookup(each.value, "severity", null)
+  target_resource_type     = lookup(each.value, "target_resource_type", null)
+  target_resource_location = lookup(each.value, "target_resource_location", null)
+  window_size              = lookup(each.value, "window_size", null)
 
   action {
-    action_group_id = azurerm_monitor_action_group.action_group[index(azurerm_monitor_action_group.action_group.*.name, each.value.action_group)].id
+    action_group_id = azurerm_monitor_action_group.action_group[each.value.action_group].id
   }
 
   criteria {
@@ -169,7 +169,7 @@ resource "azurerm_monitor_metric_alert" "metric_alert" {
     threshold        = each.value.criteria.threshold
 
     dynamic "dimension" {
-      for_each = each.value.criteria.dimension == null ? [] : [1]
+      for_each = lookup(each.value.criteria, "dimension", null) == null ? [] : [1]
 
       content {
         name     = each.value.criteria.dimension.name
@@ -178,11 +178,11 @@ resource "azurerm_monitor_metric_alert" "metric_alert" {
       }
     }
 
-    skip_metric_validation = each.value.criteria.skip_metric_validation
+    skip_metric_validation = lookup(each.value.criteria, "skip_metric_validation", null)
   }
 
   dynamic "dynamic_criteria" {
-    for_each = each.value.dynamic_criteria == null ? [] : [1]
+    for_each = lookup(each.value, "dynamic_criteria", null) == null ? [] : [1]
 
     content {
       metric_namespace  = each.value.dynamic_criteria.metric_namespace
@@ -192,7 +192,7 @@ resource "azurerm_monitor_metric_alert" "metric_alert" {
       alert_sensitivity = each.value.dynamic_criteria.alert_sensitivity
 
       dynamic "dimension" {
-        for_each = each.value.dynamic_criteria.dimension == null ? [] : [1]
+        for_each = lookup(each.value.dynamic_criteria, "dimension", null) == null ? [] : [1]
 
         content {
           name     = each.value.dynamic_criteria.dimension.name
@@ -201,15 +201,15 @@ resource "azurerm_monitor_metric_alert" "metric_alert" {
         }
       }
 
-      evaluation_total_count = each.value.dynamic_criteria.evaluation_total_count
-      evaluation_failure_count = each.value.dynamic_criteria.evaluation_failure_count
-      ignore_data_before = each.value.dynamic_criteria.ignore_data_before
-      skip_metric_validation = each.value.dynamic_criteria.skip_metric_validation
+      evaluation_total_count   = lookup(each.value.dynamic_criteria, "evaluation_total_count", null)
+      evaluation_failure_count = lookup(each.value.dynamic_criteria, "evaluation_failure_count", null)
+      ignore_data_before       = lookup(each.value.dynamic_criteria, "ignore_data_before", null)
+      skip_metric_validation   = lookup(each.value.dynamic_criteria, "skip_metric_validation", null)
     }
   }
 
   dynamic "application_insights_web_test_location_availability_criteria" {
-    for_each = each.value.application_insights_web_test_location_availability_criteria == null ? [] : [1]
+    for_each = lookup(each.value, "application_insights_web_test_location_availability_criteria", null) == null ? [] : [1]
 
     content {
       web_test_id = each.value.application_insights_web_test_location_availability_criteria.web_test_id
@@ -217,6 +217,9 @@ resource "azurerm_monitor_metric_alert" "metric_alert" {
       failed_location_count = each.value.application_insights_web_test_location_availability_criteria.failed_location_count
     }
   }
+
+  # Attach common tags passed from the caller.
+  tags = var.common_tags
 
   # This could take a long time, extend default timeouts.
   timeouts {

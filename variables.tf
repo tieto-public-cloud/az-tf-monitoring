@@ -64,6 +64,16 @@ variable "snow_webhook_uri" {
   sensitive   = true
 }
 
+variable "sb_resource_group_name" {
+  type        = string
+  description = "The name of the Sandbox resource group to be created"
+
+  validation {
+    condition     = length(var.sb_resource_group_name) > 0
+    error_message = "Allowed value for sb_resource_group_name is a non-empty string."
+  }
+}
+
 variable "location" {
   description = "The Azure location of your subscriptions (region)"
   type        = string
