@@ -36,6 +36,17 @@ resource "azurerm_log_analytics_workspace" "law" {
   provider = azurerm.law
 }
 
+resource "azurerm_storage_account" "law_storage" {
+  name                     = replace("${var.law_name}sa","/[^a-z0-9]/","")
+  resource_group_name      = azurerm_resource_group.law_rg.name
+  location                 = azurerm_resource_group.law_rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags     = var.common_tags
+  provider = azurerm.law
+}
+
 resource "azurerm_log_analytics_solution" "law_vminsights" {
   solution_name         = "VMInsights"
   location              = azurerm_resource_group.law_rg.location
@@ -177,7 +188,48 @@ resource "azurerm_linux_virtual_machine" "sb_linux" {
     version   = "latest"
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   tags     = local.common_tags
+  provider = azurerm.aux
+}
+
+data "azurerm_monitor_diagnostic_categories" "sb_linux_cats" {
+  resource_id = azurerm_linux_virtual_machine.sb_linux.id
+  provider    = azurerm.aux
+}
+
+resource "azurerm_monitor_diagnostic_setting" "sb_linux_diag" {
+  name                       = "linux-vm-diag"
+  target_resource_id         = azurerm_linux_virtual_machine.sb_linux.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+
+  dynamic "log" {
+    for_each = data.azurerm_monitor_diagnostic_categories.sb_linux_cats.logs
+
+    content {
+      category = log.value
+      retention_policy {
+        days    = 0
+        enabled = false
+      }
+    }
+  }
+
+  dynamic "metric" {
+    for_each = data.azurerm_monitor_diagnostic_categories.sb_linux_cats.metrics
+
+    content {
+      category = metric.value
+      retention_policy {
+        days    = 0
+        enabled = false
+      }
+    }
+  }
+
   provider = azurerm.aux
 }
 
@@ -243,7 +295,48 @@ resource "azurerm_windows_virtual_machine" "sb_win" {
     version   = "latest"
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   tags     = local.common_tags
+  provider = azurerm.aux
+}
+
+data "azurerm_monitor_diagnostic_categories" "sb_win_cats" {
+  resource_id = azurerm_windows_virtual_machine.sb_win.id
+  provider    = azurerm.aux
+}
+
+resource "azurerm_monitor_diagnostic_setting" "sb_win_diag" {
+  name                       = "win-vm-diag"
+  target_resource_id         = azurerm_windows_virtual_machine.sb_win.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+
+  dynamic "log" {
+    for_each = data.azurerm_monitor_diagnostic_categories.sb_win_cats.logs
+
+    content {
+      category = log.value
+      retention_policy {
+        days    = 0
+        enabled = false
+      }
+    }
+  }
+
+  dynamic "metric" {
+    for_each = data.azurerm_monitor_diagnostic_categories.sb_win_cats.metrics
+
+    content {
+      category = metric.value
+      retention_policy {
+        days    = 0
+        enabled = false
+      }
+    }
+  }
+
   provider = azurerm.aux
 }
 
