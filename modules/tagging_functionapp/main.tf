@@ -63,7 +63,6 @@ resource "azurerm_app_service_plan" "function_plan" {
   sku {
     tier     = "Dynamic"
     size     = "Y1"
-    capacity = 0
   }
 
   tags = var.common_tags
