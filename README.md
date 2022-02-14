@@ -3,7 +3,7 @@
 ## General information
 This repository contains a set of Terraform modules:  
 * `monitoring` - the main module referencing/using all other submodules.
-* `tagigng_functionapp` - a module deploying Azure Function apps reading resource tags from subscriptions and submitting them to LAW.
+* `tagging_functionapp` - a module deploying Azure Function apps reading resource tags from subscriptions and submitting them to LAW.
 
 Unless you know exactly what you are doing, you should use these modules as shown in the example provided in the root
 of this repository.
