@@ -1,9 +1,3 @@
-variable "monitor_agw" {
-  description = "Deploy monitoring for Azure Application Gateway"
-  type        = bool
-  default     = false
-}
-
 variable "agw_log_signals" {
   description = "Additional Azure Application Gateway configuration for query based monitoring to exetend the default configuration of the module"
   default     = []

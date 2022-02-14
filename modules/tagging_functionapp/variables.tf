@@ -19,7 +19,7 @@ variable "law_id" {
 }
 
 variable "law_resource_group_name" {
-  description = "The Log Analytics Workspace resource group name"
+  description = "The Log Analytics Workspace resource group name, must exist"
   type        = string
 
   validation {
@@ -30,7 +30,7 @@ variable "law_resource_group_name" {
 
 variable "law_name" {
   type        = string
-  description = "The Log Analytics Workspace name to use as a target for sent resource tag data"
+  description = "The Log Analytics Workspace name to use as a target for sent resource tag data, must exist"
 
   validation {
     condition     = length(var.law_name) > 0
@@ -59,7 +59,7 @@ variable "storage_account_name" {
 }
 
 variable "resource_group_name" {
-  description = "Name of the resource group to be created for the tagging function"
+  description = "Name of the resource group to use for the tagging function, must exist"
   type        = string
 
   validation {

@@ -28,6 +28,12 @@ variable "location" {
   }
 }
 
+variable "monitor" {
+  type        = list(string)
+  description = "A list of resource types to monitor, everything is turned off by default"
+  default     = []
+}
+
 variable "common_tags" {
   type        = map(any)
   default     = {}

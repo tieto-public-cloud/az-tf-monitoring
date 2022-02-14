@@ -79,8 +79,5 @@ variable "monitored_tags" {
 variable "common_tags" {
   description = "A set of tags added to all deployed resources, marking ownership and purpose"
   type        = map(any)
-  default     = {
-    environment = "dev"
-    owner       = "jdoe"
-  }
+  default     = {}
 }

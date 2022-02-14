@@ -1,10 +1,3 @@
-
-variable "monitor_azurevm" {
-  description = "Deploy monitoring for Azure VM"
-  type        = bool
-  default     = false
-}
-
 variable "azurevm_log_signals" {
   description = "Additional Azure VM configuration for query based monitoring to exetend the default configuration of the module"
   default     = []

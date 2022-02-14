@@ -1,9 +1,3 @@
-variable "monitor_logicapp" {
-  description = "Deploy monitoring for Azure Logic App"
-  type        = bool
-  default     = false
-}
-
 variable "logicapp_log_signals" {
   description = "Additional Azure Logic App configuration for query based monitoring to exetend the default configuration of the module"
   default     = []

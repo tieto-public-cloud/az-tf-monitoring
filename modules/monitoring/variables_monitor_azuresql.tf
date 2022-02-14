@@ -1,9 +1,3 @@
-variable "monitor_azuresql" {
-  description = "Deploy monitoring for Azure SQL"
-  type        = bool
-  default     = false
-}
-
 variable "azuresql_log_signals" {
   description = "Additional Azure SQL configuration for query based monitoring to exetend the default configuration of the module"
   default     = []

@@ -1,9 +1,3 @@
-variable "monitor_datafactory" {
-  description = "Deploy monitoring for Azure Data Factory"
-  type        = bool
-  default     = false
-}
-
 variable "datafactory_log_signals" {
   description = "Additional Data Factory configuration for query based monitoring to exetend the default configuration of the module"
   default     = []

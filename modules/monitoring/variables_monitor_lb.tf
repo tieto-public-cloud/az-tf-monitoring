@@ -1,9 +1,3 @@
-variable "monitor_lb" {
-  description = "Deploy monitoring for Azure Load Balancer (Standard SKU)"
-  type        = bool
-  default     = false
-}
-
 variable "lb_log_signals" {
   description = "Additional Load Balancer (Standard SKU) configuration for query based monitoring to exetend the default configuration of the module"
   default     = []

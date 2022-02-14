@@ -9,9 +9,26 @@
 ##
 ##############################################################################
 
-data "azurerm_log_analytics_workspace" "law" {
-  provider = azurerm.law
+locals {
+  # All available bundles have to be explicitly registered here.
+  all_log_signals = {
+    azurevm             = local.azurevm_log_signals
+    azuresql            = local.azuresql_log_signals
+    backup              = local.backup_log_signals
+    agw                 = local.agw_log_signals
+    azurefunction       = local.azurefunction_log_signals
+    datafactory         = local.datafactory_log_signals
+    expressroute        = local.expressroute_log_signals
+    lb                  = local.lb_log_signals
+    tagging_functionapp = local.tagging_functionapp_log_signals
+  }
 
+  # Only selected bundles will be applied. The caller is selecting.
+  deploy_log_signals = flatten([for ksig, vsig in local.all_log_signals : vsig if contains(var.monitor, ksig) ])
+}
+
+# Get information about our target LAW.
+data "azurerm_log_analytics_workspace" "law" {
   name                = var.law_name
   resource_group_name = var.law_resource_group_name
 }
@@ -24,7 +41,6 @@ data "azurerm_log_analytics_workspace" "law" {
 # are supported but other receivers can be added to the code easily following
 # the existing pattern.
 resource "azurerm_monitor_action_group" "action_group" {
-  provider = azurerm.law
   for_each = toset(local.action_groups) # See variables_action_groups.tf for locals.
 
   name                = each.value.name
@@ -75,189 +91,136 @@ resource "azurerm_monitor_action_group" "action_group" {
 ## Log Query Alerts
 ##############################################################################
 
-module "azurevm_log_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
+resource "azurerm_monitor_scheduled_query_rules_alert" "query_alert" {
+  for_each = toset(var.deploy_log_signals)
+
+  resource_group_name = var.law_resource_group_name
+  location            = var.location
+  data_source_id      = data.azurerm_log_analytics_workspace.law.id
+
+  name        = each.value.name
+  description = each.value.name
+  frequency   = each.value.frequency
+  query       = each.value.query
+  time_window = each.value.time_window
+  enabled     = each.value.enabled
+  severity    = each.value.severity
+  throttling  = each.value.throttling
+
+  trigger {
+    operator  = each.value.trigger.operator
+    threshold = each.value.trigger.threshold
+
+    dynamic "metric_trigger" {
+      for_each = each.value.trigger.metric_trigger == null ? [] : [1]
+
+      content {
+        operator            = each.value.trigger.metric_trigger.operator
+        threshold           = each.value.trigger.metric_trigger.threshold
+        metric_trigger_type = each.value.trigger.metric_trigger.type
+        metric_column       = each.value.trigger.metric_trigger.column
+      }
+    }
   }
 
-  query_alerts            = local.azurevm_log_signals
-  deploy                  = var.monitor_azurevm
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
-}
-
-module "azuresql_log_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
+  # Attach to an existing action group created outside of this module and passed
+  # down as a parameter. Match by name.
+  action {
+    action_group = [
+      azurerm_monitor_action_group.action_group[index(azurerm_monitor_action_group.action_group.*.name, each.value.action_group)].id
+    ]
   }
 
-  query_alerts            = local.azuresql_log_signals
-  deploy                  = var.monitor_azuresql
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
-}
-
-module "logicapp_log_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
+  # This could take a long time, extend default timeouts.
+  timeouts {
+    create = "15m"
+    delete = "15m"
   }
-
-  query_alerts            = local.logicapp_log_signals
-  deploy                  = var.monitor_logicapp
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
-}
-
-module "backup_log_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
-  }
-
-  query_alerts            = local.backup_log_signals
-  deploy                  = var.monitor_backup
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
-}
-
-module "agw_log_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
-  }
-
-  query_alerts            = local.agw_log_signals
-  deploy                  = var.monitor_agw
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
-}
-
-module "azurefunction_log_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
-  }
-
-  query_alerts            = local.azurefunction_log_signals
-  deploy                  = var.monitor_azurefunction
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
-}
-
-module "datafactory_log_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
-  }
-
-  query_alerts            = local.datafactory_log_signals
-  deploy                  = var.monitor_datafactory
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
-}
-
-module "expressroute_log_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
-  }
-
-  query_alerts            = local.expressroute_log_signals
-  deploy                  = var.monitor_expressroute
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
-}
-
-module "lb_log_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
-  }
-
-  query_alerts            = local.lb_log_signals
-  deploy                  = var.monitor_lb
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
 }
 
 ##############################################################################
 ## Metric Alerts
 ##############################################################################
 
-# Right now, there are no pre-defined metric alerts. Only metric alerts
-# provided by the caller will be deployed.
-module "custom_metric_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_metric?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
+resource "azurerm_monitor_metric_alert" "metric_alert" {
+  for_each = toset(var.metric_signals)
+
+  name                     = each.value.name
+  resource_group_name      = var.law_resource_group_name
+  scopes                   = each.value.scopes
+  description              = each.value.description
+  enabled                  = each.value.enabled
+  auto_mitigate            = each.value.auto_mitigate
+  frequency                = each.value.frequency
+  severity                 = each.value.severity
+  target_resource_type     = each.value.target_resource_type
+  target_resource_location = each.value.target_resource_location
+  window_size              = each.value.window_size
+
+  action {
+    action_group_id = azurerm_monitor_action_group.action_group[index(azurerm_monitor_action_group.action_group.*.name, each.value.action_group)].id
   }
 
-  law_resource_group_name = var.law_resource_group_name
-  deploy                  = true
-  metric_alerts           = local.metric_signals
-  action_groups           = azurerm_monitor_action_group.action_group
-}
+  criteria {
+    metric_namespace = each.value.criteria.metric_namespace
+    metric_name      = each.value.criteria.metric_name
+    aggregation      = each.value.criteria.aggregation
+    operator         = each.value.criteria.operator
+    threshold        = each.value.criteria.threshold
 
-##############################################################################
-## Tagging Function App
-##############################################################################
+    dynamic "dimension" {
+      for_each = each.value.criteria.dimension == null ? [] : [1]
 
-# Deploy monitoring on self.
-module "tagging_functionapp_log_alerts" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/alert_query?ref=v2.0"
-  providers = {
-    azurerm = azurerm.law
+      content {
+        name     = each.value.criteria.dimension.name
+        operator = each.value.criteria.dimension.operator
+        values   = each.value.criteria.dimension.values
+      }
+    }
+
+    skip_metric_validation = each.value.criteria.skip_metric_validation
   }
 
-  query_alerts            = local.tagging_functionapp_log_signals
-  deploy                  = var.monitor_tagging_functionapp
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
-}
+  dynamic "dynamic_criteria" {
+    for_each = each.value.dynamic_criteria == null ? [] : [1]
 
-# Deploy Function App(s) pulling resource tags and sending them to the Log Analytics Workspace.
-# One FApp per target subscription.
-module "tagging_functionapp" {
-  count = length(var.target_subscription_ids)
+    content {
+      metric_namespace  = each.value.dynamic_criteria.metric_namespace
+      metric_name       = each.value.dynamic_criteria.metric_name
+      aggregation       = each.value.dynamic_criteria.aggregation
+      operator          = each.value.dynamic_criteria.operator
+      alert_sensitivity = each.value.dynamic_criteria.alert_sensitivity
 
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/tagging_functionapp?ref=v2.0"
-  providers = {
-    azurerm = azurerm.aux
+      dynamic "dimension" {
+        for_each = each.value.dynamic_criteria.dimension == null ? [] : [1]
+
+        content {
+          name     = each.value.dynamic_criteria.dimension.name
+          operator = each.value.dynamic_criteria.dimension.operator
+          values   = each.value.dynamic_criteria.dimension.values
+        }
+      }
+
+      evaluation_total_count = each.value.dynamic_criteria.evaluation_total_count
+      evaluation_failure_count = each.value.dynamic_criteria.evaluation_failure_count
+      ignore_data_before = each.value.dynamic_criteria.ignore_data_before
+      skip_metric_validation = each.value.dynamic_criteria.skip_metric_validation
+    }
   }
 
-  location                = var.location
-  law_name                = var.law_name
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  target_subscription_id  = var.target_subscription_ids[count.index]
-  name                    = "${var.fa_name}${count.index}"
-  resource_group_name     = var.fa_resource_group_name
-  storage_account_name    = replace("${var.fa_name}${count.index}sa","/[^a-z0-9]/","")
-  assign_roles            = var.assign_roles
-  tag_retrieval_interval  = var.fa_tag_retrieval_interval
+  dynamic "application_insights_web_test_location_availability_criteria" {
+    for_each = each.value.application_insights_web_test_location_availability_criteria == null ? [] : [1]
 
-  common_tags = var.common_tags
+    content {
+      web_test_id = each.value.application_insights_web_test_location_availability_criteria.web_test_id
+      component_id = each.value.application_insights_web_test_location_availability_criteria.component_id
+      failed_location_count = each.value.application_insights_web_test_location_availability_criteria.failed_location_count
+    }
+  }
+
+  # This could take a long time, extend default timeouts.
+  timeouts {
+    create = "15m"
+    delete = "15m"
+  }
 }

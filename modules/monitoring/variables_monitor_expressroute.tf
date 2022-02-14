@@ -1,9 +1,3 @@
-variable "monitor_expressroute" {
-  description = "Deploy monitoring for Express Route"
-  type        = bool
-  default     = false
-}
-
 variable "expressroute_log_signals" {
   description = "Additional Express Route configuration for query based monitoring to exetend the default configuration of the module"
   default     = []

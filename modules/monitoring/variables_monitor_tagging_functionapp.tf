@@ -1,9 +1,3 @@
-variable "monitor_tagging_functionapp" {
-  description = "Deploy monitoring for supporting functionality introduced by this module"
-  type        = bool
-  default     = true
-}
-
 variable "tagging_functionapp_log_signals" {
   description = "Additional Tagging Function App configuration for query based monitoring to exetend the default configuration of the module"
   default = []

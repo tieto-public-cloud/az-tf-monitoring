@@ -1,9 +1,3 @@
-variable "monitor_backup" {
-  description = "Deploy monitoring for Azure Backups"
-  type        = bool
-  default     = false
-}
-
 variable "backup_log_signals" {
   description = "Azure Backup Monitor config for query based monitoring - custom"
   default     = []

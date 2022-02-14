@@ -1,21 +1,16 @@
 # Azure Monitoring via Terraform
 
 ## General information
-This repository contains a set of Terraform (sub)modules:  
+This repository contains a set of Terraform modules:  
 * `monitoring` - the main module referencing/using all other submodules.
-* `tagigng_functionapp` - a submodule deploying Azure Function apps reading resource tags from subscriptions and submitting them to LAW.
-* `alert_query` - a submodule deploying log query based alerts to LAW.
-* `alert_metric` - a submodule deploying metric based alerts.
+* `tagigng_functionapp` - a module deploying Azure Function apps reading resource tags from subscriptions and submitting them to LAW.
 
-Unless you know exaclty what you are doing, you should use only the main `monitoring` module as shown in the example provided in the root
-of this repository. Direct use of its submodules is discouraged and you will be doing it at your own peril.
+Unless you know exactly what you are doing, you should use these modules as shown in the example provided in the root
+of this repository.
 
 ## Monitoring Module
 - Deploys default action groups.
 - Deploys chosen default alert bundles to a shared log analytics workspace.
-- Deploys Azure Function app(s) into the specified subscription.
-  - The app is deployed from: https://github.com/tieto-public-cloud/az-func-monitoring-tagging
-  - The app will read resource tags from resources in the target subscription and push them into a shared log analytics workspace.
 - *[Advanced]* Deploys custom action groups – these should be specified as needed.
 - *[Advanced]* Deploys custom log query alerts – these should be specified as needed.
 - *[Advanced]* Deploys custom metric alerts – these should be specified as needed.
@@ -27,13 +22,12 @@ locals {
   common_tags = {}
 }
 
-module "tag_driven_monitoring" {
+module "monitoring" {
   source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/monitoring?ref=v2.0"
 
-  ## The module expect two providers, mapping must be provided explicitly!
+  ## The module a specific provider, mapping must be provided explicitly!
   providers = {
-    azurerm.law = azurerm.law
-    azurerm.aux = azurerm.aux
+    azurerm = azurerm.law
   }
 
   ## Location must be shared by all resources, only regional deployments are supported.
@@ -50,34 +44,17 @@ module "tag_driven_monitoring" {
   ag_default_webhook_service_uri = var.snow_webhook_uri
 
   ## To choose what will be monitored. Everything is turned off by default.
-  monitor_azurevm = true
-  # monitor_azuresql      = false
-  # monitor_logicapp      = false
-  # monitor_backup        = false
-  # monitor_agw           = false
-  # monitor_azurefunction = false
-  # monitor_datafactory   = false
-  # monitor_expressroute  = false
-  # monitor_lb            = false
-
-  ## To push tag data to LAW, we need helper functions.
-  ## One Azure Function app will be deployed for each target subscription.
-  fa_resource_group_name  = var.fa_resource_group_name
-  fa_name                 = var.fa_name
-  target_subscription_ids = var.target_subscription_ids
-
-  ## During the deployment, we need to adjust Azure RBAC assignments.
-  ## If your deployment credentials don't have permission to do that,
-  ## set this to `false` and look for principal IDs in the output so
-  ## that you can assign roles manually.
-  ##
-  ## Look for:
-  ## * principal_id             (this is the identity that needs roles below)
-  ## * storage_account_id       (Storage Account Contributor)
-  ## * law_id                   (Log Analytics Contributor)
-  ## * target_subscription_id   (Reader)
-  ##
-  # assign_roles = true
+  monitor = [
+    "azurevm",
+    # "azuresql",
+    # "backup",
+    # "agw",
+    # "azurefunction",
+    # "datafactory",
+    # "expressroute",
+    # "lb",
+    "tagging_functionapp" ## To monitor resources deployed by this module.
+  ]
 
   ## Assign common tags to all resources deployed by this module and its submodules.
   common_tags = local.common_tags
@@ -107,6 +84,59 @@ Any custom baselines that are not implemented in default alert bundles can be de
 - `metric_signals`
 This are *advanced* parameters of the `monitoring` module.
 
+## Tagging Function App Module
+- Deploys Azure Function app(s) into the specified subscription.
+  - The app is deployed from: https://github.com/tieto-public-cloud/az-func-monitoring-tagging
+  - The app will read resource tags from resources in the target subscription and push them into a shared log analytics workspace.
+
+### Input Variables
+```hcl
+locals {
+  # Some tags applied to all newly deployed resources.
+  common_tags = {}
+}
+
+module "tagging_functionapp" {
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/tagging_functionapp?ref=v2.0"
+
+  ## The module expects a specific provider, mapping must be provided explicitly!
+  providers = {
+    azurerm = azurerm.aux
+  }
+
+  ## Name the function and provide a resource group to use.
+  name                = var.fa_name
+  resource_group_name = azurerm_resource_group.fa_rg.name
+
+  ## Azure is picky about SA names, be sure to provide a valid value here!
+  storage_account_name = replace("${var.fa_name}sa","/[^a-z0-9]/","")
+
+  location                = var.location
+  law_name                = var.law_name
+  law_resource_group_name = azurerm_resource_group.law_rg.name
+  law_id                  = azurerm_log_analytics_workspace.law.id
+
+  ## Provide a subscription to read.
+  target_subscription_id = var.target_subscription_id
+
+  ## During the deployment, we need to adjust Azure RBAC assignments.
+  ## If your deployment credentials don't have permission to do that,
+  ## set this to `false` and look for principal IDs in the output so
+  ## that you can assign roles manually.
+  ##
+  ## Look for:
+  ## * principal_id             (this is the identity that needs roles below)
+  ## * storage_account_id       (Storage Account Contributor)
+  ## * law_id                   (Log Analytics Contributor)
+  ## * target_subscription_id   (Reader)
+  ##
+  # assign_roles = true
+
+  ## Assign common tags to all resources deployed by this module and its submodules.
+  common_tags = local.common_tags
+}
+```
+
 ## Changelog
 See [CHANGELOG.md](CHANGELOG.md).
 
@@ -122,19 +152,21 @@ To add an alert bundle for a new resource type, you can use any of the existing 
 
 You need to add a new module stanza to [modules/monitoring/main.tf](modules/monitoring/main.tf):
 ```hcl
-# In this example, change "azurevm" to match the name of the new resource.
-module "azurevm_log_alerts" {
-  source    = local.module_source_aq
-  providers = {
-    azurerm = azurerm.law
+locals {
+  # All available bundles have to be explicitly registered here.
+  all_log_signals = {
+    azurevm             = local.azurevm_log_signals
+    azuresql            = local.azuresql_log_signals
+    backup              = local.backup_log_signals
+    agw                 = local.agw_log_signals
+    azurefunction       = local.azurefunction_log_signals
+    datafactory         = local.datafactory_log_signals
+    expressroute        = local.expressroute_log_signals
+    lb                  = local.lb_log_signals
+    tagging_functionapp = local.tagging_functionapp_log_signals
   }
 
-  query_alerts            = local.azurevm_log_signals
-  deploy                  = var.monitor_azurevm
-  law_resource_group_name = var.law_resource_group_name
-  law_id                  = data.azurerm_log_analytics_workspace.law.id
-  location                = var.location
-  action_groups           = azurerm_monitor_action_group.action_group
+  # ...
 }
 ```
 

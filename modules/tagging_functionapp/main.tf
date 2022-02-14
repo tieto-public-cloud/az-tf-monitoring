@@ -1,15 +1,12 @@
 data "azurerm_subscription" "current" {}
 
-resource "azurerm_resource_group" "function_rg" {
-  name     = var.resource_group_name
-  location = var.location
-
-  tags = var.common_tags
+data "azurerm_resource_group" "function_rg" {
+  name = var.resource_group_name
 }
 
 resource "azurerm_storage_account" "function_storage" {
   name                     = var.storage_account_name
-  resource_group_name      = azurerm_resource_group.function_rg.name
+  resource_group_name      = data.azurerm_resource_group.function_rg.name
   location                 = var.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
@@ -40,7 +37,7 @@ resource "azurerm_storage_table_entity" "config_data" {
     WorkingSubscriptionId      = data.azurerm_subscription.current.subscription_id
     TargetSubscriptionId       = var.target_subscription_id
     StorageAccountName         = azurerm_storage_account.function_storage.name
-    StorageAccountResGroupName = azurerm_resource_group.function_rg.name
+    StorageAccountResGroupName = data.azurerm_resource_group.function_rg.name
     Delta                      = var.tag_retrieval_interval
   }
 
@@ -52,14 +49,14 @@ resource "azurerm_storage_table_entity" "config_data" {
 # resource "azurerm_application_insights" "function_insights" {
 #   name                = var.name
 #   location            = var.location
-#   resource_group_name = azurerm_resource_group.function_rg.name
+#   resource_group_name = data.azurerm_resource_group.function_rg.name
 #   application_type    = "web"
 # }
 
 resource "azurerm_app_service_plan" "function_plan" {
   name                         = var.name
   location                     = var.location
-  resource_group_name          = azurerm_resource_group.function_rg.name
+  resource_group_name          = data.azurerm_resource_group.function_rg.name
   kind                         = "FunctionApp"
   maximum_elastic_worker_count = 1
 
@@ -75,7 +72,7 @@ resource "azurerm_app_service_plan" "function_plan" {
 resource "azurerm_function_app" "function_app" {
   name                       = var.name
   location                   = var.location
-  resource_group_name        = azurerm_resource_group.function_rg.name
+  resource_group_name        = data.azurerm_resource_group.function_rg.name
   app_service_plan_id        = azurerm_app_service_plan.function_plan.id
   storage_account_name       = azurerm_storage_account.function_storage.name
   storage_account_access_key = azurerm_storage_account.function_storage.primary_access_key

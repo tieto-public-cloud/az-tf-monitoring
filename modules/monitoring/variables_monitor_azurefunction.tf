@@ -1,9 +1,3 @@
-variable "monitor_azurefunction" {
-  description = "Deploy monitoring for Azure Function"
-  type        = bool
-  default     = false
-}
-
 variable "azurefunction_log_signals" {
   description = "Additional Azure Function configuration for query based monitoring to exetend the default configuration of the module"
   default     = []
