@@ -62,6 +62,7 @@
                                                     "Get_Results_from_LAW": {
                                                         "inputs": {
                                                             "authentication": {
+                                                                "audience": "https://api.loganalytics.io",
                                                                 "type": "ManagedServiceIdentity"
                                                             },
                                                             "method": "GET",
@@ -291,6 +292,7 @@
                                             "Get_Results_from_LAW_-_Legacy": {
                                                 "inputs": {
                                                     "authentication": {
+                                                        "audience": "https://api.loganalytics.io",
                                                         "type": "ManagedServiceIdentity"
                                                     },
                                                     "method": "GET",
