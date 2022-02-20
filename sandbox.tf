@@ -22,17 +22,6 @@ resource "azurerm_log_analytics_workspace" "law" {
   provider = azurerm.law
 }
 
-resource "azurerm_storage_account" "law_storage" {
-  name                     = replace("${var.law_name}sa","/[^a-z0-9]/","")
-  resource_group_name      = azurerm_resource_group.law_rg.name
-  location                 = azurerm_resource_group.law_rg.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-
-  tags     = var.common_tags
-  provider = azurerm.law
-}
-
 resource "azurerm_log_analytics_solution" "law_vminsights" {
   solution_name         = "VMInsights"
   location              = azurerm_resource_group.law_rg.location
@@ -51,6 +40,15 @@ resource "azurerm_log_analytics_solution" "law_vminsights" {
 ## FA set-up.
 resource "azurerm_resource_group" "fa_rg" {
   name     = var.fa_resource_group_name
+  location = var.location
+
+  tags     = local.common_tags
+  provider = azurerm.aux
+}
+
+## LA set-up.
+resource "azurerm_resource_group" "la_rg" {
+  name     = var.la_resource_group_name
   location = var.location
 
   tags     = local.common_tags

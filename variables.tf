@@ -58,8 +58,38 @@ variable "fa_name" {
   }
 }
 
-variable "snow_webhook_uri" {
-  description = "Webhook URI for sending Azure Common Alert schema events to ServiceNow, including any secrets necessary for authentication"
+variable "la_resource_group_name" {
+  type        = string
+  description = "The name of the Azure Logic App resource group to be created"
+
+  validation {
+    condition     = length(var.la_resource_group_name) > 0
+    error_message = "Allowed value for la_resource_group_name is a non-empty string."
+  }
+}
+
+variable "la_name" {
+  type        = string
+  description = "The name of the Azure Logic App to be created"
+
+  validation {
+    condition     = length(var.la_name) > 0
+    error_message = "Allowed value for la_name is a non-empty string."
+  }
+}
+
+variable "snow_webhook_url" {
+  description = "Webhook URL for sending Azure Common Alert schema events to ServiceNow"
+  type        = string
+}
+
+variable "snow_webhook_username" {
+  description = "Webhook username for sending Azure Common Alert schema events to ServiceNow"
+  type        = string
+}
+
+variable "snow_webhook_password" {
+  description = "Webhook password for sending Azure Common Alert schema events to ServiceNow, for basic auth"
   type        = string
   sensitive   = true
 }

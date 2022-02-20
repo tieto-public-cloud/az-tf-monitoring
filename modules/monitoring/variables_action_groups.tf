@@ -1,11 +1,20 @@
-variable "ag_default_webhook_service_uri" {
-  description = "Webhook URI for sending events, including any secrets necessary for authentication"
+variable "ag_default_logicapp_id" {
+  description = "ID of the Logic App to use for event transformation and processing"
   type        = string
-  sensitive   = true
 
   validation {
-    condition     = length(var.ag_default_webhook_service_uri) > 0
-    error_message = "Allowed value for ag_default_webhook_service_uri is a non-empty string."
+    condition     = length(var.ag_default_logicapp_id) > 0
+    error_message = "Allowed value for ag_default_logicapp_id is a non-empty string."
+  }
+}
+
+variable "ag_default_logicapp_callback_url" {
+  description = "Callback URL of the Logic App used for event transformation and processing"
+  type        = string
+
+  validation {
+    condition     = length(var.ag_default_logicapp_callback_url) > 0
+    error_message = "Allowed value for ag_default_logicapp_callback_url is a non-empty string."
   }
 }
 
@@ -56,13 +65,13 @@ variable "action_groups" {
       #   email_address = string
       # }))
 
-      # azure_function_receiver = optional(object({
-      #   name                     = string
-      #   function_app_resource_id = string
-      #   function_name            = string
-      #   http_trigger_url         = string
-      #   use_common_alert_schema  = optional(bool)
-      # }))
+      azure_function_receiver = optional(object({
+        name                     = string
+        function_app_resource_id = string
+        function_name            = string
+        http_trigger_url         = string
+        use_common_alert_schema  = optional(bool)
+      }))
 
       # itsm_receiver = optional(object({
       #   name                 = string
@@ -72,12 +81,12 @@ variable "action_groups" {
       #   region               = string
       # }))
 
-      # logic_app_receiver = optional(object({
-      #   name                    = string
-      #   resource_id             = string
-      #   callback_url            = string
-      #   use_common_alert_schema = optional(bool)
-      # }))
+      logic_app_receiver = optional(object({
+        name                    = string
+        resource_id             = string
+        callback_url            = string
+        use_common_alert_schema = optional(bool)
+      }))
 
       # sms_receiver = optional(object({
       #   name         = string
@@ -95,18 +104,20 @@ locals {
     {
       name       = "tm-critical-actiongroup"
       short_name = "tm-crit-ag"
-      webhook = {
-        name                    = "Webhook"
-        service_uri             = nonsensitive(var.ag_default_webhook_service_uri)
+      logic_app_receiver = {
+        name                    = "SNow Logic App"
+        resource_id             = var.ag_default_logicapp_id
+        callback_url            = var.ag_default_logicapp_callback_url
         use_common_alert_schema = var.ag_default_use_common_alert_schema
       }
     },
     {
       name       = "tm-warning-actiongroup"
       short_name = "tm-warn-ag"
-      webhook = {
-        name                    = "Webhook"
-        service_uri             = nonsensitive(var.ag_default_webhook_service_uri)
+      logic_app_receiver = {
+        name                    = "SNow Logic App"
+        resource_id             = var.ag_default_logicapp_id
+        callback_url            = var.ag_default_logicapp_callback_url
         use_common_alert_schema = var.ag_default_use_common_alert_schema
       }
     }

@@ -2,6 +2,15 @@ output "location" {
   value = var.location
 }
 
+output "deployed_snow_logic_app" {
+  value = {
+    principal_id   = module.snow_logicapp.logic_app_principal_id
+    app_id         = module.snow_logicapp.logic_app_id
+    callback_url   = module.snow_logicapp.logic_app_callback_url
+    roles_assigned = module.snow_logicapp.roles_assigned
+  }
+}
+
 output "deployed_monitoring" {
   value = {
     action_groups = module.monitoring.deployed_action_groups

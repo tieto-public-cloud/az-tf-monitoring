@@ -1,0 +1,638 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Signal_Type": {
+                "cases": {
+                    "Log": {
+                        "actions": {
+                            "Monitoring_Service": {
+                                "cases": {
+                                    "Log_Alerts_V2": {
+                                        "actions": {
+                                            "For_Each_Search_Query": {
+                                                "actions": {
+                                                    "For_Each_Result_Table": {
+                                                        "actions": {
+                                                            "For_Each_Result": {
+                                                                "actions": {
+                                                                    "SNow_Webhook_-_Create_Alert": {
+                                                                        "inputs": {
+                                                                            "authentication": {
+                                                                                "password": "@parameters('ServiceNow Webhook Password')",
+                                                                                "type": "Basic",
+                                                                                "username": "@parameters('ServiceNow Webhook Username')"
+                                                                            },
+                                                                            "body": {
+                                                                                "description": "@{triggerBody()?['data']?['essentials']?['description']} \n\n @{join(item(), '; ')} \n\n @{string(triggerBody()?['data']?['alertContext'])}",
+                                                                                "event_class": "Azure",
+                                                                                "metric_name": "@{triggerBody()?['data']?['essentials']?['alertRule']}",
+                                                                                "node": "@{if(equals(length(item()[parameters('Query Column Mapping')['CMDBId']]), 0), item()[parameters('Query Column Mapping')['SubscriptionId']], item()[parameters('Query Column Mapping')['CMDBId']])}",
+                                                                                "resource": "@{triggerBody()?['data']?['essentials']?['alertRule']}",
+                                                                                "severity": "@if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Fired'), parameters('Severity Mapping')[triggerBody()?['data']?['essentials']?['severity']], 0)",
+                                                                                "source": "Microsoft Azure",
+                                                                                "time_of_event": "@{triggerBody()?['data']?['essentials']?['firedDateTime']}",
+                                                                                "type": "@{triggerBody()?['data']?['essentials']?['signalType']}",
+                                                                                "u_external_event_id": "@{triggerBody()?['data']?['essentials']?['alertId']}",
+                                                                                "u_external_event_url": "@{items('For_Each_Search_Query')?['linkToFilteredSearchResultsUI']}"
+                                                                            },
+                                                                            "headers": {
+                                                                                "Content-Type": "application/json"
+                                                                            },
+                                                                            "method": "POST",
+                                                                            "uri": "@parameters('ServiceNow Webhook URL')"
+                                                                        },
+                                                                        "runAfter": {},
+                                                                        "type": "Http"
+                                                                    }
+                                                                },
+                                                                "foreach": "@items('For_Each_Result_Table')?['rows']",
+                                                                "runAfter": {},
+                                                                "type": "Foreach"
+                                                            }
+                                                        },
+                                                        "foreach": "@body('Parse_Results_from_LAW')?['tables']",
+                                                        "runAfter": {
+                                                            "Parse_Results_from_LAW": [
+                                                                "Succeeded"
+                                                            ]
+                                                        },
+                                                        "type": "Foreach"
+                                                    },
+                                                    "Get_Results_from_LAW": {
+                                                        "inputs": {
+                                                            "authentication": {
+                                                                "type": "ManagedServiceIdentity"
+                                                            },
+                                                            "method": "GET",
+                                                            "uri": "@items('For_Each_Search_Query')?['linkToFilteredSearchResultsAPI']"
+                                                        },
+                                                        "runAfter": {},
+                                                        "type": "Http"
+                                                    },
+                                                    "Parse_Results_from_LAW": {
+                                                        "inputs": {
+                                                            "content": "@body('Get_Results_from_LAW')",
+                                                            "schema": {
+                                                                "properties": {
+                                                                    "tables": {
+                                                                        "items": {
+                                                                            "properties": {
+                                                                                "columns": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "name": {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            "type": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "name",
+                                                                                            "type"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "name": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "rows": {
+                                                                                    "items": {
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "name",
+                                                                                "columns",
+                                                                                "rows"
+                                                                            ],
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": "array"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "runAfter": {
+                                                            "Get_Results_from_LAW": [
+                                                                "Succeeded"
+                                                            ]
+                                                        },
+                                                        "type": "ParseJson"
+                                                    }
+                                                },
+                                                "foreach": "@body('Parse_Log_Alert_v2_Context')?['condition']?['allOf']",
+                                                "runAfter": {
+                                                    "Parse_Log_Alert_v2_Context": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "type": "Foreach"
+                                            },
+                                            "Parse_Log_Alert_v2_Context": {
+                                                "inputs": {
+                                                    "content": "@triggerBody()?['data']?['alertContext']",
+                                                    "schema": {
+                                                        "properties": {
+                                                            "condition": {
+                                                                "properties": {
+                                                                    "allOf": {
+                                                                        "items": {
+                                                                            "properties": {
+                                                                                "dimensions": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "name": {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            "value": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "failingPeriods": {
+                                                                                    "properties": {
+                                                                                        "minFailingPeriodsToAlert": {
+                                                                                            "type": "integer"
+                                                                                        },
+                                                                                        "numberOfEvaluationPeriods": {
+                                                                                            "type": "integer"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "linkToFilteredSearchResultsAPI": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "linkToFilteredSearchResultsUI": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "linkToSearchResultsAPI": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "linkToSearchResultsUI": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "metricMeasure": {},
+                                                                                "metricValue": {
+                                                                                    "type": "integer"
+                                                                                },
+                                                                                "operator": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "searchQuery": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "targetResourceTypes": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "threshold": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "timeAggregation": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "searchQuery",
+                                                                                "targetResourceTypes",
+                                                                                "dimensions",
+                                                                                "linkToSearchResultsAPI",
+                                                                                "linkToFilteredSearchResultsAPI"
+                                                                            ],
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": "array"
+                                                                    },
+                                                                    "windowEndTime": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "windowSize": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "windowStartTime": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "conditionType": {
+                                                                "type": "string"
+                                                            },
+                                                            "properties": {}
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "runAfter": {},
+                                                "type": "ParseJson"
+                                            }
+                                        },
+                                        "case": "Log Alerts V2"
+                                    },
+                                    "Log_Analytics": {
+                                        "actions": {
+                                            "For_Each_Result_Table_-_Legacy": {
+                                                "actions": {
+                                                    "For_Each_Result_-_Legacy": {
+                                                        "actions": {
+                                                            "SNow_Webhook_-_Create_Alert_-_Legacy": {
+                                                                "inputs": {
+                                                                    "authentication": {
+                                                                        "password": "@parameters('ServiceNow Webhook Password')",
+                                                                        "type": "Basic",
+                                                                        "username": "@parameters('ServiceNow Webhook Username')"
+                                                                    },
+                                                                    "body": {
+                                                                        "description": "@{triggerBody()?['data']?['essentials']?['description']} \n\n @{join(item(), '; ')} \n\n @{triggerBody()?['data']?['alertContext']}",
+                                                                        "event_class": "Azure",
+                                                                        "metric_name": "@{triggerBody()?['data']?['essentials']?['alertRule']}",
+                                                                        "node": "@{if(equals(length(item()[parameters('Query Column Mapping')['CMDBId']]), 0), item()[parameters('Query Column Mapping')['SubscriptionId']], item()[parameters('Query Column Mapping')['CMDBId']])}",
+                                                                        "resource": "@{triggerBody()?['data']?['essentials']?['alertRule']}",
+                                                                        "severity": "@if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Fired'), parameters('Severity Mapping')[triggerBody()?['data']?['essentials']?['severity']], 0)",
+                                                                        "source": "Microsoft Azure",
+                                                                        "time_of_event": "@{triggerBody()?['data']?['essentials']?['firedDateTime']}",
+                                                                        "type": "@{triggerBody()?['data']?['essentials']?['signalType']}",
+                                                                        "u_external_event_id": "@{triggerBody()?['data']?['essentials']?['alertId']}",
+                                                                        "u_external_event_url": "@{body('Parse_Log_Analytics_Context')?['LinkToFilteredSearchResultsUI']}"
+                                                                    },
+                                                                    "headers": {
+                                                                        "Content-Type": "application/json"
+                                                                    },
+                                                                    "method": "POST",
+                                                                    "uri": "@parameters('ServiceNow Webhook URL')"
+                                                                },
+                                                                "runAfter": {},
+                                                                "type": "Http"
+                                                            }
+                                                        },
+                                                        "foreach": "@items('For_Each_Result_Table_-_Legacy')?['rows']",
+                                                        "runAfter": {},
+                                                        "type": "Foreach"
+                                                    }
+                                                },
+                                                "foreach": "@body('Parse_Results_from_LAW_-_Legacy')?['tables']",
+                                                "runAfter": {
+                                                    "Parse_Results_from_LAW_-_Legacy": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "type": "Foreach"
+                                            },
+                                            "Get_Results_from_LAW_-_Legacy": {
+                                                "inputs": {
+                                                    "authentication": {
+                                                        "type": "ManagedServiceIdentity"
+                                                    },
+                                                    "method": "GET",
+                                                    "uri": "@body('Parse_Log_Analytics_Context')?['LinkToFilteredSearchResultsAPI']"
+                                                },
+                                                "runAfter": {
+                                                    "Parse_Log_Analytics_Context": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "type": "Http"
+                                            },
+                                            "Parse_Log_Analytics_Context": {
+                                                "inputs": {
+                                                    "content": "@triggerBody()?['data']?['alertContext']",
+                                                    "schema": {
+                                                        "properties": {
+                                                            "AffectedConfigurationItems": {
+                                                                "items": {
+                                                                    "type": "string"
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "AlertType": {
+                                                                "type": "string"
+                                                            },
+                                                            "Dimensions": {
+                                                                "type": "array"
+                                                            },
+                                                            "IncludedSearchResults": {
+                                                                "type": "string"
+                                                            },
+                                                            "LinkToFilteredSearchResultsAPI": {
+                                                                "type": "string"
+                                                            },
+                                                            "LinkToFilteredSearchResultsUI": {
+                                                                "type": "string"
+                                                            },
+                                                            "LinkToSearchResults": {
+                                                                "type": "string"
+                                                            },
+                                                            "LinkToSearchResultsAPI": {
+                                                                "type": "string"
+                                                            },
+                                                            "Operator": {
+                                                                "type": "string"
+                                                            },
+                                                            "ResultCount": {
+                                                                "type": "integer"
+                                                            },
+                                                            "SearchIntervalDurationMin": {
+                                                                "type": "string"
+                                                            },
+                                                            "SearchIntervalEndtimeUtc": {
+                                                                "type": "string"
+                                                            },
+                                                            "SearchIntervalInMinutes": {
+                                                                "type": "string"
+                                                            },
+                                                            "SearchIntervalStartTimeUtc": {
+                                                                "type": "string"
+                                                            },
+                                                            "SearchQuery": {
+                                                                "type": "string"
+                                                            },
+                                                            "SearchResults": {
+                                                                "properties": {
+                                                                    "tables": {
+                                                                        "items": {
+                                                                            "properties": {
+                                                                                "columns": {
+                                                                                    "items": {
+                                                                                        "properties": {
+                                                                                            "name": {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            "type": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "required": [
+                                                                                            "name",
+                                                                                            "type"
+                                                                                        ],
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "name": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "rows": {
+                                                                                    "items": {
+                                                                                        "items": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "name",
+                                                                                "columns",
+                                                                                "rows"
+                                                                            ],
+                                                                            "type": "object"
+                                                                        },
+                                                                        "type": "array"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "SeverityDescription": {
+                                                                "type": "string"
+                                                            },
+                                                            "Threshold": {
+                                                                "type": "integer"
+                                                            },
+                                                            "WorkspaceId": {
+                                                                "type": "string"
+                                                            },
+                                                            "dataSources": {
+                                                                "type": "array"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "runAfter": {},
+                                                "type": "ParseJson"
+                                            },
+                                            "Parse_Results_from_LAW_-_Legacy": {
+                                                "inputs": {
+                                                    "content": "@body('Get_Results_from_LAW_-_Legacy')",
+                                                    "schema": {
+                                                        "properties": {
+                                                            "tables": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "columns": {
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "name": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "type": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "name",
+                                                                                    "type"
+                                                                                ],
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": "array"
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "rows": {
+                                                                            "items": {
+                                                                                "type": "array"
+                                                                            },
+                                                                            "type": "array"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "name",
+                                                                        "columns",
+                                                                        "rows"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": "array"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "runAfter": {
+                                                    "Get_Results_from_LAW_-_Legacy": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "type": "ParseJson"
+                                            }
+                                        },
+                                        "case": "Log Analytics"
+                                    }
+                                },
+                                "default": {
+                                    "actions": {
+                                        "Terminate_-_Monitoring_Service": {
+                                            "inputs": {
+                                                "runError": {
+                                                    "code": "400",
+                                                    "message": "Unsupported monitoring service @{triggerBody()?['data']?['essentials']?['monitoringService']}"
+                                                },
+                                                "runStatus": "Failed"
+                                            },
+                                            "runAfter": {},
+                                            "type": "Terminate"
+                                        }
+                                    }
+                                },
+                                "expression": "@triggerBody()?['data']?['essentials']?['monitoringService']",
+                                "runAfter": {},
+                                "type": "Switch"
+                            }
+                        },
+                        "case": "Log"
+                    }
+                },
+                "default": {
+                    "actions": {
+                        "Terminate_-_Signal_Type": {
+                            "inputs": {
+                                "runError": {
+                                    "code": "400",
+                                    "message": "Unsupported signal type @{triggerBody()?['data']?['essentials']?['signalType']}"
+                                },
+                                "runStatus": "Failed"
+                            },
+                            "runAfter": {},
+                            "type": "Terminate"
+                        }
+                    }
+                },
+                "expression": "@triggerBody()?['data']?['essentials']?['signalType']",
+                "runAfter": {},
+                "type": "Switch"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "Query Column Mapping": {
+                "defaultValue": {
+                    "CMDBId": 1,
+                    "SubscriptionId": 0
+                },
+                "type": "Object"
+            },
+            "ServiceNow Webhook Password": {
+                "defaultValue": "dummy",
+                "type": "SecureString"
+            },
+            "ServiceNow Webhook URL": {
+                "defaultValue": "https://webhook.example.org/dummy",
+                "type": "String"
+            },
+            "ServiceNow Webhook Username": {
+                "defaultValue": "dummy",
+                "type": "String"
+            },
+            "Severity Mapping": {
+                "defaultValue": {
+                    "Sev0": 1,
+                    "Sev1": 2,
+                    "Sev2": 3,
+                    "Sev3": 4,
+                    "Sev4": 4
+                },
+                "type": "Object"
+            }
+        },
+        "triggers": {
+            "manual": {
+                "conditions": [],
+                "inputs": {
+                    "schema": {
+                        "properties": {
+                            "data": {
+                                "properties": {
+                                    "alertContext": {
+                                        "properties": {},
+                                        "type": "object"
+                                    },
+                                    "essentials": {
+                                        "properties": {
+                                            "alertContextVersion": {
+                                                "type": "string"
+                                            },
+                                            "alertId": {
+                                                "type": "string"
+                                            },
+                                            "alertRule": {
+                                                "type": "string"
+                                            },
+                                            "alertTargetIDs": {
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "type": "array"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            },
+                                            "essentialsVersion": {
+                                                "type": "string"
+                                            },
+                                            "firedDateTime": {
+                                                "type": "string"
+                                            },
+                                            "monitorCondition": {
+                                                "type": "string"
+                                            },
+                                            "monitoringService": {
+                                                "type": "string"
+                                            },
+                                            "originAlertId": {
+                                                "type": "string"
+                                            },
+                                            "resolvedDateTime": {
+                                                "type": "string"
+                                            },
+                                            "severity": {
+                                                "type": "string"
+                                            },
+                                            "signalType": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "schemaId": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "kind": "Http",
+                "operationOptions": "EnableSchemaValidation, SuppressWorkflowHeadersOnResponse",
+                "type": "Request"
+            }
+        }
+    },
+    "parameters": {}
+}

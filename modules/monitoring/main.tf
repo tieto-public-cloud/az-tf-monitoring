@@ -77,14 +77,31 @@ resource "azurerm_monitor_action_group" "action_group" {
     }
   }
 
+  dynamic "logic_app_receiver" {
+    for_each = lookup(each.value, "logic_app_receiver", null) == null ? [] : [1]
+
+    content {
+      name                    = each.value.logic_app_receiver.name
+      resource_id             = each.value.logic_app_receiver.resource_id
+      callback_url            = each.value.logic_app_receiver.callback_url
+      use_common_alert_schema = each.value.logic_app_receiver.use_common_alert_schema
+    }
+  }
+
+  dynamic "azure_function_receiver" {
+    for_each = lookup(each.value, "azure_function_receiver", null) == null ? [] : [1]
+
+    content {
+      name                     = each.value.azure_function_receiver.name
+      function_app_resource_id = each.value.azure_function_receiver.function_app_resource_id
+      function_name            = each.value.azure_function_receiver.function_name
+      http_trigger_url         = each.value.azure_function_receiver.http_trigger_url
+      use_common_alert_schema  = each.value.azure_function_receiver.use_common_alert_schema
+    }
+  }
+
   # Attach common tags passed from the caller.
   tags = var.common_tags
-
-  # This could take a long time, extend default timeouts.
-  timeouts {
-    create = "15m"
-    delete = "15m"
-  }
 }
 
 ##############################################################################
@@ -129,12 +146,6 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "query_alert" {
     action_group = [
       azurerm_monitor_action_group.action_group[each.value.action_group].id
     ]
-  }
-
-  # This could take a long time, extend default timeouts.
-  timeouts {
-    create = "15m"
-    delete = "15m"
   }
 }
 
@@ -220,10 +231,4 @@ resource "azurerm_monitor_metric_alert" "metric_alert" {
 
   # Attach common tags passed from the caller.
   tags = var.common_tags
-
-  # This could take a long time, extend default timeouts.
-  timeouts {
-    create = "15m"
-    delete = "15m"
-  }
 }

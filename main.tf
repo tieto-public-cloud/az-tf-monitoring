@@ -15,6 +15,67 @@ locals {
 ## See `sandbox.tf` for resources deployed to test these modules.
 
 ##############################################################################
+## Logic App for integration with SNow
+##############################################################################
+
+# Deploy Logic App converting alerts and sending them to ServiceNow.
+module "snow_logicapp" {
+  ## !!WARN!!
+  ##
+  ## The `source` parameter must be changed when you are using it in your own code!
+  ##
+  ## Use:
+  ##   "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/snow_logicapp?ref=v2.0"
+  ## where `v2.0` is a git repository reference to a tagged version of the code (a git tag).
+  ##
+  ## This will make sure your module is correctly versioned and its code is retrieved from the correct place.
+  ##
+  ## !!WARN!!
+  source    = "./modules/snow_logicapp"
+
+  ## The module expects a specific provider, mapping must be provided explicitly!
+  providers = {
+    azurerm = azurerm.aux
+  }
+
+  ## Name the app and provide a resource group to use.
+  name                = var.la_name
+  resource_group_name = azurerm_resource_group.la_rg.name
+  location            = var.location
+
+  ## Provide a reference to the shared analytics workspace that will produce alerts.
+  law_id = azurerm_log_analytics_workspace.law.id
+
+  ## Configure SNow details.
+  snow_webhook_url      = var.snow_webhook_url
+  snow_webhook_username = var.snow_webhook_username
+  snow_webhook_password = var.snow_webhook_password
+
+  ## During the deployment, we need to adjust Azure RBAC assignments.
+  ## If your deployment credentials don't have permission to do that,
+  ## set this to `false` and look for principal IDs in the output so
+  ## that you can assign roles manually.
+  ##
+  ## Look for:
+  ## * principal_id             (this is the identity that needs roles below)
+  ## * law_id                   (Log Analytics Reader)
+  ##
+  # assign_roles = true
+
+  ## Assign common tags to all resources deployed by this module and its submodules.
+  common_tags = local.common_tags
+
+  ############################################################################
+  ## This part is necessary only for the example, we need to
+  ## wait for LAW to be created before we start deploying monitoring.
+  ############################################################################
+  depends_on = [
+    azurerm_resource_group.la_rg,
+    azurerm_log_analytics_workspace.law
+  ]
+}
+
+##############################################################################
 ## Monitoring set-up with alerts
 ##############################################################################
 
@@ -48,7 +109,8 @@ module "monitoring" {
   ## Module deploys two webhook-based AGs by default:
   ## * tm-critical-actiongroup
   ## * tm-warning-actiongroup
-  ag_default_webhook_service_uri = var.snow_webhook_uri
+  ag_default_logicapp_id           = module.snow_logicapp.logic_app_id
+  ag_default_logicapp_callback_url = module.snow_logicapp.logic_app_callback_url
   # ag_default_use_common_alert_schema = true
 
   ## To choose what will be monitored. Everything is turned off by default.
