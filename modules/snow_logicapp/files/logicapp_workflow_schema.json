@@ -24,17 +24,16 @@
                                                                                 "username": "@parameters('ServiceNow Webhook Username')"
                                                                             },
                                                                             "body": {
-                                                                                "description": "@{triggerBody()?['data']?['essentials']?['description']} \n\n @{join(item(), '; ')} \n\n @{string(triggerBody()?['data']?['alertContext'])}",
-                                                                                "event_class": "Azure",
+                                                                                "description": "@{triggerBody()?['data']?['essentials']?['description']}\n\nSearch Query: @{items('For_Each_Search_Query')?['searchQuery']}\n\nResult: @{join(item(), '; ')}",
+                                                                                "event_class": "@{last(split(first(triggerBody()?['data']?['essentials']?['alertTargetIDs']), '/'))} - @{split(first(triggerBody()?['data']?['essentials']?['alertTargetIDs']), '/')[2]}",
                                                                                 "metric_name": "@{triggerBody()?['data']?['essentials']?['alertRule']}",
                                                                                 "node": "@{if(equals(length(item()[parameters('Query Column Mapping')['CMDBId']]), 0), item()[parameters('Query Column Mapping')['SubscriptionId']], item()[parameters('Query Column Mapping')['CMDBId']])}",
                                                                                 "resource": "@{triggerBody()?['data']?['essentials']?['alertRule']}",
-                                                                                "severity": "@if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Fired'), parameters('Severity Mapping')[triggerBody()?['data']?['essentials']?['severity']], 0)",
+                                                                                "severity": "@{if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Fired'), parameters('Severity Mapping')[triggerBody()?['data']?['essentials']?['severity']], 0)}",
                                                                                 "source": "Microsoft Azure",
                                                                                 "time_of_event": "@{triggerBody()?['data']?['essentials']?['firedDateTime']}",
                                                                                 "type": "@{triggerBody()?['data']?['essentials']?['signalType']}",
-                                                                                "u_external_event_id": "@{triggerBody()?['data']?['essentials']?['alertId']}",
-                                                                                "u_external_event_url": "@{items('For_Each_Search_Query')?['linkToFilteredSearchResultsUI']}"
+                                                                                "additional_info" : "{ \"u_external_event_id\": \"@{triggerBody()?['data']?['essentials']?['alertId']}\", \"u_external_event_url\": \"@{items('For_Each_Search_Query')?['linkToFilteredSearchResultsUI']}\" }"
                                                                             },
                                                                             "headers": {
                                                                                 "Content-Type": "application/json"
@@ -254,17 +253,16 @@
                                                                         "username": "@parameters('ServiceNow Webhook Username')"
                                                                     },
                                                                     "body": {
-                                                                        "description": "@{triggerBody()?['data']?['essentials']?['description']} \n\n @{join(item(), '; ')} \n\n @{triggerBody()?['data']?['alertContext']}",
-                                                                        "event_class": "Azure",
+                                                                        "description": "@{triggerBody()?['data']?['essentials']?['description']}\n\nSearch Query: @{body('Parse_Log_Analytics_Context')?['SearchQuery']}\n\nResult: @{join(item(), '; ')}",
+                                                                        "event_class": "@{last(split(first(triggerBody()?['data']?['essentials']?['alertTargetIDs']), '/'))} - @{split(first(triggerBody()?['data']?['essentials']?['alertTargetIDs']), '/')[2]}",
                                                                         "metric_name": "@{triggerBody()?['data']?['essentials']?['alertRule']}",
                                                                         "node": "@{if(equals(length(item()[parameters('Query Column Mapping')['CMDBId']]), 0), item()[parameters('Query Column Mapping')['SubscriptionId']], item()[parameters('Query Column Mapping')['CMDBId']])}",
                                                                         "resource": "@{triggerBody()?['data']?['essentials']?['alertRule']}",
-                                                                        "severity": "@if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Fired'), parameters('Severity Mapping')[triggerBody()?['data']?['essentials']?['severity']], 0)",
+                                                                        "severity": "@{if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Fired'), parameters('Severity Mapping')[triggerBody()?['data']?['essentials']?['severity']], 0)}",
                                                                         "source": "Microsoft Azure",
                                                                         "time_of_event": "@{triggerBody()?['data']?['essentials']?['firedDateTime']}",
                                                                         "type": "@{triggerBody()?['data']?['essentials']?['signalType']}",
-                                                                        "u_external_event_id": "@{triggerBody()?['data']?['essentials']?['alertId']}",
-                                                                        "u_external_event_url": "@{body('Parse_Log_Analytics_Context')?['LinkToFilteredSearchResultsUI']}"
+                                                                        "additional_info" : "{ \"u_external_event_id\": \"@{triggerBody()?['data']?['essentials']?['alertId']}\", \"u_external_event_url\": \"@{body('Parse_Log_Analytics_Context')?['LinkToFilteredSearchResultsUI']}\" }"
                                                                     },
                                                                     "headers": {
                                                                         "Content-Type": "application/json"
