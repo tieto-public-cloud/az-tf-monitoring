@@ -37,15 +37,6 @@ resource "azurerm_log_analytics_solution" "law_vminsights" {
   provider = azurerm.law
 }
 
-## FA set-up.
-resource "azurerm_resource_group" "fa_rg" {
-  name     = var.fa_resource_group_name
-  location = var.location
-
-  tags     = local.common_tags
-  provider = azurerm.aux
-}
-
 ## LA set-up.
 resource "azurerm_resource_group" "la_rg" {
   name     = var.la_resource_group_name

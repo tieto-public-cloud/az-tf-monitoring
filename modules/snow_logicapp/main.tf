@@ -5,7 +5,7 @@ data "azurerm_resource_group" "snow_logic_app_rg" {
 }
 
 data "local_file" "snow_logic_app_schema" {
-    filename = "${path.module}/files/logicapp_workflow_schema.json"
+  filename = "${path.module}/files/logicapp_workflow_schema.json"
 }
 
 resource "azurerm_logic_app_workflow" "snow_logic_app" {

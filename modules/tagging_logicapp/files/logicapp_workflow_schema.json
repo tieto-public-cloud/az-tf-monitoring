@@ -1,0 +1,123 @@
+{
+  "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "actions": {
+          "For_Each_Target_Subscription": {
+              "actions": {
+                  "Parse_Resource_Graph_Response": {
+                      "inputs": {
+                          "content": "@body('Resource_Graph_Query_for_Tags')",
+                          "schema": {
+                              "properties": {
+                                  "count": {
+                                      "type": "integer"
+                                  },
+                                  "data": {
+                                      "items": {
+                                          "properties": {
+                                              "id": {
+                                                  "type": "string"
+                                              },
+                                              "subscriptionId": {
+                                                  "type": "string"
+                                              },
+                                              "tagKey": {
+                                                  "type": "string"
+                                              },
+                                              "tagValue": {
+                                                  "type": "string"
+                                              }
+                                          },
+                                          "required": [
+                                              "subscriptionId",
+                                              "id",
+                                              "tagKey",
+                                              "tagValue"
+                                          ],
+                                          "type": "object"
+                                      },
+                                      "type": "array"
+                                  },
+                                  "facets": {
+                                      "type": "array"
+                                  },
+                                  "resultTruncated": {
+                                      "type": "string"
+                                  },
+                                  "totalRecords": {
+                                      "type": "integer"
+                                  }
+                              },
+                              "type": "object"
+                          }
+                      },
+                      "runAfter": {
+                          "Resource_Graph_Query_for_Tags": [
+                              "Succeeded"
+                          ]
+                      },
+                      "type": "ParseJson"
+                  },
+                  "Resource_Graph_Query_for_Tags": {
+                      "inputs": {
+                          "authentication": {
+                              "type": "ManagedServiceIdentity"
+                          },
+                          "body": {
+                              "query": "resources | where isnotempty(tags) | project subscriptionId, id, tags | mvexpand tags | extend tagKey = tostring(bag_keys(tags)[0]) | extend tagValue = tostring(tags[tagKey]) | project subscriptionId, id, tagKey, tagValue",
+                              "subscriptions": [
+                                  "@{items('For_Each_Target_Subscription')}"
+                              ]
+                          },
+                          "headers": {
+                              "Content-Type": "application/json"
+                          },
+                          "method": "POST",
+                          "uri": "https://management.azure.com/providers/Microsoft.ResourceGraph/resources?api-version=2021-03-01"
+                      },
+                      "runAfter": {},
+                      "type": "Http"
+                  },
+                  "Send_Data_to_LAW": {
+                      "inputs": {
+                          "body": "@{body('Parse_Resource_Graph_Response')?['data']}",
+                          "headers": {
+                              "Log-Type": "TagDataV2"
+                          },
+                          "host": {
+                              "connection": {
+                                  "name": "@parameters('$connections')['azureloganalyticsdatacollector']['connectionId']"
+                              }
+                          },
+                          "method": "post",
+                          "path": "/api/logs"
+                      },
+                      "runAfter": {
+                          "Parse_Resource_Graph_Response": [
+                              "Succeeded"
+                          ]
+                      },
+                      "type": "ApiConnection"
+                  }
+              },
+              "foreach": "@parameters('Target Subscription IDs')",
+              "runAfter": {},
+              "type": "Foreach"
+          }
+      },
+      "contentVersion": "1.0.0.0",
+      "outputs": {},
+      "parameters": {
+          "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+          },
+          "Target Subscription IDs": {
+              "defaultValue": [],
+              "type": "Array"
+          }
+      },
+      "triggers": {}
+  },
+  "parameters": {}
+}

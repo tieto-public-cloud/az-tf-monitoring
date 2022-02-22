@@ -30,7 +30,7 @@
                                                                                 "node": "@{if(equals(length(item()[parameters('Query Column Mapping')['CMDBId']]), 0), item()[parameters('Query Column Mapping')['SubscriptionId']], item()[parameters('Query Column Mapping')['CMDBId']])}",
                                                                                 "resource": "@{triggerBody()?['data']?['essentials']?['alertRule']}",
                                                                                 "severity": "@{if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Fired'), parameters('Severity Mapping')[triggerBody()?['data']?['essentials']?['severity']], 0)}",
-                                                                                "source": "Microsoft Azure",
+                                                                                "source": "Microsoft Azure v2",
                                                                                 "time_of_event": "@{triggerBody()?['data']?['essentials']?['firedDateTime']}",
                                                                                 "type": "@{triggerBody()?['data']?['essentials']?['signalType']}",
                                                                                 "additional_info" : "{ \"u_external_event_id\": \"@{triggerBody()?['data']?['essentials']?['alertId']}\", \"u_external_event_url\": \"@{items('For_Each_Search_Query')?['linkToFilteredSearchResultsUI']}\" }"
@@ -259,7 +259,7 @@
                                                                         "node": "@{if(equals(length(item()[parameters('Query Column Mapping')['CMDBId']]), 0), item()[parameters('Query Column Mapping')['SubscriptionId']], item()[parameters('Query Column Mapping')['CMDBId']])}",
                                                                         "resource": "@{triggerBody()?['data']?['essentials']?['alertRule']}",
                                                                         "severity": "@{if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Fired'), parameters('Severity Mapping')[triggerBody()?['data']?['essentials']?['severity']], 0)}",
-                                                                        "source": "Microsoft Azure",
+                                                                        "source": "Microsoft Azure v2",
                                                                         "time_of_event": "@{triggerBody()?['data']?['essentials']?['firedDateTime']}",
                                                                         "type": "@{triggerBody()?['data']?['essentials']?['signalType']}",
                                                                         "additional_info" : "{ \"u_external_event_id\": \"@{triggerBody()?['data']?['essentials']?['alertId']}\", \"u_external_event_url\": \"@{body('Parse_Log_Analytics_Context')?['LinkToFilteredSearchResultsUI']}\" }"

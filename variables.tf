@@ -38,26 +38,6 @@ variable "law_resource_group_name" {
   type        = string
 }
 
-variable "fa_resource_group_name" {
-  type        = string
-  description = "The name of the Azure Function app resource group to be created"
-
-  validation {
-    condition     = length(var.fa_resource_group_name) > 0
-    error_message = "Allowed value for fa_resource_group_name is a non-empty string."
-  }
-}
-
-variable "fa_name" {
-  type        = string
-  description = "The name of the Azure Function app to be created"
-
-  validation {
-    condition     = length(var.fa_name) > 0
-    error_message = "Allowed value for fa_name is a non-empty string."
-  }
-}
-
 variable "la_resource_group_name" {
   type        = string
   description = "The name of the Azure Logic App resource group to be created"
@@ -68,13 +48,23 @@ variable "la_resource_group_name" {
   }
 }
 
-variable "la_name" {
+variable "snow_la_name" {
   type        = string
   description = "The name of the Azure Logic App to be created"
 
   validation {
-    condition     = length(var.la_name) > 0
-    error_message = "Allowed value for la_name is a non-empty string."
+    condition     = length(var.snow_la_name) > 0
+    error_message = "Allowed value for snow_la_name is a non-empty string."
+  }
+}
+
+variable "tagging_la_name" {
+  type        = string
+  description = "The name of the Azure Logic App to be created"
+
+  validation {
+    condition     = length(var.tagging_la_name) > 0
+    error_message = "Allowed value for tagging_la_name is a non-empty string."
   }
 }
 

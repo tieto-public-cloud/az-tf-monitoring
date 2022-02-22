@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+      "connectionName": {
+          "type": "String",
+          "metadata": {
+              "description": "The name for the connection."
+          }
+      },
+      "connectionType": {
+          "type": "String",
+          "metadata": {
+              "description": "The type of the connection."
+          }
+      },
+      "parameterValues": {
+          "type": "Object"
+      }
+  },
+  "variables": {},
+  "resources": [
+      {
+          "type": "Microsoft.Web/connections",
+          "apiVersion": "2018-07-01-preview",
+          "location": "[resourceGroup().location]",
+          "name": "[parameters('connectionName')]",
+          "properties": {
+              "api": {
+                  "id": "[subscriptionResourceId('Microsoft.Web/locations/managedApis', resourceGroup().location, parameters('connectionType'))]"
+              },
+              "displayName": "[parameters('connectionName')]",
+              "parameterValues": "[parameters('parameterValues')]"
+          }
+      }
+  ],
+  "outputs": {}
+}
