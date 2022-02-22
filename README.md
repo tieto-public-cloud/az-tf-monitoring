@@ -3,10 +3,167 @@
 ## General information
 This repository contains a set of Terraform modules:  
 * `monitoring` - the main module referencing/using all other submodules.
-* `tagging_functionapp` - a module deploying Azure Function apps reading resource tags from subscriptions and submitting them to LAW.
+* `tagging_logicapp` - a module deploying Azure Logic App reading resource tags from subscriptions and submitting them to LAW.
 
 Unless you know exactly what you are doing, you should use these modules as shown in the example provided in the root
 of this repository.
+
+### Terraform Providers
+The following examples work with two AzureRM provider instances. You need to be careful when working in multi-provider
+environments and explicitly assign needed providers to specific resources and/or modules.
+
+These examples are using:
+```hcl
+# For resources and modules working with the shared Log Analytics Workspace.
+# Alert rules and action groups will be deployed here.
+provider "azurerm" {
+  features {}
+  alias = "law"
+}
+
+# For supporting resources, such as Logic Apps.
+# SNow Logic App and Tagging Logic App will be deployed here.
+provider "azurerm" {
+  features {}
+  alias = "aux"
+}
+```
+
+If you do not need to separate these resources into different Azure subscriptions, you can use one provider and
+share it with modules and resources implicitly. That means WITHOUT:
+```hcl
+providers = {
+    azurerm = azurerm.ALIAS_HERE
+  }
+```
+in your resource and module definitions.
+
+## SNow Logic App Module
+- Deploys Azure Logic App into the specified subscription(s).
+- The app will receive alert notifications from `monitoring` convert them from `AzureCommonAlert` schema to ServiceNow schema.
+- Converted notification will be sent as events to the provided HTTPS endpoint (Webhook URL).
+
+### Event Format
+```json
+{
+  "description": "VARIABLES_HERE",
+  "event_class": "VARIABLES_HERE",
+  "metric_name": "VARIABLES_HERE",
+  "node": "VARIABLES_HERE",
+  "resource": "VARIABLES_HERE",
+  "severity": "VARIABLES_HERE",
+  "source": "Microsoft Azure v2",
+  "time_of_event": "VARIABLES_HERE",
+  "type": "VARIABLES_HERE",
+  "additional_info" : "{ \"u_external_event_id\": \"ID_HERE\", \"u_external_event_url\": \"URL_HERE\" }"
+}
+```
+
+### App Definition
+See [Schema](modules/snow_logicapp/files/logicapp_workflow_schema.json).
+
+### Input Variables
+```hcl
+locals {
+  # Some tags applied to all newly deployed resources.
+  common_tags = {}
+}
+
+module "snow_logicapp" {
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/snow_logicapp?ref=v2.0"
+
+  ## The module expects a specific provider, mapping must be provided explicitly!
+  providers = {
+    azurerm = azurerm.aux
+  }
+
+  ## Name the app and provide a resource group to use.
+  name                = var.snow_la_name
+  resource_group_name = azurerm_resource_group.la_rg.name
+  location            = azurerm_resource_group.la_rg.location
+
+  ## Provide a reference to the shared analytics workspace that will produce alerts.
+  law_id = azurerm_log_analytics_workspace.law.id
+
+  ## Configure SNow details. This URL should NOT point to a transform script, just the native JSON EventManagement endpoint.
+  snow_webhook_url      = var.snow_webhook_url
+  snow_webhook_username = var.snow_webhook_username
+  snow_webhook_password = var.snow_webhook_password
+
+  ## During the deployment, we need to adjust Azure RBAC assignments.
+  ## If your deployment credentials don't have permission to do that,
+  ## set this to `false` and look for principal IDs in the output so
+  ## that you can assign roles manually.
+  ##
+  ## Look for:
+  ## * principal_id             (this is the identity that needs roles below)
+  ## * law_id                   (Log Analytics Reader)
+  ##
+  # assign_roles = true
+
+  ## Assign common tags to all resources deployed by this module and its submodules.
+  common_tags = local.common_tags
+}
+```
+
+## Tagging Logic App Module
+- Deploys Azure Logic App into the specified subscription(s).
+- The app will read resource tags from resources in the target subscription(s) and push them into a shared log analytics workspace.
+
+### App Definition
+See [Schema](modules/tagging_logicapp/files/logicapp_workflow_schema.json).
+
+### Input Variables
+```hcl
+locals {
+  # Some tags applied to all newly deployed resources.
+  common_tags = {}
+}
+
+module "tagging_logicapp" {
+  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/tagging_logicapp?ref=v2.0"
+
+  ## The module expects a specific provider, mapping must be provided explicitly!
+  providers = {
+    azurerm = azurerm.aux
+  }
+
+  ## Name the app and provide a resource group to use.
+  name                = var.tagging_la_name
+  resource_group_name = azurerm_resource_group.la_rg.name
+  location            = azurerm_resource_group.la_rg.location
+
+  law_id           = azurerm_log_analytics_workspace.law.id
+  law_workspace_id = azurerm_log_analytics_workspace.law.workspace_id
+  law_primary_key  = azurerm_log_analytics_workspace.law.primary_shared_key
+
+  ## Provide subscription(s) from which to read resource tags.
+  target_subscription_ids = var.target_subscription_ids
+
+  ## During the deployment, we need to adjust Azure RBAC assignments.
+  ## If your deployment credentials don't have permission to do that,
+  ## set this to `false` and look for principal IDs in the output so
+  ## that you can assign roles manually.
+  ##
+  ## Look for:
+  ## * principal_id             (this is the identity that needs roles below)
+  ## * target_subscription_ids  (Reader)
+  ##
+  # assign_roles = true
+
+  ## Assign common tags to all resources deployed by this module and its submodules.
+  common_tags = local.common_tags
+
+  ############################################################################
+  ## Everything beyond this point is customization for experts.
+  ############################################################################
+
+  ## How often should helper function refresh data from target subscriptions?
+  ## Doing this often can get expensive. Do not change this value unless you
+  ## know what you are doing.
+  # tag_retrieval_interval = 3 # in hours!
+}
+```
 
 ## Monitoring Module
 - Deploys default action groups.
@@ -31,17 +188,19 @@ module "monitoring" {
   }
 
   ## Location must be shared by all resources, only regional deployments are supported.
-  location  = var.location
+  location  = azurerm_resource_group.law_rg.location
 
   ## Which Log Analytics Workspace will be used as the source of data. It must exist beforehand!
   law_name                = var.law_name
-  law_resource_group_name = var.law_resource_group_name
+  law_resource_group_name = azurerm_resource_group.law_rg.name
 
   ## Change configuration of the default action group set up.
   ## Module deploys two webhook-based AGs by default:
   ## * tm-critical-actiongroup
   ## * tm-warning-actiongroup
-  ag_default_webhook_service_uri = var.snow_webhook_uri
+  ag_default_logicapp_id           = module.snow_logicapp.logic_app_id
+  ag_default_logicapp_callback_url = module.snow_logicapp.logic_app_callback_url
+  # ag_default_use_common_alert_schema = true
 
   ## To choose what will be monitored. Everything is turned off by default.
   monitor = [
@@ -53,11 +212,19 @@ module "monitoring" {
     # "datafactory",
     # "expressroute",
     # "lb",
-    "tagging_functionapp" ## To monitor resources deployed by this module.
+    "tagging_logicapp", ## To monitor resources deployed by this module.
+    "snow_logicapp"     ## To monitor resources deployed by this module.
   ]
 
   ## Assign common tags to all resources deployed by this module and its submodules.
   common_tags = local.common_tags
+
+  ## Make sure everything is executed in the right order.
+  depends_on = [
+    azurerm_log_analytics_workspace.law,
+    module.snow_logicapp,
+    module.tagging_logicapp
+  ]
 }
 ```
 
@@ -82,60 +249,8 @@ local variables available in [the monitoring module](modules/monitoring/).
 Any custom baselines that are not implemented in default alert bundles can be deployed via:
 - `*_log_signals`
 - `metric_signals`
-This are *advanced* parameters of the `monitoring` module.
-
-## Tagging Function App Module
-- Deploys Azure Function app(s) into the specified subscription.
-  - The app is deployed from: https://github.com/tieto-public-cloud/az-func-monitoring-tagging
-  - The app will read resource tags from resources in the target subscription and push them into a shared log analytics workspace.
-
-### Input Variables
-```hcl
-locals {
-  # Some tags applied to all newly deployed resources.
-  common_tags = {}
-}
-
-module "tagging_functionapp" {
-  source    = "git::https://github.com/tieto-public-cloud/az-tf-monitoring//modules/tagging_functionapp?ref=v2.0"
-
-  ## The module expects a specific provider, mapping must be provided explicitly!
-  providers = {
-    azurerm = azurerm.aux
-  }
-
-  ## Name the function and provide a resource group to use.
-  name                = var.fa_name
-  resource_group_name = azurerm_resource_group.fa_rg.name
-
-  ## Azure is picky about SA names, be sure to provide a valid value here!
-  storage_account_name = replace("${var.fa_name}sa","/[^a-z0-9]/","")
-
-  location                = var.location
-  law_name                = var.law_name
-  law_resource_group_name = azurerm_resource_group.law_rg.name
-  law_id                  = azurerm_log_analytics_workspace.law.id
-
-  ## Provide a subscription to read.
-  target_subscription_id = var.target_subscription_id
-
-  ## During the deployment, we need to adjust Azure RBAC assignments.
-  ## If your deployment credentials don't have permission to do that,
-  ## set this to `false` and look for principal IDs in the output so
-  ## that you can assign roles manually.
-  ##
-  ## Look for:
-  ## * principal_id             (this is the identity that needs roles below)
-  ## * storage_account_id       (Storage Account Contributor)
-  ## * law_id                   (Log Analytics Contributor)
-  ## * target_subscription_id   (Reader)
-  ##
-  # assign_roles = true
-
-  ## Assign common tags to all resources deployed by this module and its submodules.
-  common_tags = local.common_tags
-}
-```
+These are *advanced* parameters of the `monitoring` module. Refer to the provided examples
+for details.
 
 ## Changelog
 See [CHANGELOG.md](CHANGELOG.md).
@@ -163,7 +278,7 @@ locals {
     datafactory         = local.datafactory_log_signals
     expressroute        = local.expressroute_log_signals
     lb                  = local.lb_log_signals
-    tagging_functionapp = local.tagging_functionapp_log_signals
+    tagging_logicapp = local.tagging_logicapp_log_signals
   }
 
   # ...
@@ -172,3 +287,6 @@ locals {
 
 You also need to add a new `variables_monitor_*.tf` to [modules/monitoring/](modules/monitoring/) that
 matches the name of the new resource. See existing resource variables for the required layout of that file.
+
+## Disclaimer
+This is not an official Tietoevry product.

@@ -41,7 +41,7 @@ module "snow_logicapp" {
   ## Name the app and provide a resource group to use.
   name                = var.snow_la_name
   resource_group_name = azurerm_resource_group.la_rg.name
-  location            = var.location
+  location            = azurerm_resource_group.la_rg.location
 
   ## Provide a reference to the shared analytics workspace that will produce alerts.
   law_id = azurerm_log_analytics_workspace.law.id
@@ -93,8 +93,8 @@ module "tagging_logicapp" {
   ## Name the app and provide a resource group to use.
   name                = var.tagging_la_name
   resource_group_name = azurerm_resource_group.la_rg.name
+  location            = azurerm_resource_group.la_rg.location
 
-  location         = var.location
   law_id           = azurerm_log_analytics_workspace.law.id
   law_workspace_id = azurerm_log_analytics_workspace.law.workspace_id
   law_primary_key  = azurerm_log_analytics_workspace.law.primary_shared_key
@@ -150,7 +150,7 @@ module "monitoring" {
   }
 
   ## Location must be shared by all resources, only regional deployments are supported.
-  location  = var.location
+  location  = azurerm_resource_group.law_rg.location
 
   ## Which Log Analytics Workspace will be used as the source of data. It must exist beforehand!
   law_name                = var.law_name
@@ -174,7 +174,8 @@ module "monitoring" {
     # "datafactory",
     # "expressroute",
     # "lb",
-    # "tagging_logicapp" ## To monitor resources deployed by this module.
+    # "tagging_logicapp", ## To monitor resources deployed by this module.
+    # "snow_logicapp"     ## To monitor resources deployed by this module.
   ]
 
   ## Assign common tags to all resources deployed by this module and its submodules.
@@ -201,11 +202,10 @@ module "monitoring" {
   ## Take care to reference only existing action groups (or add them above)!
   # metric_signals = []
 
-  ############################################################################
-  ## This part is necessary only for the example, we need to
-  ## wait for LAW to be created before we start deploying monitoring.
-  ############################################################################
+  ## Make sure everything is executed in the right order.
   depends_on = [
-    azurerm_log_analytics_workspace.law
+    azurerm_log_analytics_workspace.law,
+    module.snow_logicapp,
+    module.tagging_logicapp
   ]
 }
